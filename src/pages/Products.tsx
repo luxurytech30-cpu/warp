@@ -58,7 +58,7 @@ const Products = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        טוען מוצרים...
+        يتم تحميل المنتجات...
       </div>
     );
   }
@@ -66,7 +66,7 @@ const Products = () => {
   if (isError) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        שגיאה בטעינת המוצרים
+        حدث خطأ أثناء تحميل المنتجات
       </div>
     );
   }
@@ -76,10 +76,10 @@ const Products = () => {
       <div className="container mx-auto px-4">
         <div className="mb-12 text-center">
           <h1 className="text-5xl font-black mb-4">
-            קטלוג <span className="text-gradient-primary">המוצרים</span>
+            تسوقي <span className="text-gradient-primary">مجموعة Perfect Wrap</span>
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            מגוון עצום של חומרי בניין ושיפוצים באיכות פרימיום. מחירים ללא מע״מ.
+            منتجات أنثوية مخصصة بأسماء ورسائل شخصية، مع تغليف فاخر وشحن سريع.
           </p>
         </div>
 
@@ -89,7 +89,7 @@ const Products = () => {
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               type="text"
-              placeholder="חפש מוצרים..."
+              placeholder="ابحثي عن منتج..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pr-10"
@@ -101,7 +101,7 @@ const Products = () => {
             className="gap-2"
           >
             <SlidersHorizontal className="h-4 w-4" />
-            {showFilters ? "הסתר" : "הצג"} סינון
+            {showFilters ? "إخفاء" : "إظهار"} التصفية
           </Button>
         </div>
 
@@ -110,7 +110,7 @@ const Products = () => {
           {showFilters && (
             <aside className="lg:w-64 space-y-6">
               <Card className="p-6 shadow-card">
-                <h3 className="font-bold text-lg mb-4">קטגוריות</h3>
+                <h3 className="font-bold text-lg mb-4">الفئات</h3>
                 <div className="space-y-3">
                   {categories.map((categoryName) => (
                     <div key={categoryName} className="flex items-center gap-2">
@@ -135,7 +135,7 @@ const Products = () => {
                     onClick={() => setSelectedCategories([])}
                     className="w-full mt-4"
                   >
-                    נקה הכל
+                    مسح الكل
                   </Button>
                 )}
               </Card>
@@ -145,7 +145,7 @@ const Products = () => {
           {/* Products Grid */}
           <div className="flex-1">
             <div className="mb-6 text-sm text-muted-foreground">
-              נמצאו {filteredProducts.length} מוצרים
+              تم العثور على {filteredProducts.length} منتج
             </div>
 
             <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -160,7 +160,7 @@ const Products = () => {
                       />
                       {product.isTop && (
                         <div className="absolute top-4 left-4 bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-xs font-bold shadow-gold">
-                          מוצר מוביל
+                          منتج مميز
                         </div>
                       )}
                     </div>
@@ -180,14 +180,14 @@ const Products = () => {
                               product.options[0].priceWithoutMaam}
                           </span>
                           <span className="text-sm text-muted-foreground mr-1">
-                            ללא מע״מ
+                            بدون ضريبة
                           </span>
                         </div>
                         <Button
                           variant="outline"
                           className="hover:gradient-primary hover:text-white"
                         >
-                          פרטים
+                          التفاصيل
                         </Button>
                       </div>
                     </div>
@@ -199,10 +199,10 @@ const Products = () => {
             {filteredProducts.length === 0 && (
               <div className="text-center py-20">
                 <p className="text-2xl font-bold text-muted-foreground mb-2">
-                  לא נמצאו מוצרים
+                  لا توجد نتائج
                 </p>
                 <p className="text-muted-foreground">
-                  נסה לשנות את הסינון או את מילות החיפוש
+                  جربي كلمات بحث مختلفة أو اختاري فئة أخرى
                 </p>
               </div>
             )}

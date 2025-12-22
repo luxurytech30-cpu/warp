@@ -11,14 +11,14 @@ const PaymentSuccess = () => {
     <div className="min-h-screen flex items-center justify-center">
       <Card className="p-8 text-center space-y-4">
         <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
-        <h1 className="text-2xl font-bold">התשלום בוצע בהצלחה</h1>
+        <h1 className="text-2xl font-bold">تم الدفع بنجاح</h1>
         {orderId && (
           <p className="text-muted-foreground">
-            מספר הזמנה: <span className="font-mono">{orderId}</span>
+            رقم الطلب: <span className="font-mono">{orderId}</span>
           </p>
         )}
         <Link to="/profile">
-          <Button className="mt-4">צפה בהזמנות שלך</Button>
+          <Button className="mt-4">عرض طلباتك</Button>
         </Link>
       </Card>
     </div>

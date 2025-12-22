@@ -10,16 +10,16 @@ interface LanguageContextProps {
 }
 
 const defaultValue: LanguageContextProps = {
-  language: "he",
+  language: "ar",
   switchLanguage: () => {},
-  isHebrew: true,
-  isArabic: false,
+  isHebrew: false,
+  isArabic: true,
 };
 
 const LanguageContext = createContext<LanguageContextProps>(defaultValue);
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [language, setLanguage] = useState<LanguageType>("he");
+  const [language, setLanguage] = useState<LanguageType>("ar");
 
   const switchLanguage = (lang: LanguageType) => {
     setLanguage(lang);
