@@ -99,7 +99,8 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground font-cairo;
-    background-image: radial-gradient(circle at 20% 20%, hsl(331 100% 75% / 0.14), transparent 36%), radial-gradient(circle at 80% 0%, hsl(175 72% 55% / 0.12), transparent 32%);
+    background-image: radial-gradient(circle at 20% 20%, hsl(331 100% 75% / 0.14), transparent 36%),
+      radial-gradient(circle at 80% 0%, hsl(175 72% 55% / 0.12), transparent 32%);
     direction: rtl;
   }
 
