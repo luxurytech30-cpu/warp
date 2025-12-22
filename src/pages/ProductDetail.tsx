@@ -49,7 +49,7 @@ const ProductDetail = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        טוען מוצר...
+        يتم تحميل المنتج...
       </div>
     );
   }
@@ -58,8 +58,8 @@ const ProductDetail = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">המוצר לא נמצא</h2>
-          <Button onClick={() => navigate("/products")}>חזור למוצרים</Button>
+          <h2 className="text-2xl font-bold mb-4">المنتج غير متوفر</h2>
+          <Button onClick={() => navigate("/products")}>عودة للمنتجات</Button>
         </div>
       </div>
     );
@@ -85,7 +85,7 @@ const ProductDetail = () => {
     );
 
     if (optionIndex === -1) {
-      toast.error("אפשרות המוצר אינה תקינה");
+      toast.error("خيار المنتج غير صالح");
       return;
     }
 
@@ -113,7 +113,7 @@ const ProductDetail = () => {
           className="mb-8"
         >
           <ArrowRight className="ml-2 h-4 w-4" />
-          חזור למוצרים
+          عودة للمنتجات
         </Button>
 
         <div className="grid lg:grid-cols-2 gap-12">
@@ -143,7 +143,7 @@ const ProductDetail = () => {
             {/* Options */}
             <Card className="p-6 shadow-card">
               <Label className="text-lg font-bold mb-4 block">
-                בחר אפשרות
+                اختاري خيارك المفضل
               </Label>
               <RadioGroup
                 value={selectedOption}
@@ -180,7 +180,7 @@ const ProductDetail = () => {
                           )}
                           <div className="font-bold text-primary">₪{price}</div>
                           <div className="text-xs text-muted-foreground">
-                            במלאי: {option.stock}
+                            متوفر: {option.stock}
                           </div>
                         </div>
                       </div>
@@ -194,7 +194,7 @@ const ProductDetail = () => {
             <Card className="p-6 gradient-hero text-white shadow-premium">
               <div className="space-y-3">
                 <div className="flex justify-between items-center text-lg">
-                  <span>מחיר ללא מע״מ:</span>
+                  <span>السعر قبل الضريبة:</span>
                   <div className="text-left">
                     {hasDiscount && (
                       <span className="line-through text-white/70 text-sm ml-2">
@@ -207,13 +207,13 @@ const ProductDetail = () => {
                   </div>
                 </div>
                 <div className="flex justify-between items-center text-lg">
-                  <span>מע״מ (17%):</span>
+                  <span>الضريبة (17٪):</span>
                   <span className="font-semibold">
                     ₪{(effectivePrice * 0.17).toFixed(2)}
                   </span>
                 </div>
                 <div className="border-t border-white/30 pt-3 flex justify-between items-center text-xl font-bold">
-                  <span>סה״כ כולל מע״מ:</span>
+                  <span>الإجمالي مع الضريبة:</span>
                   <span className="text-3xl">
                     ₪{priceWithMaam.toFixed(2)}
                   </span>
@@ -233,22 +233,22 @@ const ProductDetail = () => {
               className="w-full gradient-primary text-white shadow-premium text-lg py-6 h-auto"
             >
               <ShoppingCart className="ml-2 h-5 w-5" />
-              {isAdding ? "מוסיף לעגלה..." : "הוסף לעגלה"}
+              {isAdding ? "يتم الإضافة..." : "أضيفي للسلة"}
             </Button>
 
             {/* Features */}
             <div className="grid grid-cols-3 gap-4 pt-6">
               <div className="text-center">
                 <Package className="h-8 w-8 mx-auto mb-2 text-primary" />
-                <div className="text-sm font-medium">איכות מובטחת</div>
+                <div className="text-sm font-medium">جودة مضمونة</div>
               </div>
               <div className="text-center">
                 <Shield className="h-8 w-8 mx-auto mb-2 text-primary" />
-                <div className="text-sm font-medium">אחריות מלאה</div>
+                <div className="text-sm font-medium">تغليف محمي</div>
               </div>
               <div className="text-center">
                 <Truck className="h-8 w-8 mx-auto mb-2 text-primary" />
-                <div className="text-sm font-medium">משלוח מהיר</div>
+                <div className="text-sm font-medium">شحن سريع</div>
               </div>
             </div>
           </div>

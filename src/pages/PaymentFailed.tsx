@@ -11,18 +11,18 @@ const PaymentFailed = () => {
     <div className="min-h-screen flex items-center justify-center">
       <Card className="p-8 text-center space-y-4">
         <XCircle className="h-16 w-16 text-red-500 mx-auto" />
-        <h1 className="text-2xl font-bold">התשלום נכשל</h1>
+        <h1 className="text-2xl font-bold">فشل الدفع</h1>
         {orderId && (
           <p className="text-muted-foreground">
-            הזמנה מספר <span className="font-mono">{orderId}</span> לא חויבה.
+            لم يتم تحصيل الطلب رقم <span className="font-mono">{orderId}</span>.
           </p>
         )}
-        <div className="space-x-2">
+        <div className="flex flex-wrap gap-2 justify-center">
           <Link to="/cart">
-            <Button>נסה שוב</Button>
+            <Button>حاولي مجددًا</Button>
           </Link>
           <Link to="/products">
-            <Button variant="outline">חזרה לקניות</Button>
+            <Button variant="outline">عودة للتسوق</Button>
           </Link>
         </div>
       </Card>

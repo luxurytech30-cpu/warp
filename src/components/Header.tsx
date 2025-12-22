@@ -22,17 +22,17 @@ export const Header = () => {
   const closeMenu = () => setIsMobileMenuOpen(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur shadow-card">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl shadow-card">
       <div className="container mx-auto px-4">
         <div className="flex h-20 items-center justify-between">
           {/* --- Left Side: Logo --- */}
           <Link to="/" className="flex items-center gap-3" onClick={closeMenu}>
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg gradient-primary shadow-premium">
-              <Package className="h-7 w-7 text-white" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl gradient-primary shadow-premium">
+              <Package className="h-7 w-7 text-white drop-shadow-md" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gradient-primary">בניה פרימיום</h1>
-              <p className="text-xs text-muted-foreground">חומרי בניין איכותיים</p>
+              <h1 className="text-2xl font-bold text-gradient-primary leading-tight">Perfect Wrap</h1>
+              <p className="text-xs text-muted-foreground">هدايا شخصية بلمسة أنثوية</p>
             </div>
           </Link>
 
@@ -45,7 +45,7 @@ export const Header = () => {
           <div className="flex items-center gap-3">
             {/* Cart */}
             <Link to="/cart" onClick={closeMenu}>
-              <Button variant="outline" size="icon" className="relative">
+              <Button variant="outline" size="icon" className="relative border-primary/30 hover:border-primary hover:text-primary">
                 <ShoppingCart className="h-5 w-5" />
                 {totalItems > 0 && (
                   <span className="absolute -top-2 -left-2 h-6 w-6 rounded-full gradient-gold text-xs font-bold flex items-center justify-center text-white shadow-gold">
@@ -88,28 +88,28 @@ export const Header = () => {
                 className="text-foreground hover:text-primary font-medium py-2 transition-colors border-b border-border/50" 
                 onClick={closeMenu}
               >
-                דף הבית
+                الرئيسية
               </Link>
               <Link 
                 to="/products" 
                 className="text-foreground hover:text-primary font-medium py-2 transition-colors border-b border-border/50" 
                 onClick={closeMenu}
               >
-                מוצרים
+                المنتجات
               </Link>
               <Link 
                 to="/about" 
                 className="text-foreground hover:text-primary font-medium py-2 transition-colors border-b border-border/50" 
                 onClick={closeMenu}
               >
-                אודות
+                من نحن
               </Link>
               <Link 
                 to="/contact" 
                 className="text-foreground hover:text-primary font-medium py-2 transition-colors border-b border-border/50" 
                 onClick={closeMenu}
               >
-                צור קשר
+                تواصل
               </Link>
               {isAdmin && (
                 <Link
@@ -117,7 +117,7 @@ export const Header = () => {
                   className="text-foreground hover:text-primary font-medium py-2 transition-colors border-b border-border/50"
                   onClick={closeMenu}
                 >
-                  מנהל
+                  مسؤول
                 </Link>
               )}
             </nav>
@@ -138,20 +138,20 @@ export const Header = () => {
 const NavLinks = ({ isAdmin }: { isAdmin: boolean }) => (
   <>
     <Link to="/" className="text-foreground hover:text-primary font-medium transition-colors">
-      דף הבית
+      الرئيسية
     </Link>
     <Link to="/products" className="text-foreground hover:text-primary font-medium transition-colors">
-      מוצרים
+      المنتجات
     </Link>
     <Link to="/about" className="text-foreground hover:text-primary font-medium transition-colors">
-      אודות
+      من نحن
     </Link>
     <Link to="/contact" className="text-foreground hover:text-primary font-medium transition-colors">
-      צור קשר
+      تواصل
     </Link>
     {isAdmin && (
       <Link to="/admin" className="text-foreground hover:text-primary font-medium transition-colors">
-        מנהל
+        مسؤول
       </Link>
     )}
   </>
@@ -171,12 +171,12 @@ const AuthButtons = ({ user, logout, isMobile = false, onClick }: any) => {
           <DropdownMenuItem asChild>
             <Link to="/profile" className="cursor-pointer" onClick={onClick}>
               <User className="ml-2 h-4 w-4" />
-              פרופיל
+              الملف الشخصي
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => { logout(); if(onClick) onClick(); }} className="cursor-pointer text-destructive">
             <LogOut className="ml-2 h-4 w-4" />
-            התנתק
+            تسجيل خروج
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -186,14 +186,14 @@ const AuthButtons = ({ user, logout, isMobile = false, onClick }: any) => {
   return (
     <div className={`flex items-center gap-2 ${isMobile ? 'flex-col w-full' : ''}`}>
       <Link to="/login" className={isMobile ? 'w-full' : ''} onClick={onClick}>
-        <Button className={`gradient-primary text-white shadow-premium ${isMobile ? 'w-full' : ''}`}>
+        <Button className={`gradient-primary text-white shadow-premium hover:shadow-gold ${isMobile ? 'w-full' : ''}`}>
           <User className="ml-2 h-4 w-4" />
-          התחבר
+          تسجيل دخول
         </Button>
       </Link>
       <Link to="/register" className={isMobile ? 'w-full' : ''} onClick={onClick}>
-        <Button variant="outline" className={`shadow-premium ${isMobile ? 'w-full' : ''}`}>
-          הרשם
+        <Button variant="outline" className={`shadow-premium border-primary/30 hover:border-primary hover:text-primary ${isMobile ? 'w-full' : ''}`}>
+          إنشاء حساب
         </Button>
       </Link>
     </div>

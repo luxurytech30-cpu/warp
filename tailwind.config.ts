@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
@@ -16,6 +17,8 @@ export default {
       fontFamily: {
         assistant: ['Assistant', 'sans-serif'],
         heebo: ['Heebo', 'sans-serif'],
+        cairo: ['Cairo', 'Tajawal', 'Heebo', 'Assistant', 'sans-serif'],
+        tajawal: ['Tajawal', 'Cairo', 'Heebo', 'Assistant', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -78,12 +81,27 @@ export default {
             height: "0",
           },
         },
+        "fade-slide-up": {
+          "0%": { opacity: "0", transform: "translateY(16px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "200% 0" },
+          "100%": { backgroundPosition: "-200% 0" },
+        },
+        "soft-glow": {
+          "0%, 100%": { boxShadow: "0 0 0 rgba(0,0,0,0)" },
+          "50%": { boxShadow: "0 25px 50px -20px rgba(255, 79, 163, 0.25)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-slide-up": "fade-slide-up 0.6s ease-out forwards",
+        shimmer: "shimmer 2.5s linear infinite",
+        "soft-glow": "soft-glow 3s ease-in-out infinite",
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 } satisfies Config;

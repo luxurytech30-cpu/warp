@@ -8,50 +8,49 @@ const About = () => {
         {/* Hero Section */}
         <div className="text-center mb-16">
           <h1 className="text-5xl md:text-6xl font-black mb-6">
-            אודות <span className="text-gradient-primary">בניה פרימיום</span>
+            عن <span className="text-gradient-primary">Perfect Wrap</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            אנחנו מובילים את שוק חומרי הבניין בישראל כבר למעלה מ-25 שנה, ומספקים פתרונות איכותיים למקצוענים ולבעלי מלאכה
+            علامة أنثوية متخصصة في الهدايا المخصصة، تجمع بين الطباعة الفاخرة والتغليف الراقي لتصنعي لحظات لا تُنسى.
           </p>
         </div>
 
         {/* Stats */}
         <div className="grid md:grid-cols-4 gap-6 mb-20">
           <Card className="p-8 text-center shadow-card hover:shadow-premium transition-shadow">
-            <div className="text-4xl font-black text-primary mb-2">25+</div>
-            <div className="text-muted-foreground">שנות ניסיון</div>
+            <div className="text-4xl font-black text-primary mb-2">8+</div>
+            <div className="text-muted-foreground">سنوات من الإبداع</div>
           </Card>
           <Card className="p-8 text-center shadow-card hover:shadow-premium transition-shadow">
-            <div className="text-4xl font-black text-primary mb-2">50K+</div>
-            <div className="text-muted-foreground">לקוחות מרוצים</div>
+            <div className="text-4xl font-black text-primary mb-2">40K+</div>
+            <div className="text-muted-foreground">هدية شخصية وصلت لأحبابكم</div>
           </Card>
           <Card className="p-8 text-center shadow-card hover:shadow-premium transition-shadow">
-            <div className="text-4xl font-black text-primary mb-2">10K+</div>
-            <div className="text-muted-foreground">מוצרים במלאי</div>
+            <div className="text-4xl font-black text-primary mb-2">500+</div>
+            <div className="text-muted-foreground">تصميمات وأنماط جاهزة للتخصيص</div>
           </Card>
           <Card className="p-8 text-center shadow-card hover:shadow-premium transition-shadow">
-            <div className="text-4xl font-black text-primary mb-2">100%</div>
-            <div className="text-muted-foreground">שביעות רצון</div>
+            <div className="text-4xl font-black text-primary mb-2">99%</div>
+            <div className="text-muted-foreground">رضا العملاء وشغفهم</div>
           </Card>
         </div>
 
         {/* Story Section */}
         <section className="mb-20">
           <Card className="p-12 shadow-premium gradient-hero text-white">
-            <h2 className="text-3xl font-black mb-6">הסיפור שלנו</h2>
+            <h2 className="text-3xl font-black mb-6">حكايتنا</h2>
             <div className="space-y-4 text-lg leading-relaxed">
               <p>
-                בניה פרימיום נוסדה בשנת 1998 מתוך חזון ברור - לספק את חומרי הבניין האיכותיים ביותר בשוק הישראלי. 
-                מה שהתחיל כמחסן קטן בפרברי תל אביב, הפך לאחת מרשתות אספקת חומרי הבניין המובילות במדינה.
+                بدأنا بفكرة بسيطة: هدية شخصية تحمل الاسم أو العبارة التي تعني لكِ الكثير. من استوديو صغير، صنعنا
+                أولى الأكواب المطبوعة بألوان زاهية وشرايط حريرية ناعمة.
               </p>
               <p>
-                לאורך השנים, בנינו מוניטין של מצוינות ואמינות. אנחנו עובדים רק עם היצרנים והספקים המובילים בעולם,
-                ומקפידים על בקרת איכות קפדנית לכל מוצר שנכנס למחסנים שלנו. הצוות המקצועי שלנו מורכב ממומחי בניין 
-                ותיקים שיודעים להמליץ על הפתרון המושלם לכל פרויקט.
+                اليوم، Perfect Wrap تضم فريق تصميم، طباعة، وتغليف يعمل بتناغم، ليصلك كل منتج بلمسة أنثوية فاخرة
+                وبجودة تُحاكي الهدايا الراقية.
               </p>
               <p>
-                אנחנו מאמינים שכל פרויקט בנייה, קטן כגדול, ראוי לחומרים באיכות הגבוהה ביותר. לכן אנחנו משקיעים 
-                באופן מתמיד בהרחבת המלאי, בשיפור השירות, ובאימוץ טכנולוגיות חדשניות שמקלות על תהליך הרכישה.
+                نختار خاماتنا بعناية، من السيراميك المخملي إلى الأقمشة الناعمة، ونطبع بأحبار صديقة للبيئة، لنقدم لكِ
+                هدية تدوم وتبهر.
               </p>
             </div>
           </Card>
@@ -60,7 +59,7 @@ const About = () => {
         {/* Values Section */}
         <section className="mb-20">
           <h2 className="text-4xl font-black text-center mb-12">
-            הערכים <span className="text-gradient-gold">שלנו</span>
+            قيمنا <span className="text-gradient-gold">الأنثوية الراقية</span>
           </h2>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -68,10 +67,9 @@ const About = () => {
               <div className="w-16 h-16 mb-4 rounded-full gradient-primary flex items-center justify-center">
                 <Award className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold mb-3">איכות מעל הכל</h3>
+              <h3 className="text-2xl font-bold mb-3">جودة محسوسة</h3>
               <p className="text-muted-foreground leading-relaxed">
-                אנחנו מתפשרים על הרבה דברים, אבל לעולם לא על האיכות. כל מוצר שאנחנו מוכרים עובר בקרת איכות קפדנית
-                ועומד בתקנים הבינלאומיים המחמירים ביותר.
+                كل قطعة تمر باختبارات جودة دقيقة، لنضمن ملمسًا ناعمًا، طباعة حادة، وتغليفًا يحفظ اللمعة.
               </p>
             </Card>
 
@@ -79,10 +77,9 @@ const About = () => {
               <div className="w-16 h-16 mb-4 rounded-full gradient-gold flex items-center justify-center">
                 <Users className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold mb-3">שירות אישי</h3>
+              <h3 className="text-2xl font-bold mb-3">خدمة شخصية</h3>
               <p className="text-muted-foreground leading-relaxed">
-                כל לקוח הוא עולם ומלואו. אנחנו מאמינים ביחס אישי, בהקשבה לצרכים, ובמתן פתרונות מותאמים אישית
-                לכל פרויקט ולכל תקציב.
+                نهتم بتفاصيلك: من اختيار الخط المناسب لاسمك، حتى اقتراح ألوان التغليف التي تعبر عن المناسبة.
               </p>
             </Card>
 
@@ -90,10 +87,9 @@ const About = () => {
               <div className="w-16 h-16 mb-4 rounded-full gradient-primary flex items-center justify-center">
                 <Truck className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold mb-3">אספקה מהירה</h3>
+              <h3 className="text-2xl font-bold mb-3">سرعة بتأنق</h3>
               <p className="text-muted-foreground leading-relaxed">
-                זמן זה כסף, במיוחד בפרויקטי בניין. אנחנו מתחייבים לאספקה מהירה ויעילה לכל רחבי הארץ,
-                תוך עמידה בלוחות זמנים קשיחים.
+                نجهز طلبك بسرعة دون أن نفقد التفاصيل الدقيقة أو اللمسة اللامعة على كل عبوة.
               </p>
             </Card>
 
@@ -101,10 +97,9 @@ const About = () => {
               <div className="w-16 h-16 mb-4 rounded-full gradient-gold flex items-center justify-center">
                 <Shield className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold mb-3">אמינות</h3>
+              <h3 className="text-2xl font-bold mb-3">موثوقية</h3>
               <p className="text-muted-foreground leading-relaxed">
-                25 שנות פעילות בנו מוניטין של אמינות מוחלטת. הלקוחות שלנו יודעים שהם יכולים לסמוך עלינו
-                לספק בדיוק מה שהבטחנו, בדיוק במועד.
+                نفي بالوعد: تصميمك كما تخيلته، شحنك في موعده، وتغليف يحافظ على فخامة الهدية.
               </p>
             </Card>
 
@@ -112,10 +107,9 @@ const About = () => {
               <div className="w-16 h-16 mb-4 rounded-full gradient-primary flex items-center justify-center">
                 <Target className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold mb-3">מקצועיות</h3>
+              <h3 className="text-2xl font-bold mb-3">إتقان حرفي</h3>
               <p className="text-muted-foreground leading-relaxed">
-                הצוות שלנו כולל מומחים ותיקים בתחום הבניין, שיודעים לייעץ ולהדריך בכל שלב של הפרויקט.
-                ידע מקצועי זה המפתח להצלחה.
+                فريق التصميم والطباعة لدينا مدرَّب على أدق التفاصيل لتخرج القطعة متوازنة وأنيقة.
               </p>
             </Card>
 
@@ -123,10 +117,9 @@ const About = () => {
               <div className="w-16 h-16 mb-4 rounded-full gradient-gold flex items-center justify-center">
                 <Sparkles className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold mb-3">חדשנות</h3>
+              <h3 className="text-2xl font-bold mb-3">ابتكار أنثوي</h3>
               <p className="text-muted-foreground leading-relaxed">
-                אנחנו תמיד צעד אחד קדימה, עוקבים אחר הטכנולוגיות והחומרים החדשניים ביותר,
-                ומביאים את הטוב ביותר ללקוחות שלנו.
+                نتابع أحدث التقنيات في الطباعة والمواد المستدامة لنقدم لكِ تصاميم جديدة ولمسات ساحرة.
               </p>
             </Card>
           </div>
@@ -136,12 +129,11 @@ const About = () => {
         <section>
           <Card className="p-12 shadow-premium bg-muted">
             <h2 className="text-3xl font-black text-center mb-6">
-              המשימה <span className="text-gradient-primary">שלנו</span>
+              رسالتنا <span className="text-gradient-primary">إليكِ</span>
             </h2>
             <p className="text-xl text-center text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-              להיות הכתובת המובילה והאמינה ביותר לחומרי בניין באיכות פרימיום בישראל, תוך מתן שירות יוצא דופן,
-              ייעוץ מקצועי, ומחירים הוגנים. אנחנו שואפים לבנות יחסי אמון ארוכי טווח עם כל לקוח, ולהיות שותפים
-              מלאים להצלחת כל פרויקט בנייה.
+              أن نكون الوجهة الأولى للهدايا المخصصة الفاخرة في العالم العربي، مع تجربة سلسة،
+              تصميم مبدع، وتغليف يبهرك منذ اللحظة الأولى حتى فتح العلبة.
             </p>
           </Card>
         </section>
