@@ -222,7 +222,7 @@ const ProductDetail = () => {
               className="w-full gradient-primary text-white shadow-premium text-lg py-6 h-auto"
             >
               <ShoppingCart className="ml-2 h-5 w-5" />
-              {isAdding ? "يتم الإضافة..." : "أضيفي للسلة"}
+              {isAdding ? "يتم الإضافة..." : "أضف للسلة"}
             </Button>
 
             {/* Features */}
