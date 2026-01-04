@@ -143,7 +143,7 @@ const ProductDetail = () => {
             {/* Options */}
             <Card className="p-6 shadow-card">
               <Label className="text-lg font-bold mb-4 block">
-                اختاري خيارك المفضل
+                اختار خيارك المفضل
               </Label>
               <RadioGroup
                 value={selectedOption}
@@ -194,7 +194,7 @@ const ProductDetail = () => {
             <Card className="p-6 gradient-hero text-white shadow-premium">
               <div className="space-y-3">
                 <div className="flex justify-between items-center text-lg">
-                  <span>السعر قبل الضريبة:</span>
+                  <span>السعر</span>
                   <div className="text-left">
                     {hasDiscount && (
                       <span className="line-through text-white/70 text-sm ml-2">
@@ -206,18 +206,7 @@ const ProductDetail = () => {
                     </span>
                   </div>
                 </div>
-                <div className="flex justify-between items-center text-lg">
-                  <span>الضريبة (17٪):</span>
-                  <span className="font-semibold">
-                    ₪{(effectivePrice * 0.17).toFixed(2)}
-                  </span>
-                </div>
-                <div className="border-t border-white/30 pt-3 flex justify-between items-center text-xl font-bold">
-                  <span>الإجمالي مع الضريبة:</span>
-                  <span className="text-3xl">
-                    ₪{priceWithMaam.toFixed(2)}
-                  </span>
-                </div>
+                
               </div>
             </Card>
 

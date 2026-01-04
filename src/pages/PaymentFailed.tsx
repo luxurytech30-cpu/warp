@@ -19,7 +19,7 @@ const PaymentFailed = () => {
         )}
         <div className="flex flex-wrap gap-2 justify-center">
           <Link to="/cart">
-            <Button>حاولي مجددًا</Button>
+            <Button>حاول مجددًا</Button>
           </Link>
           <Link to="/products">
             <Button variant="outline">عودة للتسوق</Button>

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, Sparkles, Shield, Truck, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import heroImg from "@/assets/hero.jpeg";
 
 import { getProducts } from "@/lib/api";
 import type { Product } from "@/types";
@@ -34,8 +35,16 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
+      {/* local animation (no separate files) */}
+      <style>{`
+        @keyframes pw-float-slow {
+          0%, 100% { transform: translateY(0) scale(1.08); }
+          50% { transform: translateY(-14px) scale(1.08); }
+        }
+      `}</style>
+
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-hero text-white py-24 min-h-[70vh] flex items-center">
+      <section className="relative overflow-hidden bg-gradient-hero py-24 min-h-[70vh] flex items-center">
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute -left-24 -top-16 h-64 w-64 rounded-full bg-primary/35 blur-3xl" />
           <div className="absolute right-6 top-10 h-48 w-48 rounded-full bg-accent/30 blur-3xl" />
@@ -43,38 +52,70 @@ const Index = () => {
         </div>
 
         <div className="container relative mx-auto px-4">
-          <div className="max-w-3xl space-y-6 animate-fade-slide-up">
-            <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm backdrop-blur">
-              <Sparkles className="h-4 w-4" />
-              <span>إطلاق جديد — هدايا مخصصة لكِ</span>
-            </p>
-            <h1 className="text-5xl md:text-6xl font-black leading-tight drop-shadow-lg">
-              Perfect Wrap
-              <br />
-              <span className="text-gradient-gold">هدايا راقية بلمسة شخصية</span>
-            </h1>
-            <p className="text-lg md:text-xl text-white/90 leading-relaxed">
-              أكواب، حقائب، وإكسسوارات تحمل اسمك أو رسالة خاصة. صُممت لتكون هدية فاخرة، أنيقة، وأنثوية تلائم كل مناسبة.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Link to="/products">
-                <Button
-                  size="lg"
-                  className="gradient-primary text-white shadow-premium text-lg px-8 py-6 h-auto animate-soft-glow"
-                >
-                  اكتشفي المنتجات
-                  <ArrowLeft className="mr-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Link to="/contact">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="bg-white/10 backdrop-blur border-white text-white hover:bg-white hover:text-foreground text-lg px-8 py-6 h-auto"
-                >
-                  تحدثي معنا
-                </Button>
-              </Link>
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left: text */}
+            <div className="order-2 lg:order-1 max-w-3xl space-y-6 animate-fade-slide-up text-primary">
+              <p className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-4 py-2 text-sm backdrop-blur border border-primary/20">
+                <Sparkles className="h-4 w-4" />
+                <span>إطلاق جديد — هدايا مخصصة لكِ</span>
+              </p>
+
+              <h1 className="text-5xl md:text-6xl font-black leading-tight drop-shadow-lg">
+                Perfect Wrap
+                <br />
+                <span className="bg-gradient-to-l from-primary via-accent to-primary bg-clip-text text-transparent">
+                  هدايا راقية بلمسة شخصية
+                </span>
+              </h1>
+
+              <p className="text-lg md:text-xl text-black">
+                     اكتشف مجموعتنا الحصرية من الهدايا المطبوعة بعناية فائقة، المصممة خصيصًا لتضفي لمسة من الأناقة والتميّز على جميع مناسباتك الخاصة. اجعل لحظاتك أكثر جمالًا بهدايا تعبّر عن ذوقك الرفيع وتبقى ذكرى لا تُنسى.
+              </p>
+
+              <div className="flex flex-wrap gap-4">
+                <Link to="/products">
+                  <Button
+                    size="lg"
+                    className="gradient-primary text-white shadow-premium text-lg px-8 py-6 h-auto animate-soft-glow"
+                  >
+                    اكتشف المنتجات
+                    <ArrowLeft className="mr-2 h-5 w-5" />
+                  </Button>
+                </Link>
+
+                <Link to="/contact">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="bg-primary/10 backdrop-blur border-primary text-primary hover:bg-primary hover:text-primary-foreground text-lg px-8 py-6 h-auto"
+                  >
+                    تحدث معنا
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Right: moving image (slow up/down) + fixed border/frame OVER it */}
+            <div className="relative order-1 lg:order-2 flex justify-center">
+              <div className="absolute -inset-10 rounded-full bg-primary/25 blur-3xl" />
+
+              {/* Frame wrapper (frame stays fixed, image moves under it) */}
+              <div className="relative w-72 md:w-80 lg:w-96 aspect-square">
+                {/* Clip area */}
+                <div className="relative h-full w-full overflow-hidden rounded-[28px] bg-white/10 backdrop-blur shadow-premium">
+                  <img
+                    src={heroImg}
+                    alt="Perfect Wrap"
+                    className="h-full w-full object-cover will-change-transform motion-reduce:transform-none"
+                    style={{
+                      animation: "pw-float-slow 9s ease-in-out infinite",
+                    }}
+                  />
+                </div>
+
+                {/* FIXED frame overlay (doesn't move) */}
+                <div className="pointer-events-none absolute inset-0 rounded-[28px] ring-4 ring-white/70 shadow-[0_0_0_1px_rgba(255,255,255,0.25)]" />
+              </div>
             </div>
           </div>
         </div>
@@ -89,7 +130,9 @@ const Index = () => {
                 <Sparkles className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">تصميمات مخصصة</h3>
-              <p className="text-muted-foreground">اطبعي اسمك أو رسالتك على كل قطعة</p>
+              <p className="text-muted-foreground">
+                اطبع اسمك أو رسالتك على كل قطعة
+              </p>
             </Card>
 
             <Card className="p-8 text-center shadow-card hover:shadow-premium transition-shadow">
@@ -97,7 +140,9 @@ const Index = () => {
                 <Shield className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">جودة فاخرة</h3>
-              <p className="text-muted-foreground">مواد مختارة بعناية وتغليف أنيق</p>
+              <p className="text-muted-foreground">
+                مواد مختارة بعناية وتغليف أنيق
+              </p>
             </Card>
 
             <Card className="p-8 text-center shadow-card hover:shadow-premium transition-shadow">
@@ -105,7 +150,9 @@ const Index = () => {
                 <Truck className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">شحن سريع</h3>
-              <p className="text-muted-foreground">إلى بابك مع تحديثات لحظية للحالة</p>
+              <p className="text-muted-foreground">
+                إلى بابك مع تحديثات لحظية للحالة
+              </p>
             </Card>
 
             <Card className="p-8 text-center shadow-card hover:shadow-premium transition-shadow">
@@ -113,7 +160,9 @@ const Index = () => {
                 <Award className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">تغليف ساحر</h3>
-              <p className="text-muted-foreground">علب وشرايط حريرية جاهزة للإهداء</p>
+              <p className="text-muted-foreground">
+                علب وشرايط حريرية جاهزة للإهداء
+              </p>
             </Card>
           </div>
         </div>
@@ -130,7 +179,9 @@ const Index = () => {
           </p>
 
           {loading && (
-            <p className="text-center text-muted-foreground">يتم تحميل المنتجات...</p>
+            <p className="text-center text-muted-foreground">
+              يتم تحميل المنتجات...
+            </p>
           )}
 
           {error && !loading && (
@@ -179,9 +230,7 @@ const Index = () => {
                               <span className="text-2xl font-bold text-primary">
                                 ₪{price}
                               </span>
-                              <span className="text-sm text-muted-foreground mr-1">
-                                بدون ضريبة
-                              </span>
+                              
                             </div>
                             <Button
                               variant="outline"
@@ -217,10 +266,11 @@ const Index = () => {
       <section className="py-24 gradient-hero relative overflow-hidden">
         <div className="container mx-auto px-4 text-center relative z-10">
           <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
-            جاهزة لتبهري من تحبين؟
+            جاهز لتبهر من تحب؟
           </h2>
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            اختاري التصميم، أضيفي الاسم أو الرسالة، واتركي لنا مهمة إعداد التغليف الفاخر والشحن السريع.
+            اختار التصميم، أضيفي الاسم أو الرسالة، واترك لنا مهمة إعداد التغليف
+            الفاخر والشحن السريع.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <Link to="/products">
@@ -228,7 +278,7 @@ const Index = () => {
                 size="lg"
                 className="bg-white text-foreground hover:bg-white/90 shadow-card text-lg px-8 py-6 h-auto"
               >
-                ابدئي التسوق
+                ابدئ التسوق
               </Button>
             </Link>
             <Link to="/contact">
@@ -236,7 +286,7 @@ const Index = () => {
                 size="lg"
                 className="bg-white text-foreground hover:bg-white/90 shadow-card text-lg px-8 py-6 h-auto"
               >
-                تحدثي مع خبيرة
+                تحدث مع خبيرة
               </Button>
             </Link>
           </div>

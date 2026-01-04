@@ -9,7 +9,8 @@ export const Footer = () => {
           <div>
             <h3 className="text-xl font-bold mb-4 text-gradient-primary">Perfect Wrap</h3>
             <p className="text-secondary-foreground/80 leading-relaxed">
-              هدايا واكسسوارات مصممة بحب، بأسماء ورسائل شخصية لكل امرأة تبحث عن لمسة فريدة.
+             احتفل بلحظاتك مع الهدايا المثالية
+اكتشف مجموعة من الهدايا المطبوعة والمخصّصة لكل مناسبة. تُصنع بعناية في باقة الغربية، لتمنحك هدايا فريدة تضيف لمسة خاصة وتجعل كل احتفال ذكرى لا تُنسى.
             </p>
           </div>
 
@@ -39,35 +40,23 @@ export const Footer = () => {
             </ul>
           </div>
 
-          <div>
-            <h4 className="font-bold mb-4">منتجاتنا</h4>
-            <ul className="space-y-2 text-secondary-foreground/80">
-              <li>أكواب بطباعة الأسماء</li>
-              <li>حقائب واكسسوارات</li>
-              <li>هدايا مناسبات</li>
-              <li>ألبسة مخصصة</li>
-              <li>علب تغليف فاخرة</li>
-            </ul>
-          </div>
+          
 
           <div>
             <h4 className="font-bold mb-4">تواصل</h4>
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-secondary-foreground/80">
                 <Phone className="h-4 w-4 text-primary" />
-                <span>03-1234567</span>
+                <span>050-601-6901</span>
               </li>
               <li className="flex items-center gap-2 text-secondary-foreground/80">
                 <Mail className="h-4 w-4 text-primary" />
-                <span>hello@perfectwrap.co</span>
+                <span>Perfectwrap2022@gmail.com</span>
               </li>
-              <li className="flex items-center gap-2 text-secondary-foreground/80">
-                <MapPin className="h-4 w-4 text-primary" />
-                <span>تل أبيب / دبي</span>
-              </li>
+              
             </ul>
 
-            <div className="flex gap-3 mt-6">
+            {/*<div className="flex gap-3 mt-6">
               <a href="#" className="w-10 h-10 rounded-full bg-primary/15 hover:bg-primary hover:text-white flex items-center justify-center transition-colors">
                 <Facebook className="h-5 w-5" />
               </a>
@@ -77,9 +66,9 @@ export const Footer = () => {
               <a href="#" className="w-10 h-10 rounded-full bg-primary/15 hover:bg-primary hover:text-white flex items-center justify-center transition-colors">
                 <Linkedin className="h-5 w-5" />
               </a>
-            </div>
+            </div>*/}
           </div>
-        </div>
+       </div>
 
         <div className="border-t border-secondary-foreground/10 pt-8 text-center text-secondary-foreground/60">
           <p>© 2024 Perfect Wrap. كل الحقوق محفوظة.</p>

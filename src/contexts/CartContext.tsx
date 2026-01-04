@@ -11,6 +11,7 @@ import {
   updateCartItemRequest,
   removeCartItemRequest,
   clearCartRequest,
+  updateCartItemNoteRequest,
 } from "@/lib/api";
 
 interface CartContextType {
@@ -27,6 +28,7 @@ interface CartContextType {
   getTotalWithoutMaam: () => number;
   getTotalWithMaam: () => number;
   placeOrder: (details: CustomerDetails) => Promise<void>;
+    updateItemNote: (productId: string, optionIndex: number, itemNote: string) => Promise<void>;
   loadCart: () => Promise<void>;
 }
 
@@ -70,6 +72,32 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     }
     return true;
   };
+
+
+const updateItemNote = async (productId: string, optionIndex: number, itemNote: string) => {
+  if (!requireLogin()) return;
+
+  const previous = [...cart];
+
+  // optimistic
+  setCart((current) =>
+    current.map((it) =>
+      it.productId === productId && it.optionIndex === optionIndex
+        ? { ...it, itemNote }
+        : it
+    )
+  );
+
+  try {
+    const updatedCart = await updateCartItemNoteRequest({ productId, optionIndex, itemNote });
+    setCart(updatedCart);
+  } catch (err) {
+    console.error("UPDATE ITEM NOTE ERROR:", err);
+    setCart(previous);
+    toast.error("שגיאה בעדכון ההערה");
+  }
+};
+
 
   const addToCart = async (item: Omit<CartItem, "quantity">) => {
     if (!requireLogin()) return;
@@ -223,6 +251,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
         getTotalWithMaam,
         placeOrder,
         loadCart,
+          updateItemNote, 
       }}
     >
       {children}

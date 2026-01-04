@@ -4,6 +4,8 @@ import { ShoppingCart, User, LogOut, Package, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
+import heroImg from "@/assets/hero.jpeg"; // <-- change to your hero image path
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,12 +29,18 @@ export const Header = () => {
         <div className="flex h-20 items-center justify-between">
           {/* --- Left Side: Logo --- */}
           <Link to="/" className="flex items-center gap-3" onClick={closeMenu}>
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl gradient-primary shadow-premium">
-              <Package className="h-7 w-7 text-white drop-shadow-md" />
-            </div>
+            <div className="h-12 w-12 rounded-2xl overflow-hidden shadow-premium ring-1 ring-primary/20">
+  <img
+    src={heroImg}
+    alt="Perfect Wrap"
+    className="h-full w-full object-cover"
+    loading="eager"
+  />
+</div>
+
             <div>
               <h1 className="text-2xl font-bold text-gradient-primary leading-tight">Perfect Wrap</h1>
-              <p className="text-xs text-muted-foreground">هدايا شخصية بلمسة أنثوية</p>
+              
             </div>
           </Link>
 

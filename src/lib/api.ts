@@ -111,6 +111,16 @@ export const getMyOrders = async (): Promise<Order[]> => {
   return res.data;
 };
 
+export async function updateCartItemNoteRequest(data: {
+  productId: string;
+  optionIndex: number;
+  itemNote: string;
+}) {
+  const res = await api.patch("/cart/note", data);
+  return res.data.cart;
+}
+
+
 //
 // 3.1 Categories (Admin)
 //

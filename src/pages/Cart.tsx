@@ -16,7 +16,7 @@ const Cart = () => {
     removeFromCart,
     updateQuantity,
     getTotalWithoutMaam,
-    getTotalWithMaam,
+    updateItemNote,
     placeOrder,
     clearCart,
   } = useCart();
@@ -24,8 +24,8 @@ const Cart = () => {
   const isAuthenticated = !!user;
 
   const totalWithoutMaam = getTotalWithoutMaam();
-  const maamAmount = totalWithoutMaam * 0.17;
-  const totalWithMaam = getTotalWithMaam();
+  
+  
 
   // which item is being updated (for disabling + / - / input)
   const [updatingKey, setUpdatingKey] = useState<string | null>(null);
@@ -48,15 +48,35 @@ const Cart = () => {
   const [postalCode, setPostalCode] = useState("");
   const [notes, setNotes] = useState("");
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+   const [editNotes, setEditNotes] = useState<Record<string, string>>({});
+const [savingNoteKey, setSavingNoteKey] = useState<string | null>(null);
+
+const handleSaveNote = async (
+  productId: string,
+  optionIndex: number,
+  key: string,
+  fallback: string
+) => {
+  const noteToSave = (editNotes[key] ?? fallback).trim();
+
+  setSavingNoteKey(key);
+  try {
+    await updateItemNote(productId, optionIndex, noteToSave);
+    toast.success("تم حفظ الملاحظة");
+  } finally {
+    setSavingNoteKey(null);
+  }
+};
+ 
 
   const handleCheckout = async () => {
     if (!isAuthenticated) {
-      toast.error("יש להתחבר כדי להשלים הזמנה");
+      toast.error("يجب تسجيل الدخول لإتمام الطلب");
       return;
     }
 
     if (!fullName || !phone || !city || !street || !houseNumber) {
-      toast.error("אנא מלא שם מלא, טלפון וכתובת (עיר, רחוב, מספר בית)");
+      toast.error("يرجى تعبئة الاسم الكامل، الهاتف، والعنوان (المدينة، الشارع، رقم المنزل)");
       return;
     }
 
@@ -72,7 +92,7 @@ const Cart = () => {
         postalCode,
         notes,
       });
-      // אם תרצה, אפשר לנקות את הטופס אחרי הזמנה
+      // إذا أردت: يمكن تفريغ الحقول بعد إتمام الطلب
       // setFullName(""); setPhone(""); ...
     } finally {
       setIsPlacingOrder(false);
@@ -83,11 +103,7 @@ const Cart = () => {
     clearCart();
   };
 
-  const handleChangeInput = (
-    key: string,
-    value: string,
-    fallback: number
-  ) => {
+  const handleChangeInput = (key: string, value: string, fallback: number) => {
     const parsed = parseInt(value, 10);
     setEditQuantities((prev) => ({
       ...prev,
@@ -137,8 +153,8 @@ const Cart = () => {
   ) => {
     const key = getKey(productId, optionIndex);
     if (updatingKey === key) return;
-    const newQty = Math.max(1, currentQuantity - 1);
 
+    const newQty = Math.max(1, currentQuantity - 1);
     setEditQuantities((prev) => ({ ...prev, [key]: newQty }));
     setUpdatingKey(key);
     try {
@@ -150,19 +166,14 @@ const Cart = () => {
 
   if (cart.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center py-12">
+      <div className="min-h-screen flex items-center justify-center py-12" dir="rtl" lang="ar">
         <div className="text-center">
           <ShoppingBag className="h-24 w-24 mx-auto mb-6 text-muted-foreground" />
-          <h2 className="text-3xl font-bold mb-4">העגלה ריקה</h2>
-          <p className="text-muted-foreground mb-8">
-            עדיין לא הוספת מוצרים לעגלה
-          </p>
+          <h2 className="text-3xl font-bold mb-4">السلة فارغة</h2>
+          <p className="text-muted-foreground mb-8">لم تقوم بإضافة أي منتجات بعد</p>
           <Link to="/products">
-            <Button
-              size="lg"
-              className="gradient-primary text-white shadow-premium"
-            >
-              התחל לקנות
+            <Button size="lg" className="gradient-primary text-white shadow-premium">
+              ابدء التسوق
               <ArrowLeft className="mr-2 h-5 w-5" />
             </Button>
           </Link>
@@ -172,10 +183,10 @@ const Cart = () => {
   }
 
   return (
-    <div className="min-h-screen py-12">
+    <div className="min-h-screen py-12" dir="rtl" lang="ar">
       <div className="container mx-auto px-4">
         <h1 className="text-4xl font-black mb-8">
-          עגלת <span className="text-gradient-primary">הקניות</span>
+          سلة <span className="text-gradient-primary">التسوق</span>
         </h1>
 
         <div className="grid lg:grid-cols-3 gap-8">
@@ -185,10 +196,10 @@ const Cart = () => {
               const key = getKey(item.productId, item.optionIndex);
               const isUpdating = updatingKey === key;
               const displayQty =
-                editQuantities[key] !== undefined
-                  ? editQuantities[key]
-                  : item.quantity;
-
+                editQuantities[key] !== undefined ? editQuantities[key] : item.quantity;
+                // ✅ ADD THESE TWO LINES HERE
+  const noteValue = editNotes[key] ?? (item.itemNote || "");
+  const isSavingNote = savingNoteKey === key;
               return (
                 <Card key={key} className="p-6 shadow-card">
                   <div className="flex gap-6">
@@ -199,12 +210,8 @@ const Cart = () => {
                     />
 
                     <div className="flex-1">
-                      <h3 className="font-bold text-lg mb-1">
-                        {item.productName}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mb-3">
-                        {item.optionName}
-                      </p>
+                      <h3 className="font-bold text-lg mb-1">{item.productName}</h3>
+                      <p className="text-sm text-muted-foreground mb-3">{item.optionName}</p>
 
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2 border rounded-lg">
@@ -213,27 +220,18 @@ const Cart = () => {
                             size="icon"
                             disabled={isUpdating}
                             onClick={() =>
-                              handleDecrement(
-                                item.productId,
-                                item.optionIndex,
-                                item.quantity
-                              )
+                              handleDecrement(item.productId, item.optionIndex, item.quantity)
                             }
                           >
                             <Minus className="h-4 w-4" />
                           </Button>
+
                           <Input
                             type="number"
                             min={1}
                             value={displayQty}
                             disabled={isUpdating}
-                            onChange={(e) =>
-                              handleChangeInput(
-                                key,
-                                e.target.value,
-                                item.quantity
-                              )
-                            }
+                            onChange={(e) => handleChangeInput(key, e.target.value, item.quantity)}
                             onBlur={() =>
                               handleBlurInput(
                                 item.productId,
@@ -243,17 +241,15 @@ const Cart = () => {
                               )
                             }
                             className="w-16 text-center border-0"
+                            dir="ltr"
                           />
+
                           <Button
                             variant="ghost"
                             size="icon"
                             disabled={isUpdating}
                             onClick={() =>
-                              handleIncrement(
-                                item.productId,
-                                item.optionIndex,
-                                item.quantity
-                              )
+                              handleIncrement(item.productId, item.optionIndex, item.quantity)
                             }
                           >
                             <Plus className="h-4 w-4" />
@@ -264,9 +260,7 @@ const Cart = () => {
                           variant="ghost"
                           size="icon"
                           disabled={isUpdating}
-                          onClick={() =>
-                            removeFromCart(item.productId, item.optionIndex)
-                          }
+                          onClick={() => removeFromCart(item.productId, item.optionIndex)}
                           className="text-destructive hover:text-destructive"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -274,20 +268,35 @@ const Cart = () => {
                       </div>
                     </div>
 
+                    {/* price box */}
                     <div className="text-left">
-                      <div className="text-sm text-muted-foreground mb-1">
-                        מחיר ליחידה
-                      </div>
-                      <div className="font-bold text-primary">
-                        ₪{item.priceWithoutMaam}
-                      </div>
-                      <div className="text-sm text-muted-foreground mt-3">
-                        סה״כ
-                      </div>
+                      <div className="text-sm text-muted-foreground mb-1">سعر القطعة</div>
+                      <div className="font-bold text-primary">₪{item.priceWithoutMaam}</div>
+
+                      <div className="text-sm text-muted-foreground mt-3">المجموع</div>
                       <div className="font-bold text-xl">
                         ₪{(item.priceWithoutMaam * displayQty).toFixed(2)}
                       </div>
                     </div>
+                    <div className="mt-4 space-y-2">
+  <Textarea
+    placeholder="ملاحظة لهذا المنتج (مثال: اكتب الاسم للطباعة)"
+    value={noteValue}
+    onChange={(e) =>
+      setEditNotes((prev) => ({ ...prev, [key]: e.target.value }))
+    }
+  />
+
+  <Button
+    size="sm"
+    disabled={isSavingNote}
+    onClick={() => handleSaveNote(item.productId, item.optionIndex, key, item.itemNote || "")}
+  >
+    {isSavingNote ? "جارٍ الحفظ..." : "حفظ الملاحظة"}
+  </Button>
+</div>
+
+
                   </div>
                 </Card>
               );
@@ -297,70 +306,62 @@ const Cart = () => {
           {/* Summary + checkout form */}
           <div className="lg:col-span-1">
             <Card className="p-6 shadow-premium sticky top-24">
-              <h2 className="text-2xl font-bold mb-6">סיכום הזמנה</h2>
+              <h2 className="text-2xl font-bold mb-6">ملخص الطلب</h2>
 
               <div className="space-y-3 mb-6">
-                <div className="flex justify-between text-lg">
-                  <span>סכום ללא מע״מ:</span>
-                  <span className="font-semibold">
-                    ₪{totalWithoutMaam.toFixed(2)}
-                  </span>
-                </div>
-                <div className="flex justify-between text-lg">
-                  <span>מע״מ (17%):</span>
-                  <span className="font-semibold text-primary">
-                    ₪{maamAmount.toFixed(2)}
-                  </span>
-                </div>
+                
+
                 <div className="border-t pt-3 flex justify-between text-xl font-bold">
-                  <span>סה״כ לתשלום:</span>
-                  <span className="text-2xl text-primary">
-                    ₪{totalWithMaam.toFixed(2)}
-                  </span>
+                  <span>الإجمالي للدفع:</span>
+                  <span className="text-2xl text-primary">₪{totalWithoutMaam.toFixed(2)}</span>
                 </div>
               </div>
 
               {/* Checkout details form */}
               <div className="space-y-3 mb-6">
-                <h3 className="text-lg font-semibold">פרטי משלוח</h3>
+                <h3 className="text-lg font-semibold">تفاصيل الشحن</h3>
 
                 <Input
-                  placeholder="שם מלא *"
+                  placeholder="الاسم الكامل *"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                 />
                 <Input
-                  placeholder="טלפון *"
+                  placeholder="الهاتف *"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
+                  dir="ltr"
                 />
                 <Input
-                  placeholder="אימייל (לא חובה)"
+                  placeholder="البريد الإلكتروني (اختياري)"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  dir="ltr"
                 />
                 <Input
-                  placeholder="עיר *"
+                  placeholder="المدينة *"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                 />
                 <Input
-                  placeholder="רחוב *"
+                  placeholder="الشارع *"
                   value={street}
                   onChange={(e) => setStreet(e.target.value)}
                 />
                 <Input
-                  placeholder="מספר בית *"
+                  placeholder="رقم المنزل *"
                   value={houseNumber}
                   onChange={(e) => setHouseNumber(e.target.value)}
+                  dir="ltr"
                 />
                 <Input
-                  placeholder="מיקוד (לא חובה)"
+                  placeholder="الرمز البريدي (اختياري)"
                   value={postalCode}
                   onChange={(e) => setPostalCode(e.target.value)}
+                  dir="ltr"
                 />
                 <Textarea
-                  placeholder="הערות להזמנה (לא חובה)"
+                  placeholder="ملاحظات على الطلب (اختياري)"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                 />
@@ -374,22 +375,19 @@ const Cart = () => {
                     disabled={isPlacingOrder}
                     className="w-full gradient-primary text-white shadow-premium"
                   >
-                    {isPlacingOrder ? "מפנה לעמוד התשלום..." : "המשך לתשלום"}
+                    {isPlacingOrder ? "جاري تحويلك لصفحة الدفع..." : "متابعة للدفع"}
                   </Button>
                 ) : (
                   <Link to="/login" className="block">
-                    <Button
-                      size="lg"
-                      className="w-full gradient-primary text-white shadow-premium"
-                    >
-                      התחבר להשלמת הזמנה
+                    <Button size="lg" className="w-full gradient-primary text-white shadow-premium">
+                      سجّلي الدخول لإتمام الطلب
                     </Button>
                   </Link>
                 )}
 
                 <Link to="/products" className="block">
                   <Button variant="outline" size="lg" className="w-full">
-                    המשך קניות
+                    متابعة التسوق
                   </Button>
                 </Link>
 
@@ -399,17 +397,11 @@ const Cart = () => {
                   onClick={handleClearCart}
                   className="w-full border-destructive text-destructive hover:bg-destructive/10"
                 >
-                  נקה עגלה
+                  تفريغ السلة
                 </Button>
               </div>
 
-              <div className="mt-6 p-4 bg-muted rounded-lg text-sm">
-                <p className="font-semibold mb-2">💡 שים לב:</p>
-                <ul className="space-y-1 text-muted-foreground">
-                  <li>• המחירים מוצגים ללא מע״מ</li>
-                  <li>• מע״מ של 17% מתווסף בתשלום</li>
-                </ul>
-              </div>
+              
             </Card>
           </div>
         </div>

@@ -76,10 +76,10 @@ const Products = () => {
       <div className="container mx-auto px-4">
         <div className="mb-12 text-center">
           <h1 className="text-5xl font-black mb-4">
-            تسوقي <span className="text-gradient-primary">مجموعة Perfect Wrap</span>
+            تسوق <span className="text-gradient-primary">مجموعة Perfect Wrap</span>
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            منتجات أنثوية مخصصة بأسماء ورسائل شخصية، مع تغليف فاخر وشحن سريع.
+            منتجات مخصصة بأسماء ورسائل شخصية، مع تغليف فاخر وشحن سريع.
           </p>
         </div>
 
@@ -89,7 +89,7 @@ const Products = () => {
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               type="text"
-              placeholder="ابحثي عن منتج..."
+              placeholder="ابحث عن منتج..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pr-10"
@@ -179,9 +179,7 @@ const Products = () => {
                             {product.options[0].salePriceWithoutMaam ??
                               product.options[0].priceWithoutMaam}
                           </span>
-                          <span className="text-sm text-muted-foreground mr-1">
-                            بدون ضريبة
-                          </span>
+                          
                         </div>
                         <Button
                           variant="outline"

@@ -29,6 +29,7 @@ export interface CartItem {
   priceWithoutMaam: number;
   quantity: number;
   image: string;
+  itemNote:string;
 }
 
 
@@ -48,7 +49,7 @@ export interface Order {
   date: string;
   items: CartItem[];
   totalWithoutMaam: number;
-  totalWithMaam: number;
+  
   status: "pending" | "paid" | "shipped" | "completed" | "failed" | "canceled";
   customerDetails?: CustomerDetails;
 }

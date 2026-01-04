@@ -20,7 +20,7 @@ const Register = () => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      toast.error("הסיסמאות אינן תואמות");
+      toast.error("كلمتا المرور غير متطابقتين");
       return;
     }
 
@@ -28,12 +28,12 @@ const Register = () => {
       setLoading(true);
       await registerRequest(username, password, "customer");
 
-      toast.success("נרשמת בהצלחה! אפשר להתחבר עכשיו.");
+      toast.success("تم إنشاء الحساب بنجاح! يمكنك تسجيل الدخول الآن.");
       navigate("/login");
     } catch (err: any) {
       console.error("REGISTER FAILED:", err);
       const message =
-        err?.response?.data?.message || "שגיאה בהרשמה, נסה שוב מאוחר יותר.";
+        err?.response?.data?.message || "حدث خطأ أثناء التسجيل، حاول لاحقًا.";
       toast.error(message);
     } finally {
       setLoading(false);
@@ -41,49 +41,53 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted py-12 px-4">
+    <div
+      className="min-h-screen flex items-center justify-center bg-muted py-12 px-4"
+      dir="rtl"
+      lang="ar"
+    >
       <Card className="w-full max-w-md p-8 shadow-premium">
         <div className="text-center mb-8">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full gradient-primary flex items-center justify-center">
             <UserPlus className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-3xl font-black mb-2">הרשמה</h1>
-          <p className="text-muted-foreground">צור חשבון חדש</p>
+          <h1 className="text-3xl font-black mb-2">إنشاء حساب</h1>
+          <p className="text-muted-foreground">أنشئ حسابًا جديدًا</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="username">שם משתמש</Label>
+            <Label htmlFor="username">اسم المستخدم</Label>
             <Input
               id="username"
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="הכנס שם משתמש"
+              placeholder="أدخل اسم المستخدم"
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">סיסמה</Label>
+            <Label htmlFor="password">كلمة المرور</Label>
             <Input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="הכנס סיסמה"
+              placeholder="أدخل كلمة المرور"
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">אימות סיסמה</Label>
+            <Label htmlFor="confirmPassword">تأكيد كلمة المرور</Label>
             <Input
               id="confirmPassword"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="הכנס שוב את הסיסמה"
+              placeholder="أعد إدخال كلمة المرور"
               required
             />
           </div>
@@ -93,18 +97,18 @@ const Register = () => {
             className="w-full gradient-primary text-white shadow-premium"
             disabled={loading}
           >
-            {loading ? "נרשם..." : "הרשם"}
+            {loading ? "جارٍ التسجيل..." : "تسجيل"}
           </Button>
         </form>
 
         <div className="mt-6 text-center text-sm text-muted-foreground">
-          כבר יש לך חשבון?{" "}
+          لديك حساب بالفعل؟{" "}
           <button
             type="button"
             className="text-primary underline"
             onClick={() => navigate("/login")}
           >
-            להתחברות
+            تسجيل الدخول
           </button>
         </div>
       </Card>

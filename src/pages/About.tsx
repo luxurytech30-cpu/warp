@@ -11,7 +11,7 @@ const About = () => {
             عن <span className="text-gradient-primary">Perfect Wrap</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            علامة أنثوية متخصصة في الهدايا المخصصة، تجمع بين الطباعة الفاخرة والتغليف الراقي لتصنعي لحظات لا تُنسى.
+            علامة  متخصصة في الهدايا المخصصة، تجمع بين الطباعة الفاخرة والتغليف الراقي لتصنعي لحظات لا تُنسى.
           </p>
         </div>
 
@@ -41,11 +41,10 @@ const About = () => {
             <h2 className="text-3xl font-black mb-6">حكايتنا</h2>
             <div className="space-y-4 text-lg leading-relaxed">
               <p>
-                بدأنا بفكرة بسيطة: هدية شخصية تحمل الاسم أو العبارة التي تعني لكِ الكثير. من استوديو صغير، صنعنا
-                أولى الأكواب المطبوعة بألوان زاهية وشرايط حريرية ناعمة.
+بدأت فكرتنا من شغف بسيط: تحويل الصور العادية والتصاميم المبتكرة إلى هدايا ملموسة تحمل قيمة عاطفية حقيقية. أدركنا أن أفضل الهدايا هي تلك التي تتحدث بلسان صاحبها، ولذلك قررنا أن نكون جسرًا بين الفكرة والتطبيق.
               </p>
               <p>
-                اليوم، Perfect Wrap تضم فريق تصميم، طباعة، وتغليف يعمل بتناغم، ليصلك كل منتج بلمسة أنثوية فاخرة
+                اليوم، Perfect Wrap تضم فريق تصميم، طباعة، وتغليف يعمل بتناغم، ليصلك كل منتج بلمسة  فاخرة
                 وبجودة تُحاكي الهدايا الراقية.
               </p>
               <p>
@@ -59,7 +58,7 @@ const About = () => {
         {/* Values Section */}
         <section className="mb-20">
           <h2 className="text-4xl font-black text-center mb-12">
-            قيمنا <span className="text-gradient-gold">الأنثوية الراقية</span>
+            قيمنا <span className="text-gradient-gold"> الراقية</span>
           </h2>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -117,7 +116,7 @@ const About = () => {
               <div className="w-16 h-16 mb-4 rounded-full gradient-gold flex items-center justify-center">
                 <Sparkles className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold mb-3">ابتكار أنثوي</h3>
+              <h3 className="text-2xl font-bold mb-3">ابتكار </h3>
               <p className="text-muted-foreground leading-relaxed">
                 نتابع أحدث التقنيات في الطباعة والمواد المستدامة لنقدم لكِ تصاميم جديدة ولمسات ساحرة.
               </p>
@@ -132,9 +131,7 @@ const About = () => {
               رسالتنا <span className="text-gradient-primary">إليكِ</span>
             </h2>
             <p className="text-xl text-center text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-              أن نكون الوجهة الأولى للهدايا المخصصة الفاخرة في العالم العربي، مع تجربة سلسة،
-              تصميم مبدع، وتغليف يبهرك منذ اللحظة الأولى حتى فتح العلبة.
-            </p>
+اجعل هديتكِ تتحدث عنكِ—باسمكِ ولمستكِ الخاصة، لتبقى ذكرى لا تُنسى.            </p>
           </Card>
         </section>
       </div>
