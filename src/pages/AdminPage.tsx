@@ -521,7 +521,7 @@ const ProductsSection: React.FC = () => {
 
         {/* Cloudinary signed image upload */}
         <div className="space-y-2">
-          <Label>صورة المنتج (Cloudinary Signed)</Label>
+          <Label>صورة المنتج </Label>
           <div className="flex gap-2 items-center">
             <Input
               type="file"
