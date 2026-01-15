@@ -21,9 +21,11 @@ const Cart = () => {
     placeOrder,
     clearCart,
   } = useCart();
+
   const { user } = useAuth();
   const { isArabic } = useLanguage();
   const isAuthenticated = !!user;
+
   const labels = isArabic
     ? {
         noteSaved: "تم حفظ الملاحظة",
@@ -57,7 +59,6 @@ const Cart = () => {
         continueShopping: "متابعة التسوق",
         clearCart: "تفريغ السلة",
         cancelPolicy: "يمكن إلغاء الطلب خلال ساعتين فقط من وقت إنشائه.",
-
       }
     : {
         noteSaved: "ההערה נשמרה",
@@ -70,16 +71,16 @@ const Cart = () => {
         cartTitle: "עגלה",
         cartHighlight: "קניות",
         unitPrice: "מחיר יחידה",
-        total: "סה\"כ",
+        total: 'סה"כ',
         notePlaceholder: "הערה למוצר הזה (לדוגמה: כתבו את השם להדפסה)",
         saving: "שומרים...",
         saveNote: "שמור הערה",
         orderSummary: "סיכום הזמנה",
-        totalToPay: "סה\"כ לתשלום:",
+        totalToPay: 'סה"כ לתשלום:',
         shippingDetails: "פרטי משלוח",
         fullName: "שם מלא *",
         phone: "*טלפון ",
-        email: "דוא\"ל (אופציונלי)",
+        email: 'דוא"ל (אופציונלי)',
         city: "עיר *",
         street: "רחוב *",
         houseNumber: "*מספר בית ",
@@ -91,12 +92,9 @@ const Cart = () => {
         continueShopping: "המשיכו לקנות",
         clearCart: "רוקן עגלה",
         cancelPolicy: "ניתן לבטל הזמנה רק בתוך שעתיים מרגע יצירתה.",
-
       };
 
   const totalWithoutMaam = getTotalWithoutMaam();
-  
-  
 
   // which item is being updated (for disabling + / - / input)
   const [updatingKey, setUpdatingKey] = useState<string | null>(null);
@@ -119,26 +117,27 @@ const Cart = () => {
   const [postalCode, setPostalCode] = useState("");
   const [notes, setNotes] = useState("");
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
-   const [editNotes, setEditNotes] = useState<Record<string, string>>({});
-const [savingNoteKey, setSavingNoteKey] = useState<string | null>(null);
 
-const handleSaveNote = async (
-  productId: string,
-  optionIndex: number,
-  key: string,
-  fallback: string
-) => {
-  const noteToSave = (editNotes[key] ?? fallback).trim();
+  // notes per item
+  const [editNotes, setEditNotes] = useState<Record<string, string>>({});
+  const [savingNoteKey, setSavingNoteKey] = useState<string | null>(null);
 
-  setSavingNoteKey(key);
-  try {
-    await updateItemNote(productId, optionIndex, noteToSave);
-    toast.success(labels.noteSaved);
-  } finally {
-    setSavingNoteKey(null);
-  }
-};
- 
+  const handleSaveNote = async (
+    productId: string,
+    optionIndex: number,
+    key: string,
+    fallback: string
+  ) => {
+    const noteToSave = (editNotes[key] ?? fallback).trim();
+
+    setSavingNoteKey(key);
+    try {
+      await updateItemNote(productId, optionIndex, noteToSave);
+      toast.success(labels.noteSaved);
+    } finally {
+      setSavingNoteKey(null);
+    }
+  };
 
   const handleCheckout = async () => {
     if (!isAuthenticated) {
@@ -163,8 +162,6 @@ const handleSaveNote = async (
         postalCode,
         notes,
       });
-      // إذا أردت: يمكن تفريغ الحقول بعد إتمام الطلب
-      // setFullName(""); setPhone(""); ...
     } finally {
       setIsPlacingOrder(false);
     }
@@ -189,7 +186,7 @@ const handleSaveNote = async (
     currentQuantity: number
   ) => {
     const newQty = editQuantities[key] ?? currentQuantity;
-    if (newQty === currentQuantity) return; // nothing to update
+    if (newQty === currentQuantity) return;
 
     setUpdatingKey(key);
     try {
@@ -237,13 +234,20 @@ const handleSaveNote = async (
 
   if (cart.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center py-12" dir="rtl" lang={isArabic ? "ar" : "he"}>
+      <div
+        className="min-h-screen flex items-center justify-center py-12"
+        dir="rtl"
+        lang={isArabic ? "ar" : "he"}
+      >
         <div className="text-center">
           <ShoppingBag className="h-24 w-24 mx-auto mb-6 text-muted-foreground" />
           <h2 className="text-3xl font-bold mb-4">{labels.emptyTitle}</h2>
           <p className="text-muted-foreground mb-8">{labels.emptyBody}</p>
           <Link to="/products">
-            <Button size="lg" className="gradient-primary text-white shadow-premium">
+            <Button
+              size="lg"
+              className="gradient-primary text-white shadow-premium"
+            >
               {labels.startShopping}
               <ArrowLeft className="mr-2 h-5 w-5" />
             </Button>
@@ -257,7 +261,8 @@ const handleSaveNote = async (
     <div className="min-h-screen py-12" dir="rtl" lang={isArabic ? "ar" : "he"}>
       <div className="container mx-auto px-4">
         <h1 className="text-4xl font-black mb-8">
-          {labels.cartTitle} <span className="text-gradient-primary">{labels.cartHighlight}</span>
+          {labels.cartTitle}{" "}
+          <span className="text-gradient-primary">{labels.cartHighlight}</span>
         </h1>
 
         <div className="grid lg:grid-cols-3 gap-8">
@@ -267,22 +272,30 @@ const handleSaveNote = async (
               const key = getKey(item.productId, item.optionIndex);
               const isUpdating = updatingKey === key;
               const displayQty =
-                editQuantities[key] !== undefined ? editQuantities[key] : item.quantity;
-                // ✅ ADD THESE TWO LINES HERE
-  const noteValue = editNotes[key] ?? (item.itemNote || "");
-  const isSavingNote = savingNoteKey === key;
+                editQuantities[key] !== undefined
+                  ? editQuantities[key]
+                  : item.quantity;
+
+              const noteValue = editNotes[key] ?? (item.itemNote || "");
+              const isSavingNote = savingNoteKey === key;
+
               return (
                 <Card key={key} className="p-6 shadow-card">
-                  <div className="flex gap-6">
+                  {/* ✅ responsive row (no shrinking on mobile) */}
+                  <div className="flex flex-col md:flex-row gap-4">
                     <img
                       src={item.image}
                       alt={item.productName}
                       className="w-24 h-24 object-cover rounded-lg"
                     />
 
-                    <div className="flex-1">
-                      <h3 className="font-bold text-lg mb-1">{item.productName}</h3>
-                      <p className="text-sm text-muted-foreground mb-3">{item.optionName}</p>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-lg mb-1">
+                        {item.productName}
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        {item.optionName}
+                      </p>
 
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2 border rounded-lg">
@@ -291,7 +304,11 @@ const handleSaveNote = async (
                             size="icon"
                             disabled={isUpdating}
                             onClick={() =>
-                              handleDecrement(item.productId, item.optionIndex, item.quantity)
+                              handleDecrement(
+                                item.productId,
+                                item.optionIndex,
+                                item.quantity
+                              )
                             }
                           >
                             <Minus className="h-4 w-4" />
@@ -302,7 +319,13 @@ const handleSaveNote = async (
                             min={1}
                             value={displayQty}
                             disabled={isUpdating}
-                            onChange={(e) => handleChangeInput(key, e.target.value, item.quantity)}
+                            onChange={(e) =>
+                              handleChangeInput(
+                                key,
+                                e.target.value,
+                                item.quantity
+                              )
+                            }
                             onBlur={() =>
                               handleBlurInput(
                                 item.productId,
@@ -320,7 +343,11 @@ const handleSaveNote = async (
                             size="icon"
                             disabled={isUpdating}
                             onClick={() =>
-                              handleIncrement(item.productId, item.optionIndex, item.quantity)
+                              handleIncrement(
+                                item.productId,
+                                item.optionIndex,
+                                item.quantity
+                              )
                             }
                           >
                             <Plus className="h-4 w-4" />
@@ -331,7 +358,9 @@ const handleSaveNote = async (
                           variant="ghost"
                           size="icon"
                           disabled={isUpdating}
-                          onClick={() => removeFromCart(item.productId, item.optionIndex)}
+                          onClick={() =>
+                            removeFromCart(item.productId, item.optionIndex)
+                          }
                           className="text-destructive hover:text-destructive"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -339,35 +368,56 @@ const handleSaveNote = async (
                       </div>
                     </div>
 
-                    {/* price box */}
-                    <div className="text-left">
-                      <div className="text-sm text-muted-foreground mb-1">{labels.unitPrice}</div>
-                      <div className="font-bold text-primary">₪{item.priceWithoutMaam}</div>
+                    {/* ✅ price box: full width on mobile, side on desktop */}
+                    <div className="w-full md:w-auto md:text-left flex md:block justify-between md:justify-start">
+                      <div>
+                        <div className="text-sm text-muted-foreground mb-1">
+                          {labels.unitPrice}
+                        </div>
+                        <div className="font-bold text-primary">
+                          ₪{item.priceWithoutMaam}
+                        </div>
+                      </div>
 
-                      <div className="text-sm text-muted-foreground mt-3">{labels.total}</div>
-                      <div className="font-bold text-xl">
-                        ₪{(item.priceWithoutMaam * displayQty).toFixed(2)}
+                      <div className="text-right md:text-left">
+                        <div className="text-sm text-muted-foreground mt-0 md:mt-3">
+                          {labels.total}
+                        </div>
+                        <div className="font-bold text-xl">
+                          ₪{(item.priceWithoutMaam * displayQty).toFixed(2)}
+                        </div>
                       </div>
                     </div>
-                    <div className="mt-4 space-y-2">
-  <Textarea
-    placeholder={labels.notePlaceholder}
-    value={noteValue}
-    onChange={(e) =>
-      setEditNotes((prev) => ({ ...prev, [key]: e.target.value }))
-    }
-  />
+                  </div>
 
-  <Button
-    size="sm"
-    disabled={isSavingNote}
-    onClick={() => handleSaveNote(item.productId, item.optionIndex, key, item.itemNote || "")}
-  >
-    {isSavingNote ? labels.saving : labels.saveNote}
-  </Button>
-</div>
+                  {/* ✅ note section under (full width) */}
+                  <div className="mt-4 space-y-2">
+                    <Textarea
+                      placeholder={labels.notePlaceholder}
+                      value={noteValue}
+                      onChange={(e) =>
+                        setEditNotes((prev) => ({
+                          ...prev,
+                          [key]: e.target.value,
+                        }))
+                      }
+                    />
 
-
+                    <Button
+                      size="sm"
+                      className="w-full md:w-auto"
+                      disabled={isSavingNote}
+                      onClick={() =>
+                        handleSaveNote(
+                          item.productId,
+                          item.optionIndex,
+                          key,
+                          item.itemNote || ""
+                        )
+                      }
+                    >
+                      {isSavingNote ? labels.saving : labels.saveNote}
+                    </Button>
                   </div>
                 </Card>
               );
@@ -376,83 +426,83 @@ const handleSaveNote = async (
 
           {/* Summary + checkout form */}
           <div className="lg:col-span-1">
-            <Card className="p-6 shadow-premium sticky top-24">
+            {/* ✅ sticky only on large screens */}
+            <Card className="p-6 shadow-premium lg:sticky lg:top-24">
               <h2 className="text-2xl font-bold mb-6">{labels.orderSummary}</h2>
 
               <div className="space-y-3 mb-6">
-                
-
                 <div className="border-t pt-3 flex justify-between text-xl font-bold">
                   <span>{labels.totalToPay}</span>
-                  <span className="text-2xl text-primary">₪{totalWithoutMaam.toFixed(2)}</span>
+                  <span className="text-2xl text-primary">
+                    ₪{totalWithoutMaam.toFixed(2)}
+                  </span>
                 </div>
               </div>
 
-             {/* Checkout details form */}
-<div className="space-y-3 mb-6">
-  <h3 className="text-lg font-semibold">{labels.shippingDetails}</h3>
+              {/* Checkout details form */}
+              <div className="space-y-3 mb-6">
+                <h3 className="text-lg font-semibold">{labels.shippingDetails}</h3>
 
-  <Input
-    placeholder={labels.fullName}
-    value={fullName}
-    onChange={(e) => setFullName(e.target.value)}
-    className="text-right placeholder:text-right"
-  />
+                <Input
+                  placeholder={labels.fullName}
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="text-right placeholder:text-right"
+                />
 
-  <Input
-    placeholder={labels.phone}
-    value={phone}
-    onChange={(e) => setPhone(e.target.value)}
-    dir="ltr"
-    className="text-right placeholder:text-right"
-  />
+                <Input
+                  placeholder={labels.phone}
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  dir="ltr"
+                  className="text-right placeholder:text-right"
+                />
 
-  <Input
-    placeholder={labels.email}
-    value={email}
-    onChange={(e) => setEmail(e.target.value)}
-    dir="ltr"
-    className="text-right placeholder:text-right"
-  />
+                <Input
+                  placeholder={labels.email}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  dir="ltr"
+                  className="text-right placeholder:text-right"
+                />
 
-  <Input
-    placeholder={labels.city}
-    value={city}
-    onChange={(e) => setCity(e.target.value)}
-    className="text-right placeholder:text-right"
-  />
+                <Input
+                  placeholder={labels.city}
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  className="text-right placeholder:text-right"
+                />
 
-  <Input
-    placeholder={labels.street}
-    value={street}
-    onChange={(e) => setStreet(e.target.value)}
-    className="text-right placeholder:text-right"
-  />
+                <Input
+                  placeholder={labels.street}
+                  value={street}
+                  onChange={(e) => setStreet(e.target.value)}
+                  className="text-right placeholder:text-right"
+                />
 
-  <Input
-    placeholder={labels.houseNumber}
-    value={houseNumber}
-    onChange={(e) => setHouseNumber(e.target.value)}
-    dir="ltr"
-    className="text-right placeholder:text-right"
-  />
+                <Input
+                  placeholder={labels.houseNumber}
+                  value={houseNumber}
+                  onChange={(e) => setHouseNumber(e.target.value)}
+                  dir="ltr"
+                  className="text-right placeholder:text-right"
+                />
 
-  <Input
-    placeholder={labels.postalCode}
-    value={postalCode}
-    onChange={(e) => setPostalCode(e.target.value)}
-    dir="ltr"
-    className="text-right placeholder:text-right"
-  />
+                <Input
+                  placeholder={labels.postalCode}
+                  value={postalCode}
+                  onChange={(e) => setPostalCode(e.target.value)}
+                  dir="ltr"
+                  className="text-right placeholder:text-right"
+                />
 
-  <Textarea
-    placeholder={labels.orderNotes}
-    value={notes}
-    onChange={(e) => setNotes(e.target.value)}
-    className="text-right placeholder:text-right"
-  />
-</div>
-
+                <Textarea
+                  placeholder={labels.orderNotes}
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  className="text-right placeholder:text-right"
+                />
+              </div>
 
               <div className="space-y-3">
                 {isAuthenticated ? (
@@ -466,13 +516,14 @@ const handleSaveNote = async (
                   </Button>
                 ) : (
                   <Link to="/login" className="block">
-                    <Button size="lg" className="w-full gradient-primary text-white shadow-premium">
+                    <Button
+                      size="lg"
+                      className="w-full gradient-primary text-white shadow-premium"
+                    >
                       {labels.loginToCheckout}
                     </Button>
                   </Link>
                 )}
-
-                
 
                 <Link to="/products" className="block">
                   <Button variant="outline" size="lg" className="w-full">
@@ -490,12 +541,9 @@ const handleSaveNote = async (
                 </Button>
 
                 <p className="text-xs text-muted-foreground text-center">
-  {labels.cancelPolicy}
-</p>
-
+                  {labels.cancelPolicy}
+                </p>
               </div>
-             
-              
             </Card>
           </div>
         </div>
