@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 import { LogIn } from "lucide-react";
 
@@ -12,7 +13,31 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useAuth();
+  const { isArabic } = useLanguage();
   const navigate = useNavigate();
+  const labels = isArabic
+    ? {
+        loginSuccess: "تم تسجيل الدخول بنجاح!",
+        loginFailed: "اسم المستخدم أو كلمة المرور غير صحيحة",
+        title: "تسجيل الدخول",
+        subtitle: "ادخل إلى حسابك",
+        username: "اسم المستخدم",
+        usernamePlaceholder: "أدخل اسم المستخدم",
+        password: "كلمة المرور",
+        passwordPlaceholder: "أدخل كلمة المرور",
+        submit: "دخول",
+      }
+    : {
+        loginSuccess: "התחברת בהצלחה!",
+        loginFailed: "שם המשתמש או הסיסמה אינם נכונים",
+        title: "התחברות",
+        subtitle: "היכנס לחשבונך",
+        username: "שם משתמש",
+        usernamePlaceholder: "הזן שם משתמש",
+        password: "סיסמה",
+        passwordPlaceholder: "הזן סיסמה",
+        submit: "התחבר",
+      };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,10 +45,10 @@ const Login = () => {
     const success = await login(username, password); // WAIT for backend
 
     if (success) {
-      toast.success("تم تسجيل الدخول بنجاح!");
+      toast.success(labels.loginSuccess);
       navigate("/");
     } else {
-      toast.error("اسم المستخدم أو كلمة المرور غير صحيحة");
+      toast.error(labels.loginFailed);
     }
   };
 
@@ -31,7 +56,7 @@ const Login = () => {
     <div
       className="min-h-screen flex items-center justify-center bg-muted py-12 px-4"
       dir="rtl"
-      lang="ar"
+      lang={isArabic ? "ar" : "he"}
     >
       <Card className="w-full max-w-md p-8 shadow-premium">
         <div className="text-center mb-8">
@@ -39,31 +64,31 @@ const Login = () => {
             <LogIn className="h-8 w-8 text-white" />
           </div>
 
-          <h1 className="text-3xl font-black mb-2">تسجيل الدخول</h1>
-          <p className="text-muted-foreground">ادخل إلى حسابك</p>
+          <h1 className="text-3xl font-black mb-2">{labels.title}</h1>
+          <p className="text-muted-foreground">{labels.subtitle}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="username">اسم المستخدم</Label>
+            <Label htmlFor="username">{labels.username}</Label>
             <Input
               id="username"
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="أدخل اسم المستخدم"
+              placeholder={labels.usernamePlaceholder}
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">كلمة المرور</Label>
+            <Label htmlFor="password">{labels.password}</Label>
             <Input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="أدخل كلمة المرور"
+              placeholder={labels.passwordPlaceholder}
               required
             />
           </div>
@@ -72,7 +97,7 @@ const Login = () => {
             type="submit"
             className="w-full gradient-primary text-white shadow-premium"
           >
-            دخول
+            {labels.submit}
           </Button>
         </form>
       </Card>

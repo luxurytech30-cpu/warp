@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import { useCart } from "@/contexts/CartContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 import {
   ArrowRight,
@@ -26,6 +27,36 @@ const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { isArabic } = useLanguage();
+  const labels = isArabic
+    ? {
+        loading: "يتم تحميل المنتج...",
+        unavailableTitle: "المنتج غير متوفر",
+        backToProducts: "عودة للمنتجات",
+        invalidOption: "خيار المنتج غير صالح",
+        chooseOption: "اختار خيارك المفضل",
+        available: (count: number) => `متوفر: ${count}`,
+        price: "السعر",
+        adding: "يتم الإضافة...",
+        addToCart: "أضف للسلة",
+        quality: "جودة مضمونة",
+        packaging: "تغليف محمي",
+        fastShipping: "شحن سريع",
+      }
+    : {
+        loading: "טוענים מוצר...",
+        unavailableTitle: "המוצר אינו זמין",
+        backToProducts: "חזרה למוצרים",
+        invalidOption: "אפשרות מוצר לא תקינה",
+        chooseOption: "בחרו את האפשרות המועדפת",
+        available: (count: number) => `זמין: ${count}`,
+        price: "מחיר",
+        adding: "מוסיף...",
+        addToCart: "הוסף לעגלה",
+        quality: "איכות מובטחת",
+        packaging: "אריזה מוגנת",
+        fastShipping: "משלוח מהיר",
+      };
 
   const {
     data: product,
@@ -49,7 +80,7 @@ const ProductDetail = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        يتم تحميل المنتج...
+        {labels.loading}
       </div>
     );
   }
@@ -58,8 +89,8 @@ const ProductDetail = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">المنتج غير متوفر</h2>
-          <Button onClick={() => navigate("/products")}>عودة للمنتجات</Button>
+          <h2 className="text-2xl font-bold mb-4">{labels.unavailableTitle}</h2>
+          <Button onClick={() => navigate("/products")}>{labels.backToProducts}</Button>
         </div>
       </div>
     );
@@ -85,7 +116,7 @@ const ProductDetail = () => {
     );
 
     if (optionIndex === -1) {
-      toast.error("خيار المنتج غير صالح");
+      toast.error(labels.invalidOption);
       return;
     }
 
@@ -113,7 +144,7 @@ const ProductDetail = () => {
           className="mb-8"
         >
           <ArrowRight className="ml-2 h-4 w-4" />
-          عودة للمنتجات
+          {labels.backToProducts}
         </Button>
 
         <div className="grid lg:grid-cols-2 gap-12">
@@ -143,7 +174,7 @@ const ProductDetail = () => {
             {/* Options */}
             <Card className="p-6 shadow-card">
               <Label className="text-lg font-bold mb-4 block">
-                اختار خيارك المفضل
+                {labels.chooseOption}
               </Label>
               <RadioGroup
                 value={selectedOption}
@@ -180,7 +211,7 @@ const ProductDetail = () => {
                           )}
                           <div className="font-bold text-primary">₪{price}</div>
                           <div className="text-xs text-muted-foreground">
-                            متوفر: {option.stock}
+                            {labels.available(option.stock)}
                           </div>
                         </div>
                       </div>
@@ -194,7 +225,7 @@ const ProductDetail = () => {
             <Card className="p-6 gradient-hero text-white shadow-premium">
               <div className="space-y-3">
                 <div className="flex justify-between items-center text-lg">
-                  <span>السعر</span>
+                  <span>{labels.price}</span>
                   <div className="text-left">
                     {hasDiscount && (
                       <span className="line-through text-white/70 text-sm ml-2">
@@ -222,22 +253,22 @@ const ProductDetail = () => {
               className="w-full gradient-primary text-white shadow-premium text-lg py-6 h-auto"
             >
               <ShoppingCart className="ml-2 h-5 w-5" />
-              {isAdding ? "يتم الإضافة..." : "أضف للسلة"}
+              {isAdding ? labels.adding : labels.addToCart}
             </Button>
 
             {/* Features */}
             <div className="grid grid-cols-3 gap-4 pt-6">
               <div className="text-center">
                 <Package className="h-8 w-8 mx-auto mb-2 text-primary" />
-                <div className="text-sm font-medium">جودة مضمونة</div>
+                <div className="text-sm font-medium">{labels.quality}</div>
               </div>
               <div className="text-center">
                 <Shield className="h-8 w-8 mx-auto mb-2 text-primary" />
-                <div className="text-sm font-medium">تغليف محمي</div>
+                <div className="text-sm font-medium">{labels.packaging}</div>
               </div>
               <div className="text-center">
                 <Truck className="h-8 w-8 mx-auto mb-2 text-primary" />
-                <div className="text-sm font-medium">شحن سريع</div>
+                <div className="text-sm font-medium">{labels.fastShipping}</div>
               </div>
             </div>
           </div>

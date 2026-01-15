@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
@@ -21,7 +22,77 @@ const Cart = () => {
     clearCart,
   } = useCart();
   const { user } = useAuth();
+  const { isArabic } = useLanguage();
   const isAuthenticated = !!user;
+  const labels = isArabic
+    ? {
+        noteSaved: "تم حفظ الملاحظة",
+        loginRequired: "يجب تسجيل الدخول لإتمام الطلب",
+        missingFields:
+          "يرجى تعبئة الاسم الكامل، الهاتف، والعنوان (المدينة، الشارع، رقم المنزل)",
+        emptyTitle: "السلة فارغة",
+        emptyBody: "لم تقوم بإضافة أي منتجات بعد",
+        startShopping: "ابدء التسوق",
+        cartTitle: "سلة",
+        cartHighlight: "التسوق",
+        unitPrice: "سعر القطعة",
+        total: "المجموع",
+        notePlaceholder: "ملاحظة لهذا المنتج (مثال: اكتب الاسم للطباعة)",
+        saving: "جارٍ الحفظ...",
+        saveNote: "حفظ الملاحظة",
+        orderSummary: "ملخص الطلب",
+        totalToPay: "الإجمالي للدفع:",
+        shippingDetails: "تفاصيل الشحن",
+        fullName: "الاسم الكامل *",
+        phone: "*الهاتف",
+        email: "البريد الإلكتروني (اختياري)",
+        city: "المدينة *",
+        street: "الشارع *",
+        houseNumber: "*رقم المنزل",
+        postalCode: "الرمز البريدي (اختياري)",
+        orderNotes: "ملاحظات على الطلب (اختياري)",
+        redirecting: "جاري تحويلك لصفحة الدفع...",
+        proceedToPay: "متابعة للدفع",
+        loginToCheckout: "سجّلي الدخول لإتمام الطلب",
+        continueShopping: "متابعة التسوق",
+        clearCart: "تفريغ السلة",
+        cancelPolicy: "يمكن إلغاء الطلب خلال ساعتين فقط من وقت إنشائه.",
+
+      }
+    : {
+        noteSaved: "ההערה נשמרה",
+        loginRequired: "יש להתחבר כדי להשלים את ההזמנה",
+        missingFields:
+          "נא למלא שם מלא, טלפון וכתובת (עיר, רחוב, מספר בית)",
+        emptyTitle: "העגלה ריקה",
+        emptyBody: "לא הוספת עדיין מוצרים",
+        startShopping: "התחילו לקנות",
+        cartTitle: "עגלה",
+        cartHighlight: "קניות",
+        unitPrice: "מחיר יחידה",
+        total: "סה\"כ",
+        notePlaceholder: "הערה למוצר הזה (לדוגמה: כתבו את השם להדפסה)",
+        saving: "שומרים...",
+        saveNote: "שמור הערה",
+        orderSummary: "סיכום הזמנה",
+        totalToPay: "סה\"כ לתשלום:",
+        shippingDetails: "פרטי משלוח",
+        fullName: "שם מלא *",
+        phone: "*טלפון ",
+        email: "דוא\"ל (אופציונלי)",
+        city: "עיר *",
+        street: "רחוב *",
+        houseNumber: "*מספר בית ",
+        postalCode: "מיקוד (אופציונלי)",
+        orderNotes: "הערות להזמנה (אופציונלי)",
+        redirecting: "מעבירים אותך לעמוד התשלום...",
+        proceedToPay: "המשך לתשלום",
+        loginToCheckout: "התחברו כדי להשלים את ההזמנה",
+        continueShopping: "המשיכו לקנות",
+        clearCart: "רוקן עגלה",
+        cancelPolicy: "ניתן לבטל הזמנה רק בתוך שעתיים מרגע יצירתה.",
+
+      };
 
   const totalWithoutMaam = getTotalWithoutMaam();
   
@@ -62,7 +133,7 @@ const handleSaveNote = async (
   setSavingNoteKey(key);
   try {
     await updateItemNote(productId, optionIndex, noteToSave);
-    toast.success("تم حفظ الملاحظة");
+    toast.success(labels.noteSaved);
   } finally {
     setSavingNoteKey(null);
   }
@@ -71,12 +142,12 @@ const handleSaveNote = async (
 
   const handleCheckout = async () => {
     if (!isAuthenticated) {
-      toast.error("يجب تسجيل الدخول لإتمام الطلب");
+      toast.error(labels.loginRequired);
       return;
     }
 
     if (!fullName || !phone || !city || !street || !houseNumber) {
-      toast.error("يرجى تعبئة الاسم الكامل، الهاتف، والعنوان (المدينة، الشارع، رقم المنزل)");
+      toast.error(labels.missingFields);
       return;
     }
 
@@ -166,14 +237,14 @@ const handleSaveNote = async (
 
   if (cart.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center py-12" dir="rtl" lang="ar">
+      <div className="min-h-screen flex items-center justify-center py-12" dir="rtl" lang={isArabic ? "ar" : "he"}>
         <div className="text-center">
           <ShoppingBag className="h-24 w-24 mx-auto mb-6 text-muted-foreground" />
-          <h2 className="text-3xl font-bold mb-4">السلة فارغة</h2>
-          <p className="text-muted-foreground mb-8">لم تقوم بإضافة أي منتجات بعد</p>
+          <h2 className="text-3xl font-bold mb-4">{labels.emptyTitle}</h2>
+          <p className="text-muted-foreground mb-8">{labels.emptyBody}</p>
           <Link to="/products">
             <Button size="lg" className="gradient-primary text-white shadow-premium">
-              ابدء التسوق
+              {labels.startShopping}
               <ArrowLeft className="mr-2 h-5 w-5" />
             </Button>
           </Link>
@@ -183,10 +254,10 @@ const handleSaveNote = async (
   }
 
   return (
-    <div className="min-h-screen py-12" dir="rtl" lang="ar">
+    <div className="min-h-screen py-12" dir="rtl" lang={isArabic ? "ar" : "he"}>
       <div className="container mx-auto px-4">
         <h1 className="text-4xl font-black mb-8">
-          سلة <span className="text-gradient-primary">التسوق</span>
+          {labels.cartTitle} <span className="text-gradient-primary">{labels.cartHighlight}</span>
         </h1>
 
         <div className="grid lg:grid-cols-3 gap-8">
@@ -270,17 +341,17 @@ const handleSaveNote = async (
 
                     {/* price box */}
                     <div className="text-left">
-                      <div className="text-sm text-muted-foreground mb-1">سعر القطعة</div>
+                      <div className="text-sm text-muted-foreground mb-1">{labels.unitPrice}</div>
                       <div className="font-bold text-primary">₪{item.priceWithoutMaam}</div>
 
-                      <div className="text-sm text-muted-foreground mt-3">المجموع</div>
+                      <div className="text-sm text-muted-foreground mt-3">{labels.total}</div>
                       <div className="font-bold text-xl">
                         ₪{(item.priceWithoutMaam * displayQty).toFixed(2)}
                       </div>
                     </div>
                     <div className="mt-4 space-y-2">
   <Textarea
-    placeholder="ملاحظة لهذا المنتج (مثال: اكتب الاسم للطباعة)"
+    placeholder={labels.notePlaceholder}
     value={noteValue}
     onChange={(e) =>
       setEditNotes((prev) => ({ ...prev, [key]: e.target.value }))
@@ -292,7 +363,7 @@ const handleSaveNote = async (
     disabled={isSavingNote}
     onClick={() => handleSaveNote(item.productId, item.optionIndex, key, item.itemNote || "")}
   >
-    {isSavingNote ? "جارٍ الحفظ..." : "حفظ الملاحظة"}
+    {isSavingNote ? labels.saving : labels.saveNote}
   </Button>
 </div>
 
@@ -306,66 +377,82 @@ const handleSaveNote = async (
           {/* Summary + checkout form */}
           <div className="lg:col-span-1">
             <Card className="p-6 shadow-premium sticky top-24">
-              <h2 className="text-2xl font-bold mb-6">ملخص الطلب</h2>
+              <h2 className="text-2xl font-bold mb-6">{labels.orderSummary}</h2>
 
               <div className="space-y-3 mb-6">
                 
 
                 <div className="border-t pt-3 flex justify-between text-xl font-bold">
-                  <span>الإجمالي للدفع:</span>
+                  <span>{labels.totalToPay}</span>
                   <span className="text-2xl text-primary">₪{totalWithoutMaam.toFixed(2)}</span>
                 </div>
               </div>
 
-              {/* Checkout details form */}
-              <div className="space-y-3 mb-6">
-                <h3 className="text-lg font-semibold">تفاصيل الشحن</h3>
+             {/* Checkout details form */}
+<div className="space-y-3 mb-6">
+  <h3 className="text-lg font-semibold">{labels.shippingDetails}</h3>
 
-                <Input
-                  placeholder="الاسم الكامل *"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                />
-                <Input
-                  placeholder="الهاتف *"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  dir="ltr"
-                />
-                <Input
-                  placeholder="البريد الإلكتروني (اختياري)"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  dir="ltr"
-                />
-                <Input
-                  placeholder="المدينة *"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                />
-                <Input
-                  placeholder="الشارع *"
-                  value={street}
-                  onChange={(e) => setStreet(e.target.value)}
-                />
-                <Input
-                  placeholder="رقم المنزل *"
-                  value={houseNumber}
-                  onChange={(e) => setHouseNumber(e.target.value)}
-                  dir="ltr"
-                />
-                <Input
-                  placeholder="الرمز البريدي (اختياري)"
-                  value={postalCode}
-                  onChange={(e) => setPostalCode(e.target.value)}
-                  dir="ltr"
-                />
-                <Textarea
-                  placeholder="ملاحظات على الطلب (اختياري)"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                />
-              </div>
+  <Input
+    placeholder={labels.fullName}
+    value={fullName}
+    onChange={(e) => setFullName(e.target.value)}
+    className="text-right placeholder:text-right"
+  />
+
+  <Input
+    placeholder={labels.phone}
+    value={phone}
+    onChange={(e) => setPhone(e.target.value)}
+    dir="ltr"
+    className="text-right placeholder:text-right"
+  />
+
+  <Input
+    placeholder={labels.email}
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+    dir="ltr"
+    className="text-right placeholder:text-right"
+  />
+
+  <Input
+    placeholder={labels.city}
+    value={city}
+    onChange={(e) => setCity(e.target.value)}
+    className="text-right placeholder:text-right"
+  />
+
+  <Input
+    placeholder={labels.street}
+    value={street}
+    onChange={(e) => setStreet(e.target.value)}
+    className="text-right placeholder:text-right"
+  />
+
+  <Input
+    placeholder={labels.houseNumber}
+    value={houseNumber}
+    onChange={(e) => setHouseNumber(e.target.value)}
+    dir="ltr"
+    className="text-right placeholder:text-right"
+  />
+
+  <Input
+    placeholder={labels.postalCode}
+    value={postalCode}
+    onChange={(e) => setPostalCode(e.target.value)}
+    dir="ltr"
+    className="text-right placeholder:text-right"
+  />
+
+  <Textarea
+    placeholder={labels.orderNotes}
+    value={notes}
+    onChange={(e) => setNotes(e.target.value)}
+    className="text-right placeholder:text-right"
+  />
+</div>
+
 
               <div className="space-y-3">
                 {isAuthenticated ? (
@@ -375,19 +462,21 @@ const handleSaveNote = async (
                     disabled={isPlacingOrder}
                     className="w-full gradient-primary text-white shadow-premium"
                   >
-                    {isPlacingOrder ? "جاري تحويلك لصفحة الدفع..." : "متابعة للدفع"}
+                    {isPlacingOrder ? labels.redirecting : labels.proceedToPay}
                   </Button>
                 ) : (
                   <Link to="/login" className="block">
                     <Button size="lg" className="w-full gradient-primary text-white shadow-premium">
-                      سجّلي الدخول لإتمام الطلب
+                      {labels.loginToCheckout}
                     </Button>
                   </Link>
                 )}
 
+                
+
                 <Link to="/products" className="block">
                   <Button variant="outline" size="lg" className="w-full">
-                    متابعة التسوق
+                    {labels.continueShopping}
                   </Button>
                 </Link>
 
@@ -397,10 +486,15 @@ const handleSaveNote = async (
                   onClick={handleClearCart}
                   className="w-full border-destructive text-destructive hover:bg-destructive/10"
                 >
-                  تفريغ السلة
+                  {labels.clearCart}
                 </Button>
-              </div>
 
+                <p className="text-xs text-muted-foreground text-center">
+  {labels.cancelPolicy}
+</p>
+
+              </div>
+             
               
             </Card>
           </div>

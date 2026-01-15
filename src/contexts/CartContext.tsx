@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { CartItem,  Order, CustomerDetails } from "@/types";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   checkoutOrder, 
   startTranzilaPayment, 
@@ -43,6 +44,38 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   const [cart, setCart] = useState<CartItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const { user } = useAuth();
+  const { isArabic } = useLanguage();
+  const labels = isArabic
+    ? {
+        loadError: "حدث خطأ أثناء تحميل السلة",
+        loginRequired: "يجب تسجيل الدخول لاستخدام السلة",
+        noteUpdateError: "حدث خطأ أثناء تحديث الملاحظة",
+        addSuccess: "تمت إضافة المنتج إلى السلة",
+        addError: "حدث خطأ أثناء إضافة المنتج إلى السلة",
+        removeSuccess: "تمت إزالة المنتج من السلة",
+        removeError: "حدث خطأ أثناء إزالة المنتج من السلة",
+        updateQtyError: "حدث خطأ أثناء تحديث الكمية",
+        clearSuccess: "تم تفريغ السلة",
+        clearError: "حدث خطأ أثناء تفريغ السلة",
+        orderLoginRequired: "يجب تسجيل الدخول لإتمام الطلب",
+        cartEmpty: "السلة فارغة",
+        checkoutError: "حدث خطأ أثناء تنفيذ الطلب. حاول لاحقًا.",
+      }
+    : {
+        loadError: "שגיאה בטעינת העגלה",
+        loginRequired: "עליך להתחבר כדי להשתמש בעגלה",
+        noteUpdateError: "שגיאה בעדכון ההערה",
+        addSuccess: "המוצר נוסף לעגלה",
+        addError: "שגיאה בהוספת המוצר לעגלה",
+        removeSuccess: "המוצר הוסר מהעגלה",
+        removeError: "שגיאה בהסרת המוצר מהעגלה",
+        updateQtyError: "שגיאה בעדכון הכמות",
+        clearSuccess: "העגלה נוקתה",
+        clearError: "שגיאה בניקוי העגלה",
+        orderLoginRequired: "עליך להתחבר כדי לבצע הזמנה",
+        cartEmpty: "העגלה ריקה",
+        checkoutError: "שגיאה בביצוע ההזמנה. נסה שוב מאוחר יותר.",
+      };
 
   // Load cart from server when user changes
   useEffect(() => {
@@ -62,12 +95,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
         setCart(serverCart);
       } catch (err) {
         console.error("FETCH CART ERROR:", err);
-        toast.error("שגיאה בטעינת העגלה");
+        toast.error(labels.loadError);
       }
     };
   const requireLogin = (): boolean => {
     if (!user) {
-      toast.error("עליך להתחבר כדי להשתמש בעגלה");
+      toast.error(labels.loginRequired);
       return false;
     }
     return true;
@@ -94,7 +127,7 @@ const updateItemNote = async (productId: string, optionIndex: number, itemNote: 
   } catch (err) {
     console.error("UPDATE ITEM NOTE ERROR:", err);
     setCart(previous);
-    toast.error("שגיאה בעדכון ההערה");
+    toast.error(labels.noteUpdateError);
   }
 };
 
@@ -109,10 +142,10 @@ const updateItemNote = async (productId: string, optionIndex: number, itemNote: 
         quantity: 1,
       });
       setCart(updatedCart);
-      toast.success("המוצר נוסף לעגלה");
+      toast.success(labels.addSuccess);
     } catch (err) {
       console.error("ADD TO CART ERROR:", err);
-      toast.error("שגיאה בהוספת המוצר לעגלה");
+      toast.error(labels.addError);
     }
   };
 
@@ -134,11 +167,11 @@ const updateItemNote = async (productId: string, optionIndex: number, itemNote: 
         optionIndex,
       });
       setCart(updatedCart);
-      toast.info("המוצר הוסר מהעגלה");
+      toast.info(labels.removeSuccess);
     } catch (err) {
       console.error("REMOVE FROM CART ERROR:", err);
       setCart(previous);
-      toast.error("שגיאה בהסרת המוצר מהעגלה");
+      toast.error(labels.removeError);
     }
   };
 
@@ -173,7 +206,7 @@ const updateItemNote = async (productId: string, optionIndex: number, itemNote: 
     } catch (err) {
       console.error("UPDATE CART QUANTITY ERROR:", err);
       setCart(previous);
-      toast.error("שגיאה בעדכון הכמות");
+      toast.error(labels.updateQtyError);
     }
   };
 
@@ -186,11 +219,11 @@ const updateItemNote = async (productId: string, optionIndex: number, itemNote: 
     try {
       const updatedCart = await clearCartRequest();
       setCart(updatedCart);
-      toast.info("העגלה נוקתה");
+      toast.info(labels.clearSuccess);
     } catch (err) {
       console.error("CLEAR CART ERROR:", err);
       setCart(previous);
-      toast.error("שגיאה בניקוי העגלה");
+      toast.error(labels.clearError);
     }
   };
 
@@ -208,12 +241,12 @@ const updateItemNote = async (productId: string, optionIndex: number, itemNote: 
 
   const placeOrder = async (details: CustomerDetails) => {
   if (!user) {
-    toast.error("עליך להתחבר כדי לבצע הזמנה");
+    toast.error(labels.orderLoginRequired);
     return;
   }
 
   if (cart.length === 0) {
-    toast.error("העגלה ריקה");
+    toast.error(labels.cartEmpty);
     return;
   }
 
@@ -232,7 +265,7 @@ const updateItemNote = async (productId: string, optionIndex: number, itemNote: 
     console.error("CHECKOUT ERROR:", err);
     const msg =
       err?.response?.data?.message ||
-      "שגיאה בביצוע ההזמנה. נסה שוב מאוחר יותר.";
+      labels.checkoutError;
     toast.error(msg);
   }
 };

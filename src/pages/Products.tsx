@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 import { Search, SlidersHorizontal } from "lucide-react";
 
@@ -17,6 +18,42 @@ const Products = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(true);
+  const { isArabic } = useLanguage();
+  const labels = isArabic
+    ? {
+        loading: "يتم تحميل المنتجات...",
+        error: "حدث خطأ أثناء تحميل المنتجات",
+        title: "تسوق مجموعة ",
+        subtitle: "منتجات مخصصة بأسماء ورسائل شخصية، مع تغليف فاخر وشحن سريع.",
+        searchPlaceholder: "ابحث عن منتج...",
+        show: "إظهار",
+        hide: "إخفاء",
+        filter: "التصفية",
+        categories: "الفئات",
+        clearAll: "مسح الكل",
+        results: (count: number) => `تم العثور على ${count} منتج`,
+        featured: "منتج مميز",
+        details: "التفاصيل",
+        noResultsTitle: "لا توجد نتائج",
+        noResultsBody: "جربي كلمات بحث مختلفة أو اختاري فئة أخرى",
+      }
+    : {
+        loading: "טוענים מוצרים...",
+        error: "אירעה שגיאה בעת טעינת המוצרים",
+        title: "קנו את קולקציית ",
+        subtitle: "מוצרים מותאמים עם שמות והודעות אישיות, עם אריזה יוקרתית ומשלוח מהיר.",
+        searchPlaceholder: "חפשו מוצר...",
+        show: "הצג",
+        hide: "הסתר",
+        filter: "סינון",
+        categories: "קטגוריות",
+        clearAll: "נקה הכל",
+        results: (count: number) => `נמצאו ${count} מוצרים`,
+        featured: "מוצר מובחר",
+        details: "פרטים",
+        noResultsTitle: "לא נמצאו תוצאות",
+        noResultsBody: "נסו מילות חיפוש שונות או בחרו קטגוריה אחרת",
+      };
 
   const {
     data: products = [],
@@ -58,7 +95,7 @@ const Products = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        يتم تحميل المنتجات...
+        {labels.loading}
       </div>
     );
   }
@@ -66,7 +103,7 @@ const Products = () => {
   if (isError) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        حدث خطأ أثناء تحميل المنتجات
+        {labels.error}
       </div>
     );
   }
@@ -76,10 +113,10 @@ const Products = () => {
       <div className="container mx-auto px-4">
         <div className="mb-12 text-center">
           <h1 className="text-5xl font-black mb-4">
-            تسوق <span className="text-gradient-primary">مجموعة Perfect Wrap</span>
+            {labels.title} <span className="text-gradient-primary">Perfect Wrap</span>
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            منتجات مخصصة بأسماء ورسائل شخصية، مع تغليف فاخر وشحن سريع.
+            {labels.subtitle}
           </p>
         </div>
 
@@ -89,7 +126,7 @@ const Products = () => {
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               type="text"
-              placeholder="ابحث عن منتج..."
+              placeholder={labels.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pr-10"
@@ -101,7 +138,7 @@ const Products = () => {
             className="gap-2"
           >
             <SlidersHorizontal className="h-4 w-4" />
-            {showFilters ? "إخفاء" : "إظهار"} التصفية
+            {showFilters ? labels.hide : labels.show} {labels.filter}
           </Button>
         </div>
 
@@ -110,7 +147,7 @@ const Products = () => {
           {showFilters && (
             <aside className="lg:w-64 space-y-6">
               <Card className="p-6 shadow-card">
-                <h3 className="font-bold text-lg mb-4">الفئات</h3>
+                <h3 className="font-bold text-lg mb-4">{labels.categories}</h3>
                 <div className="space-y-3">
                   {categories.map((categoryName) => (
                     <div key={categoryName} className="flex items-center gap-2">
@@ -135,7 +172,7 @@ const Products = () => {
                     onClick={() => setSelectedCategories([])}
                     className="w-full mt-4"
                   >
-                    مسح الكل
+                    {labels.clearAll}
                   </Button>
                 )}
               </Card>
@@ -145,7 +182,7 @@ const Products = () => {
           {/* Products Grid */}
           <div className="flex-1">
             <div className="mb-6 text-sm text-muted-foreground">
-              تم العثور على {filteredProducts.length} منتج
+              {labels.results(filteredProducts.length)}
             </div>
 
             <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -160,7 +197,7 @@ const Products = () => {
                       />
                       {product.isTop && (
                         <div className="absolute top-4 left-4 bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-xs font-bold shadow-gold">
-                          منتج مميز
+                          {labels.featured}
                         </div>
                       )}
                     </div>
@@ -185,7 +222,7 @@ const Products = () => {
                           variant="outline"
                           className="hover:gradient-primary hover:text-white"
                         >
-                          التفاصيل
+                          {labels.details}
                         </Button>
                       </div>
                     </div>
@@ -197,10 +234,10 @@ const Products = () => {
             {filteredProducts.length === 0 && (
               <div className="text-center py-20">
                 <p className="text-2xl font-bold text-muted-foreground mb-2">
-                  لا توجد نتائج
+                  {labels.noResultsTitle}
                 </p>
                 <p className="text-muted-foreground">
-                  جربي كلمات بحث مختلفة أو اختاري فئة أخرى
+                  {labels.noResultsBody}
                 </p>
               </div>
             )}

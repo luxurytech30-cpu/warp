@@ -4,6 +4,7 @@ import { ArrowLeft, Sparkles, Shield, Truck, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import heroImg from "@/assets/hero.jpeg";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 import { getProducts } from "@/lib/api";
 import type { Product } from "@/types";
@@ -12,6 +13,66 @@ const Index = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { isArabic } = useLanguage();
+  const labels = isArabic
+    ? {
+        loadError: "حدث خطأ أثناء تحميل المنتجات",
+        heroBadge: "إطلاق جديد — هدايا مخصصة لكِ",
+        heroHeadline: "هدايا راقية بلمسة شخصية",
+        heroCopy:
+          "اكتشف مجموعتنا الحصرية من الهدايا المطبوعة بعناية فائقة، المصممة خصيصًا لتضفي لمسة من الأناقة والتميّز على جميع مناسباتك الخاصة. اجعل لحظاتك أكثر جمالًا بهدايا تعبّر عن ذوقك الرفيع وتبقى ذكرى لا تُنسى.",
+        discoverProducts: "اكتشف المنتجات",
+        talkToUs: "تحدث معنا",
+        featureCustomTitle: "تصميمات مخصصة",
+        featureCustomBody: "اطبع اسمك أو رسالتك على كل قطعة",
+        featureQualityTitle: "جودة فاخرة",
+        featureQualityBody: "مواد مختارة بعناية وتغليف أنيق",
+        featureShippingTitle: "شحن سريع",
+        featureShippingBody: "إلى بابك مع تحديثات لحظية للحالة",
+        featureWrapTitle: "تغليف ساحر",
+        featureWrapBody: "علب وشرايط حريرية جاهزة للإهداء",
+        topTitle: "منتجات",
+        topHighlight: "مميزة",
+        topSubtitle: "مختارات أنيقة تم تنسيقها لعشاق اللمسات الشخصية",
+        loading: "يتم تحميل المنتجات...",
+        noTop: "لم يتم تحديد منتجات مميزة بعد.",
+        details: "التفاصيل",
+        browseAll: "تصفح كل المنتجات",
+        ctaTitle: "جاهز لتبهر من تحب؟",
+        ctaBody:
+          "اختار التصميم، أضيفي الاسم أو الرسالة، واترك لنا مهمة إعداد التغليف الفاخر والشحن السريع.",
+        ctaShop: "ابدئ التسوق",
+        ctaExpert: "تحدث مع خبيرة",
+      }
+    : {
+        loadError: "אירעה שגיאה בעת טעינת המוצרים",
+        heroBadge: "השקה חדשה — מתנות מותאמות עבורך",
+        heroHeadline: "מתנות יוקרתיות בנגיעה אישית",
+        heroCopy:
+          "גלו את הקולקציה הבלעדית שלנו של מתנות מודפסות בקפידה, מעוצבות במיוחד כדי להוסיף נגיעה של אלגנטיות וייחוד לכל האירועים המיוחדים שלכם. הפכו את הרגעים שלכם ליפים יותר עם מתנות שמבטאות את הטעם שלכם ונשארות זיכרון שלא נשכח.",
+        discoverProducts: "גלו את המוצרים",
+        talkToUs: "דברו איתנו",
+        featureCustomTitle: "עיצובים מותאמים אישית",
+        featureCustomBody: "הדפיסו את שמכם או המסר שלכם על כל פריט",
+        featureQualityTitle: "איכות יוקרתית",
+        featureQualityBody: "חומרים שנבחרו בקפידה ואריזה אלגנטית",
+        featureShippingTitle: "משלוח מהיר",
+        featureShippingBody: "עד הבית עם עדכונים בזמן אמת",
+        featureWrapTitle: "אריזה קסומה",
+        featureWrapBody: "קופסאות וסרטי משי מוכנים למתנה",
+        topTitle: "מוצרים",
+        topHighlight: "מובחרים",
+        topSubtitle: "בחירות אלגנטיות שתואמו לחובבי הנגיעה האישית",
+        loading: "טוענים מוצרים...",
+        noTop: "לא נבחרו עדיין מוצרים מובחרים.",
+        details: "פרטים",
+        browseAll: "עיינו בכל המוצרים",
+        ctaTitle: "מוכנים להדהים את מי שאתם אוהבים?",
+        ctaBody:
+          "בחרו את העיצוב, הוסיפו שם או מסר, והשאירו לנו את המשימה להכין את האריזה היוקרתית והמשלוח המהיר.",
+        ctaShop: "התחילו לקנות",
+        ctaExpert: "דברו עם מומחית",
+      };
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -22,7 +83,7 @@ const Index = () => {
         setProducts(data);
       } catch (err) {
         console.error("Failed to load products:", err);
-        setError("حدث خطأ أثناء تحميل المنتجات");
+        setError(labels.loadError);
       } finally {
         setLoading(false);
       }
@@ -57,19 +118,19 @@ const Index = () => {
             <div className="order-2 lg:order-1 max-w-3xl space-y-6 animate-fade-slide-up text-primary">
               <p className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-4 py-2 text-sm backdrop-blur border border-primary/20">
                 <Sparkles className="h-4 w-4" />
-                <span>إطلاق جديد — هدايا مخصصة لكِ</span>
+                <span>{labels.heroBadge}</span>
               </p>
 
               <h1 className="text-5xl md:text-6xl font-black leading-tight drop-shadow-lg">
                 Perfect Wrap
                 <br />
                 <span className="bg-gradient-to-l from-primary via-accent to-primary bg-clip-text text-transparent">
-                  هدايا راقية بلمسة شخصية
+                  {labels.heroHeadline}
                 </span>
               </h1>
 
               <p className="text-lg md:text-xl text-black">
-                     اكتشف مجموعتنا الحصرية من الهدايا المطبوعة بعناية فائقة، المصممة خصيصًا لتضفي لمسة من الأناقة والتميّز على جميع مناسباتك الخاصة. اجعل لحظاتك أكثر جمالًا بهدايا تعبّر عن ذوقك الرفيع وتبقى ذكرى لا تُنسى.
+                     {labels.heroCopy}
               </p>
 
               <div className="flex flex-wrap gap-4">
@@ -78,7 +139,7 @@ const Index = () => {
                     size="lg"
                     className="gradient-primary text-white shadow-premium text-lg px-8 py-6 h-auto animate-soft-glow"
                   >
-                    اكتشف المنتجات
+                    {labels.discoverProducts}
                     <ArrowLeft className="mr-2 h-5 w-5" />
                   </Button>
                 </Link>
@@ -89,7 +150,7 @@ const Index = () => {
                     variant="outline"
                     className="bg-primary/10 backdrop-blur border-primary text-primary hover:bg-primary hover:text-primary-foreground text-lg px-8 py-6 h-auto"
                   >
-                    تحدث معنا
+                    {labels.talkToUs}
                   </Button>
                 </Link>
               </div>
@@ -129,9 +190,9 @@ const Index = () => {
               <div className="w-16 h-16 mx-auto mb-4 rounded-full gradient-primary flex items-center justify-center">
                 <Sparkles className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-2">تصميمات مخصصة</h3>
+              <h3 className="text-xl font-bold mb-2">{labels.featureCustomTitle}</h3>
               <p className="text-muted-foreground">
-                اطبع اسمك أو رسالتك على كل قطعة
+                {labels.featureCustomBody}
               </p>
             </Card>
 
@@ -139,9 +200,9 @@ const Index = () => {
               <div className="w-16 h-16 mx-auto mb-4 rounded-full gradient-gold flex items-center justify-center">
                 <Shield className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-2">جودة فاخرة</h3>
+              <h3 className="text-xl font-bold mb-2">{labels.featureQualityTitle}</h3>
               <p className="text-muted-foreground">
-                مواد مختارة بعناية وتغليف أنيق
+                {labels.featureQualityBody}
               </p>
             </Card>
 
@@ -149,9 +210,9 @@ const Index = () => {
               <div className="w-16 h-16 mx-auto mb-4 rounded-full gradient-primary flex items-center justify-center">
                 <Truck className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-2">شحن سريع</h3>
+              <h3 className="text-xl font-bold mb-2">{labels.featureShippingTitle}</h3>
               <p className="text-muted-foreground">
-                إلى بابك مع تحديثات لحظية للحالة
+                {labels.featureShippingBody}
               </p>
             </Card>
 
@@ -159,9 +220,9 @@ const Index = () => {
               <div className="w-16 h-16 mx-auto mb-4 rounded-full gradient-gold flex items-center justify-center">
                 <Award className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-2">تغليف ساحر</h3>
+              <h3 className="text-xl font-bold mb-2">{labels.featureWrapTitle}</h3>
               <p className="text-muted-foreground">
-                علب وشرايط حريرية جاهزة للإهداء
+                {labels.featureWrapBody}
               </p>
             </Card>
           </div>
@@ -172,15 +233,15 @@ const Index = () => {
       <section className="py-20 bg-muted">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl md:text-5xl font-black text-center mb-4">
-            منتجات <span className="text-gradient-gold">مميزة</span>
+            {labels.topTitle} <span className="text-gradient-gold">{labels.topHighlight}</span>
           </h2>
           <p className="text-center text-muted-foreground text-lg mb-12">
-            مختارات أنيقة تم تنسيقها لعشاق اللمسات الشخصية
+            {labels.topSubtitle}
           </p>
 
           {loading && (
             <p className="text-center text-muted-foreground">
-              يتم تحميل المنتجات...
+              {labels.loading}
             </p>
           )}
 
@@ -190,7 +251,7 @@ const Index = () => {
 
           {!loading && !error && topProducts.length === 0 && (
             <p className="text-center text-muted-foreground">
-              لم يتم تحديد منتجات مميزة بعد.
+              {labels.noTop}
             </p>
           )}
 
@@ -236,7 +297,7 @@ const Index = () => {
                               variant="outline"
                               className="hover:gradient-primary hover:text-white"
                             >
-                              التفاصيل
+                              {labels.details}
                             </Button>
                           </div>
                         </div>
@@ -252,7 +313,7 @@ const Index = () => {
                     size="lg"
                     className="gradient-primary text-white shadow-premium px-8"
                   >
-                    تصفح كل المنتجات
+                    {labels.browseAll}
                     <ArrowLeft className="mr-2 h-5 w-5" />
                   </Button>
                 </Link>
@@ -266,11 +327,10 @@ const Index = () => {
       <section className="py-24 gradient-hero relative overflow-hidden">
         <div className="container mx-auto px-4 text-center relative z-10">
           <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
-            جاهز لتبهر من تحب؟
+            {labels.ctaTitle}
           </h2>
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            اختار التصميم، أضيفي الاسم أو الرسالة، واترك لنا مهمة إعداد التغليف
-            الفاخر والشحن السريع.
+            {labels.ctaBody}
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <Link to="/products">
@@ -278,7 +338,7 @@ const Index = () => {
                 size="lg"
                 className="bg-white text-foreground hover:bg-white/90 shadow-card text-lg px-8 py-6 h-auto"
               >
-                ابدئ التسوق
+                {labels.ctaShop}
               </Button>
             </Link>
             <Link to="/contact">
@@ -286,7 +346,7 @@ const Index = () => {
                 size="lg"
                 className="bg-white text-foreground hover:bg-white/90 shadow-card text-lg px-8 py-6 h-auto"
               >
-                تحدث مع خبيرة
+                {labels.ctaExpert}
               </Button>
             </Link>
           </div>

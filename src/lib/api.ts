@@ -234,5 +234,11 @@ export async function getUploadSignature() {
     folder: string;
   };
 }
+
+export const cancelOrderRequest = async (orderId: string): Promise<{ order: Order }> => {
+  const res = await api.patch(`/orders/${orderId}/cancel`);
+  return res.data; // { message, order }
+};
+
 export default api;
 

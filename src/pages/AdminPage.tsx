@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useCart } from "@/contexts/CartContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import type { Category, Product, User, Order, CustomerDetails } from "@/types";
 
 import {
@@ -33,36 +34,38 @@ type Tab = "categories" | "products" | "users" | "orders";
 
 const AdminPage: React.FC = () => {
   const [tab, setTab] = useState<Tab>("products");
+  const { isArabic } = useLanguage();
+  const t = (ar: string, he: string) => (isArabic ? ar : he);
  
   return (
-    <div className="min-h-screen py-8 px-4" dir="rtl" lang="ar">
+    <div className="min-h-screen py-8 px-4" dir="rtl" lang={isArabic ? "ar" : "he"}>
       <div className="max-w-6xl mx-auto space-y-6">
-        <h1 className="text-3xl font-bold">لوحة التحكم</h1>
+        <h1 className="text-3xl font-bold">{t("لوحة التحكم", "לוח ניהול")}</h1>
 
         <div className="flex gap-2 flex-wrap">
           <Button
             variant={tab === "categories" ? "default" : "outline"}
             onClick={() => setTab("categories")}
           >
-            التصنيفات
+            {t("التصنيفات", "קטגוריות")}
           </Button>
           <Button
             variant={tab === "products" ? "default" : "outline"}
             onClick={() => setTab("products")}
           >
-            المنتجات
+            {t("المنتجات", "מוצרים")}
           </Button>
           <Button
             variant={tab === "users" ? "default" : "outline"}
             onClick={() => setTab("users")}
           >
-            المستخدمون
+            {t("المستخدمون", "משתמשים")}
           </Button>
           <Button
             variant={tab === "orders" ? "default" : "outline"}
             onClick={() => setTab("orders")}
           >
-            الطلبات
+            {t("الطلبات", "הזמנות")}
           </Button>
         </div>
 
@@ -86,6 +89,8 @@ const CategoriesSection: React.FC = () => {
   const [newName, setNewName] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
+  const { isArabic } = useLanguage();
+  const t = (ar: string, he: string) => (isArabic ? ar : he);
 
   const load = async () => {
     try {
@@ -93,7 +98,7 @@ const CategoriesSection: React.FC = () => {
       setCategories(data);
     } catch (e) {
       console.error(e);
-      toast.error("خطأ في تحميل التصنيفات");
+      toast.error(t("خطأ في تحميل التصنيفات", "שגיאה בטעינת הקטגוריות"));
     }
   };
 
@@ -108,10 +113,10 @@ const CategoriesSection: React.FC = () => {
       await createCategoryRequest(newName.trim());
       setNewName("");
       await load();
-      toast.success("تمت إضافة التصنيف");
+      toast.success(t("تمت إضافة التصنيف", "הקטגוריה נוספה"));
     } catch (e) {
       console.error(e);
-      toast.error("خطأ أثناء إضافة التصنيف");
+      toast.error(t("خطأ أثناء إضافة التصنيف", "שגיאה בהוספת קטגוריה"));
     }
   };
 
@@ -122,15 +127,15 @@ const CategoriesSection: React.FC = () => {
       setEditingId(null);
       setEditingName("");
       await load();
-      toast.success("تم تحديث التصنيف");
+      toast.success(t("تم تحديث التصنيف", "הקטגוריה עודכנה"));
     } catch (e) {
       console.error(e);
-      toast.error("خطأ أثناء تحديث التصنيف");
+      toast.error(t("خطأ أثناء تحديث التصنيف", "שגיאה בעדכון קטגוריה"));
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm("هل تريد حذف هذا التصنيف؟")) return;
+    if (!window.confirm(t("هل تريد حذف هذا التصنيف؟", "האם למחוק את הקטגוריה הזו?"))) return;
 
     try {
       // check if there are products connected to this category
@@ -138,30 +143,30 @@ const CategoriesSection: React.FC = () => {
       const hasProducts = products.some((p) => p.category && p.category._id === id);
 
       if (hasProducts) {
-        toast.error("لا يمكن حذف تصنيف مرتبط بمنتجات");
+        toast.error(t("لا يمكن حذف تصنيف مرتبط بمنتجات", "לא ניתן למחוק קטגוריה שמקושרת למוצרים"));
         return;
       }
 
       await deleteCategoryRequest(id);
       await load();
-      toast.success("تم حذف التصنيف");
+      toast.success(t("تم حذف التصنيف", "הקטגוריה נמחקה"));
     } catch (e) {
       console.error(e);
-      toast.error("خطأ أثناء حذف التصنيف");
+      toast.error(t("خطأ أثناء حذف التصنيف", "שגיאה במחיקת קטגוריה"));
     }
   };
 
   return (
     <Card className="p-4 space-y-4">
-      <h2 className="text-xl font-semibold mb-2">التصنيفات</h2>
+      <h2 className="text-xl font-semibold mb-2">{t("التصنيفات", "קטגוריות")}</h2>
 
       <form onSubmit={handleCreate} className="flex gap-2 max-w-md">
         <Input
-          placeholder="اسم تصنيف جديد"
+          placeholder={t("اسم تصنيف جديد", "שם קטגוריה חדש")}
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
         />
-        <Button type="submit">إضافة</Button>
+        <Button type="submit">{t("إضافة", "הוספה")}</Button>
       </form>
 
       <div className="mt-4 space-y-2">
@@ -177,7 +182,7 @@ const CategoriesSection: React.FC = () => {
                   onChange={(e) => setEditingName(e.target.value)}
                 />
                 <Button size="sm" onClick={() => handleUpdate(cat._id)}>
-                  حفظ
+                  {t("حفظ", "שמור")}
                 </Button>
                 <Button
                   size="sm"
@@ -187,7 +192,7 @@ const CategoriesSection: React.FC = () => {
                     setEditingName("");
                   }}
                 >
-                  إلغاء
+                  {t("إلغاء", "ביטול")}
                 </Button>
               </div>
             ) : (
@@ -202,21 +207,21 @@ const CategoriesSection: React.FC = () => {
                       setEditingName(cat.name);
                     }}
                   >
-                    تعديل
+                    {t("تعديل", "ערוך")}
                   </Button>
                   <Button
                     size="sm"
                     variant="destructive"
                     onClick={() => handleDelete(cat._id)}
                   >
-                    حذف
+                    {t("حذف", "מחק")}
                   </Button>
                 </div>
               </>
             )}
           </div>
         ))}
-        {categories.length === 0 && <p>لا توجد تصنيفات.</p>}
+        {categories.length === 0 && <p>{t("لا توجد تصنيفات.", "אין קטגוריות.")}</p>}
       </div>
     </Card>
   );
@@ -261,6 +266,8 @@ const emptyProductForm: ProductFormState = {
 
 const ProductsSection: React.FC = () => {
   const { loadCart } = useCart();
+  const { isArabic } = useLanguage();
+  const t = (ar: string, he: string) => (isArabic ? ar : he);
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -285,7 +292,7 @@ const ProductsSection: React.FC = () => {
       setProducts(prods);
     } catch (e) {
       console.error(e);
-      toast.error("خطأ في تحميل بيانات المنتجات/التصنيفات");
+      toast.error(t("خطأ في تحميل بيانات المنتجات/التصنيفات", "שגיאה בטעינת נתוני מוצרים/קטגוריות"));
     } finally {
       setLoading(false);
     }
@@ -329,16 +336,16 @@ const ProductsSection: React.FC = () => {
   };
 
   const handleDeleteProduct = async (id: string) => {
-    if (!window.confirm("هل تريد حذف هذا المنتج؟")) return;
+    if (!window.confirm(t("هل تريد حذف هذا المنتج؟", "האם למחוק את המוצר הזה?"))) return;
     try {
       await deleteProductRequest(id);
       await loadInitial();
       await loadCart();
       if (form.id === id) resetForm();
-      toast.success("تم حذف المنتج");
+      toast.success(t("تم حذف المنتج", "המוצר נמחק"));
     } catch (e) {
       console.error(e);
-      toast.error("خطأ أثناء حذف المنتج");
+      toast.error(t("خطأ أثناء حذف المنتج", "שגיאה במחיקת מוצר"));
     }
   };
 
@@ -387,32 +394,32 @@ const ProductsSection: React.FC = () => {
 
   const validateForm = () => {
     if (!form.name.trim()) {
-      toast.error("اسم المنتج مطلوب");
+      toast.error(t("اسم المنتج مطلوب", "שם מוצר נדרש"));
       return false;
     }
     if (!form.description.trim()) {
-      toast.error("وصف المنتج مطلوب");
+      toast.error(t("وصف المنتج مطلوب", "תיאור מוצר נדרש"));
       return false;
     }
     if (!form.categoryId) {
-      toast.error("يرجى اختيار التصنيف");
+      toast.error(t("يرجى اختيار التصنيف", "אנא בחר קטגוריה"));
       return false;
     }
     if (!form.image.trim()) {
-      toast.error("يرجى رفع صورة للمنتج");
+      toast.error(t("يرجى رفع صورة للمنتج", "נא להעלות תמונה למוצר"));
       return false;
     }
     if (!form.options.length) {
-      toast.error("يجب وجود خيار واحد على الأقل");
+      toast.error(t("يجب وجود خيار واحد على الأقل", "חייבת להיות לפחות אפשרות אחת"));
       return false;
     }
     for (const opt of form.options) {
       if (!opt.optionName.trim()) {
-        toast.error("اسم الخيار مطلوب");
+        toast.error(t("اسم الخيار مطلوب", "שם אפשרות נדרש"));
         return false;
       }
       if (!opt.priceWithoutMaam.trim()) {
-        toast.error("السعر بدون ضريبة مطلوب");
+        toast.error(t("السعر بدون ضريبة مطلوب", "מחיר ללא מע\"מ נדרש"));
         return false;
       }
     }
@@ -425,10 +432,10 @@ const ProductsSection: React.FC = () => {
     try {
       const url = await uploadProductImageSigned(imageFile);
       handleFormChange("image", url);
-      toast.success("تم رفع الصورة");
+      toast.success(t("تم رفع الصورة", "התמונה הועלתה"));
     } catch (err: any) {
       console.error(err);
-      toast.error(err?.message || "خطأ أثناء رفع الصورة");
+      toast.error(err?.message || t("خطأ أثناء رفع الصورة", "שגיאה בהעלאת התמונה"));
     } finally {
       setUploadingImg(false);
     }
@@ -459,23 +466,23 @@ const ProductsSection: React.FC = () => {
     try {
       if (isEditing && form.id) {
         await updateProductRequest(form.id, payload);
-        toast.success("تم تحديث المنتج");
+        toast.success(t("تم تحديث المنتج", "המוצר עודכן"));
       } else {
         await createProductRequest(payload);
-        toast.success("تم إنشاء المنتج");
+        toast.success(t("تم إنشاء المنتج", "המוצר נוצר"));
       }
       await loadInitial();
       await loadCart();
       resetForm();
     } catch (e) {
       console.error(e);
-      toast.error("خطأ أثناء حفظ المنتج");
+      toast.error(t("خطأ أثناء حفظ المنتج", "שגיאה בשמירת המוצר"));
     }
   };
 
   return (
     <Card className="p-4 space-y-6">
-      <h2 className="text-xl font-semibold mb-2">المنتجات</h2>
+      <h2 className="text-xl font-semibold mb-2">{t("المنتجات", "מוצרים")}</h2>
 
       {/* Product form */}
       <form
@@ -484,7 +491,7 @@ const ProductsSection: React.FC = () => {
         className="grid gap-4 md:grid-cols-2 border rounded-md p-4"
       >
         <div className="space-y-2">
-          <Label htmlFor="name">اسم المنتج</Label>
+          <Label htmlFor="name">{t("اسم المنتج", "שם מוצר")}</Label>
           <Input
             id="name"
             value={form.name}
@@ -493,14 +500,14 @@ const ProductsSection: React.FC = () => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="category">التصنيف</Label>
+          <Label htmlFor="category">{t("التصنيف", "קטגוריה")}</Label>
           <select
             id="category"
             className="border rounded-md px-2 py-2 w-full bg-background"
             value={form.categoryId}
             onChange={(e) => handleFormChange("categoryId", e.target.value)}
           >
-            <option value="">اختر تصنيفًا</option>
+            <option value="">{t("اختر تصنيفًا", "בחר קטגוריה")}</option>
             {categories.map((c) => (
               <option key={c._id} value={c._id}>
                 {c.name}
@@ -510,7 +517,7 @@ const ProductsSection: React.FC = () => {
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="description">الوصف</Label>
+          <Label htmlFor="description">{t("الوصف", "תיאור")}</Label>
           <textarea
             id="description"
             className="border rounded-md px-2 py-2 w-full bg-background min-h-[80px]"
@@ -521,7 +528,7 @@ const ProductsSection: React.FC = () => {
 
         {/* Cloudinary signed image upload */}
         <div className="space-y-2">
-          <Label>صورة المنتج </Label>
+          <Label>{t("صورة المنتج", "תמונת מוצר")}</Label>
           <div className="flex gap-2 items-center">
             <Input
               type="file"
@@ -535,12 +542,12 @@ const ProductsSection: React.FC = () => {
               disabled={!imageFile || uploadingImg}
               onClick={handleUploadImage}
             >
-              {uploadingImg ? "جاري الرفع..." : "رفع"}
+              {uploadingImg ? t("جاري الرفع...", "מעלה...") : t("رفع", "העלה")}
             </Button>
           </div>
 
           <Input
-            placeholder="سيظهر رابط الصورة هنا بعد الرفع"
+            placeholder={t("سيظهر رابط الصورة هنا بعد الرفع", "קישור התמונה יופיע כאן לאחר ההעלאה")}
             value={form.image}
             onChange={(e) => handleFormChange("image", e.target.value)}
             dir="ltr"
@@ -562,20 +569,20 @@ const ProductsSection: React.FC = () => {
             checked={form.isTop}
             onChange={(e) => handleFormChange("isTop", e.target.checked)}
           />
-          <Label htmlFor="isTop">منتج مميز (Top)</Label>
+          <Label htmlFor="isTop">{t("منتج مميز (Top)", "מוצר מובחר (Top)")}</Label>
         </div>
 
         {/* Options list */}
         <div className="md:col-span-2 space-y-3 mt-2">
           <div className="flex items-center justify-between">
-            <h3 className="font-medium">الخيارات</h3>
+            <h3 className="font-medium">{t("الخيارات", "אפשרויות")}</h3>
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={handleAddOption}
             >
-              إضافة خيار
+              {t("إضافة خيار", "הוסף אפשרות")}
             </Button>
           </div>
 
@@ -586,7 +593,7 @@ const ProductsSection: React.FC = () => {
                 className="grid gap-2 md:grid-cols-4 border rounded-md p-3"
               >
                 <div className="space-y-1">
-                  <Label>اسم الخيار</Label>
+                  <Label>{t("اسم الخيار", "שם אפשרות")}</Label>
                   <Input
                     value={opt.optionName}
                     onChange={(e) =>
@@ -596,7 +603,7 @@ const ProductsSection: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <Label>السعر </Label>
+                  <Label>{t("السعر", "מחיר")}</Label>
                   <Input
                     type="number"
                     step="0.01"
@@ -609,7 +616,7 @@ const ProductsSection: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <Label>سعر التخفيض  (اختياري)</Label>
+                  <Label>{t("سعر التخفيض  (اختياري)", "מחיר מבצע (אופציונלי)")}</Label>
                   <Input
                     type="number"
                     step="0.01"
@@ -626,7 +633,7 @@ const ProductsSection: React.FC = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <Label>المخزون</Label>
+                  <Label>{t("المخزون", "מלאי")}</Label>
                   <div className="flex gap-2">
                     <Input
                       type="number"
@@ -641,7 +648,7 @@ const ProductsSection: React.FC = () => {
                       variant="destructive"
                       size="icon"
                       onClick={() => handleRemoveOption(index)}
-                      title="حذف الخيار"
+                      title={t("حذف الخيار", "מחק אפשרות")}
                     >
                       ✕
                     </Button>
@@ -655,31 +662,31 @@ const ProductsSection: React.FC = () => {
         <div className="md:col-span-2 flex gap-2 justify-end mt-2">
           {isEditing && (
             <Button type="button" variant="outline" onClick={resetForm}>
-              إلغاء التعديل
+              {t("إلغاء التعديل", "בטל עריכה")}
             </Button>
           )}
-          <Button type="submit">{isEditing ? "حفظ التغييرات" : "إنشاء منتج"}</Button>
+          <Button type="submit">{isEditing ? t("حفظ التغييرات", "שמור שינויים") : t("إنشاء منتج", "צור מוצר")}</Button>
         </div>
       </form>
 
       {/* Products table */}
       <div className="space-y-2">
-        <h3 className="font-semibold">قائمة المنتجات</h3>
+        <h3 className="font-semibold">{t("قائمة المنتجات", "רשימת מוצרים")}</h3>
         {loading ? (
-          <p>جاري التحميل...</p>
+          <p>{t("جاري التحميل...", "טוען...")}</p>
         ) : products.length === 0 ? (
-          <p>لا توجد منتجات.</p>
+          <p>{t("لا توجد منتجات.", "אין מוצרים.")}</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead>
                 <tr className="border-b">
-                  <th className="text-right p-2">الصورة</th>
-                  <th className="text-right p-2">الاسم</th>
-                  <th className="text-right p-2">التصنيف</th>
-                  <th className="text-right p-2">مميز</th>
-                  <th className="text-right p-2">عدد الخيارات</th>
-                  <th className="text-right p-2">الإجراءات</th>
+                  <th className="text-right p-2">{t("الصورة", "תמונה")}</th>
+                  <th className="text-right p-2">{t("الاسم", "שם")}</th>
+                  <th className="text-right p-2">{t("التصنيف", "קטגוריה")}</th>
+                  <th className="text-right p-2">{t("مميز", "מובחר")}</th>
+                  <th className="text-right p-2">{t("عدد الخيارات", "מספר אפשרויות")}</th>
+                  <th className="text-right p-2">{t("الإجراءات", "פעולות")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -698,15 +705,15 @@ const ProductsSection: React.FC = () => {
                     </td>
                     <td className="p-2">{p.name}</td>
                     <td className="p-2">{p.category?.name}</td>
-                    <td className="p-2">{p.isTop ? "نعم" : "لا"}</td>
+                    <td className="p-2">{p.isTop ? t("نعم", "כן") : t("لا", "לא")}</td>
                     <td className="p-2">{p.options?.length ?? 0}</td>
                     <td className="p-2">
                       <div className="flex gap-2">
                         <Button size="sm" variant="outline" onClick={() => handleEditProduct(p)}>
-                          تعديل
+                          {t("تعديل", "ערוך")}
                         </Button>
                         <Button size="sm" variant="destructive" onClick={() => handleDeleteProduct(p._id)}>
-                          حذف
+                          {t("حذف", "מחק")}
                         </Button>
                       </div>
                     </td>
@@ -728,6 +735,8 @@ const ProductsSection: React.FC = () => {
 const UsersSection: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const { isArabic } = useLanguage();
+  const t = (ar: string, he: string) => (isArabic ? ar : he);
 
   const load = async () => {
     try {
@@ -736,7 +745,7 @@ const UsersSection: React.FC = () => {
       setUsers(data);
     } catch (e) {
       console.error(e);
-      toast.error("خطأ في تحميل المستخدمين");
+      toast.error(t("خطأ في تحميل المستخدمين", "שגיאה בטעינת משתמשים"));
     } finally {
       setLoading(false);
     }
@@ -750,35 +759,35 @@ const UsersSection: React.FC = () => {
     try {
       await updateUserRoleRequest(userId, role);
       await load();
-      toast.success("تم تحديث الصلاحية");
+      toast.success(t("تم تحديث الصلاحية", "ההרשאה עודכנה"));
     } catch (e) {
       console.error(e);
-      toast.error("خطأ في تحديث الصلاحية");
+      toast.error(t("خطأ في تحديث الصلاحية", "שגיאה בעדכון הרשאה"));
     }
   };
 
   return (
     <Card className="p-4 space-y-4">
-      <h2 className="text-xl font-semibold mb-2">المستخدمون</h2>
+      <h2 className="text-xl font-semibold mb-2">{t("المستخدمون", "משתמשים")}</h2>
       {loading ? (
-        <p>جاري التحميل...</p>
+        <p>{t("جاري التحميل...", "טוען...")}</p>
       ) : users.length === 0 ? (
-        <p>لا يوجد مستخدمون.</p>
+        <p>{t("لا يوجد مستخدمون.", "אין משתמשים.")}</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead>
               <tr className="border-b">
-                <th className="text-right p-2">اسم المستخدم</th>
-                <th className="text-right p-2">الصلاحية</th>
-                <th className="text-right p-2">تغيير الصلاحية</th>
+                <th className="text-right p-2">{t("اسم المستخدم", "שם משתמש")}</th>
+                <th className="text-right p-2">{t("الصلاحية", "הרשאה")}</th>
+                <th className="text-right p-2">{t("تغيير الصلاحية", "שינוי הרשאה")}</th>
               </tr>
             </thead>
             <tbody>
               {users.map((u) => (
                 <tr key={u.id} className="border-b">
                   <td className="p-2">{u.username}</td>
-                  <td className="p-2">{u.role === "admin" ? "مدير" : "عميل"}</td>
+                  <td className="p-2">{u.role === "admin" ? t("مدير", "מנהל") : t("عميل", "לקוח")}</td>
                   <td className="p-2">
                     <div className="flex gap-2">
                       <Button
@@ -786,14 +795,14 @@ const UsersSection: React.FC = () => {
                         variant={u.role === "customer" ? "default" : "outline"}
                         onClick={() => changeRole(u.id, "customer")}
                       >
-                        عميل
+                        {t("عميل", "לקוח")}
                       </Button>
                       <Button
                         size="sm"
                         variant={u.role === "admin" ? "default" : "outline"}
                         onClick={() => changeRole(u.id, "admin")}
                       >
-                        مدير
+                        {t("مدير", "מנהל")}
                       </Button>
                     </div>
                   </td>
@@ -815,6 +824,8 @@ const OrdersSection: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const { isArabic } = useLanguage();
+  const t = (ar: string, he: string) => (isArabic ? ar : he);
 
   const detailsRef = useRef<HTMLDivElement | null>(null);
 
@@ -828,7 +839,7 @@ const OrdersSection: React.FC = () => {
       }
     } catch (e) {
       console.error(e);
-      toast.error("خطأ في تحميل الطلبات");
+      toast.error(t("خطأ في تحميل الطلبات", "שגיאה בטעינת הזמנות"));
     } finally {
       setLoading(false);
     }
@@ -860,23 +871,23 @@ const OrdersSection: React.FC = () => {
 
   return (
     <Card className="p-4 space-y-4">
-      <h2 className="text-xl font-semibold mb-2">كل الطلبات</h2>
+      <h2 className="text-xl font-semibold mb-2">{t("كل الطلبات", "כל ההזמנות")}</h2>
       {loading ? (
-        <p>جاري التحميل...</p>
+        <p>{t("جاري التحميل...", "טוען...")}</p>
       ) : orders.length === 0 ? (
-        <p>لا توجد طلبات.</p>
+        <p>{t("لا توجد طلبات.", "אין הזמנות.")}</p>
       ) : (
         <>
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead>
                 <tr className="border-b">
-                  <th className="text-right p-2">رقم الطلب</th>
-                  <th className="text-right p-2">التاريخ</th>
-                  <th className="text-right p-2">العميل</th>
-                  <th className="text-right p-2">الإجمالي مع الضريبة</th>
-                  <th className="text-right p-2">الحالة</th>
-                  <th className="text-right p-2">التفاصيل</th>
+                  <th className="text-right p-2">{t("رقم الطلب", "מספר הזמנה")}</th>
+                  <th className="text-right p-2">{t("التاريخ", "תאריך")}</th>
+                  <th className="text-right p-2">{t("العميل", "לקוח")}</th>
+                  <th className="text-right p-2">{t("الإجمالي مع الضريبة", "סה\"כ עם מע\"מ")}</th>
+                  <th className="text-right p-2">{t("الحالة", "סטטוס")}</th>
+                  <th className="text-right p-2">{t("التفاصيل", "פרטים")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -888,7 +899,7 @@ const OrdersSection: React.FC = () => {
                     }
                   >
                     <td className="p-2">{o.id}</td>
-                    <td className="p-2">{new Date(o.date).toLocaleString("ar")}</td>
+                    <td className="p-2">{new Date(o.date).toLocaleString(isArabic ? "ar" : "he")}</td>
                     <td className="p-2">{formatCustomer(o.customerDetails)}</td>
                     <td className="p-2">
                       <span dir="ltr">{o.totalWithoutMaam.toFixed(2)} ₪</span>
@@ -903,7 +914,7 @@ const OrdersSection: React.FC = () => {
                           setTimeout(scrollToDetails, 0);
                         }}
                       >
-                        عرض
+                        {t("عرض", "הצג")}
                       </Button>
                     </td>
                   </tr>
@@ -915,70 +926,70 @@ const OrdersSection: React.FC = () => {
           {selectedOrder && (
             <div ref={detailsRef} className="mt-4 grid gap-4 md:grid-cols-3">
               <Card className="p-4 space-y-2 md:col-span-1">
-                <h3 className="font-semibold mb-2">تفاصيل الطلب</h3>
+                <h3 className="font-semibold mb-2">{t("تفاصيل الطلب", "פרטי הזמנה")}</h3>
                 <p>
-                  <span className="font-medium">رقم الطلب:</span> {selectedOrder.id}
+                  <span className="font-medium">{t("رقم الطلب:", "מספר הזמנה:")}</span> {selectedOrder.id}
                 </p>
                 <p>
-                  <span className="font-medium">التاريخ:</span>{" "}
-                  {new Date(selectedOrder.date).toLocaleString("ar")}
+                  <span className="font-medium">{t("التاريخ:", "תאריך:")}</span>{" "}
+                  {new Date(selectedOrder.date).toLocaleString(isArabic ? "ar" : "he")}
                 </p>
                 <p>
-                  <span className="font-medium">الحالة:</span> {selectedOrder.status}
+                  <span className="font-medium">{t("الحالة:", "סטטוס:")}</span> {selectedOrder.status}
                 </p>
                 <p>
-                  <span className="font-medium">الإجمالي:</span>{" "}
+                  <span className="font-medium">{t("الإجمالي:", "סה\"כ:")}</span>{" "}
                   <span dir="ltr">{selectedOrder.totalWithoutMaam.toFixed(2)} ₪</span>
                 </p>
                
               </Card>
 
               <Card className="p-4 space-y-2 md:col-span-1">
-                <h3 className="font-semibold mb-2">تفاصيل العميل</h3>
+                <h3 className="font-semibold mb-2">{t("تفاصيل العميل", "פרטי לקוח")}</h3>
                 {selectedOrder.customerDetails ? (
                   <>
                     <p>
-                      <span className="font-medium">الاسم:</span>{" "}
+                      <span className="font-medium">{t("الاسم:", "שם:")}</span>{" "}
                       {selectedOrder.customerDetails.fullName}
                     </p>
                     <p>
-                      <span className="font-medium">الهاتف:</span>{" "}
+                      <span className="font-medium">{t("الهاتف:", "טלפון:")}</span>{" "}
                       <span dir="ltr">{selectedOrder.customerDetails.phone}</span>
                     </p>
                     {selectedOrder.customerDetails.email && (
                       <p>
-                        <span className="font-medium">البريد:</span>{" "}
+                        <span className="font-medium">{t("البريد:", "דוא\"ל:")}</span>{" "}
                         <span dir="ltr">{selectedOrder.customerDetails.email}</span>
                       </p>
                     )}
                     <p>
-                      <span className="font-medium">العنوان:</span>{" "}
+                      <span className="font-medium">{t("العنوان:", "כתובת:")}</span>{" "}
                       {selectedOrder.customerDetails.street}{" "}
                       {selectedOrder.customerDetails.houseNumber},{" "}
                       {selectedOrder.customerDetails.city}
                     </p>
                     {selectedOrder.customerDetails.postalCode && (
                       <p>
-                        <span className="font-medium">الرمز البريدي:</span>{" "}
+                        <span className="font-medium">{t("الرمز البريدي:", "מיקוד:")}</span>{" "}
                         <span dir="ltr">{selectedOrder.customerDetails.postalCode}</span>
                       </p>
                     )}
                     {selectedOrder.customerDetails.notes && (
                       <p>
-                        <span className="font-medium">ملاحظات:</span>{" "}
+                        <span className="font-medium">{t("ملاحظات:", "הערות:")}</span>{" "}
                         {selectedOrder.customerDetails.notes}
                       </p>
                     )}
                   </>
                 ) : (
-                  <p>لا توجد تفاصيل عميل.</p>
+                  <p>{t("لا توجد تفاصيل عميل.", "אין פרטי לקוח.")}</p>
                 )}
               </Card>
 
               <Card className="p-4 space-y-2 md:col-span-1 md:row-span-2">
-                <h3 className="font-semibold mb-2">منتجات الطلب</h3>
+                <h3 className="font-semibold mb-2">{t("منتجات الطلب", "מוצרי ההזמנה")}</h3>
                 {selectedOrder.items.length === 0 ? (
-                  <p>لا توجد عناصر.</p>
+                  <p>{t("لا توجد عناصر.", "אין פריטים.")}</p>
                 ) : (
                   <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
                     {selectedOrder.items.map((item, idx) => (
@@ -996,12 +1007,12 @@ const OrdersSection: React.FC = () => {
   </div>
 
   <div>
-    الكمية: {item.quantity} | سعر القطعة:{" "}
+    {t("الكمية", "כמות")}: {item.quantity} | {t("سعر القطعة", "מחיר יחידה")}:{" "}
     <span dir="ltr">{item.priceWithoutMaam.toFixed(2)} ₪</span>
   </div>
 
   <div className="font-medium">
-    المجموع:{" "}
+    {t("المجموع", "סה\"כ")}:{" "}
     <span dir="ltr">
       {(item.priceWithoutMaam * item.quantity).toFixed(2)} ₪
     </span>
@@ -1009,7 +1020,7 @@ const OrdersSection: React.FC = () => {
 
   {item.itemNote && item.itemNote.trim() !== "" && (
     <div className="mt-2 text-sm">
-      <span className="font-medium">ملاحظة للمنتج:</span>{" "}
+      <span className="font-medium">{t("ملاحظة للمنتج:", "הערה למוצר:")}</span>{" "}
       <span className="text-muted-foreground">{item.itemNote}</span>
     </div>
   )}

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
 type LanguageType = "he" | "ar";
 
@@ -27,6 +27,11 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
 
   const isHebrew = language === "he";
   const isArabic = language === "ar";
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+    document.documentElement.dir = "rtl";
+  }, [language]);
 
   return (
     <LanguageContext.Provider
