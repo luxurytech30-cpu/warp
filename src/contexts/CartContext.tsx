@@ -14,6 +14,12 @@ import {
   clearCartRequest,
   updateCartItemNoteRequest,
 } from "@/lib/api";
+type PlaceOrderResult = {
+  order: Order;
+  iframeUrl: string;   // ✅ required
+  paymentUrl?: string; // optional only if you still support redirect mode
+};
+
 
 interface CartContextType {
   cart: CartItem[];
@@ -28,7 +34,7 @@ interface CartContextType {
   clearCart: () => Promise<void>;
   getTotalWithoutMaam: () => number;
   getTotalWithMaam: () => number;
-  placeOrder: (details: CustomerDetails) => Promise<void>;
+  placeOrder: (details: CustomerDetails) => Promise<PlaceOrderResult>;
     updateItemNote: (productId: string, optionIndex: number, itemNote: string) => Promise<void>;
   loadCart: () => Promise<void>;
 }
@@ -239,36 +245,29 @@ const updateItemNote = async (productId: string, optionIndex: number, itemNote: 
     return totalWithout * (1 + MAAM_RATE);
   };
 
-  const placeOrder = async (details: CustomerDetails) => {
+
+const placeOrder = async (details: CustomerDetails): Promise<PlaceOrderResult> => {
   if (!user) {
     toast.error(labels.orderLoginRequired);
-    return;
+    throw new Error("NOT_AUTHENTICATED");
   }
 
   if (cart.length === 0) {
     toast.error(labels.cartEmpty);
-    return;
+    throw new Error("CART_EMPTY");
   }
 
-  try {
-    // 1. create order in backend (status: pending) + clear cart
-    const { order } = await checkoutOrder(details);
+  const { order } = await checkoutOrder(details);
+  setOrders((prev) => [order, ...prev]);
 
-    // 2. update local state
-    setOrders((prev) => [order, ...prev]);
-    setCart([]);
+  
+const pay = await startTranzilaPayment(order.id); // returns { iframeUrl }
+return { order, iframeUrl: pay.iframeUrl };
 
-    // 3. Start Tranzila payment → redirect user to Tranzila page
-    const { paymentUrl } = await startTranzilaPayment(order.id);
-    window.location.href = paymentUrl;
-  } catch (err: any) {
-    console.error("CHECKOUT ERROR:", err);
-    const msg =
-      err?.response?.data?.message ||
-      labels.checkoutError;
-    toast.error(msg);
-  }
+
 };
+
+
 
 
   return (

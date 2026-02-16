@@ -99,12 +99,27 @@ export const checkoutOrder = async (
   return res.data;
 };
 
-export const startTranzilaPayment = async (
-  orderId: string
-): Promise<{ paymentUrl: string }> => {
-  const res = await api.post("/payments/start", { orderId });
-  return res.data;
-};
+export async function startTranzilaPayment(orderId: string): Promise<{ iframeUrl: string }> {
+  const token = localStorage.getItem("token");
+
+  const r = await fetch(`/api/payments/start`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ orderId }),
+  });
+
+  const data = await r.json();
+  if (!r.ok) throw new Error(data?.message || "Payment start failed");
+
+  // ✅ expect iframeUrl
+  if (!data?.iframeUrl) throw new Error("Missing iframeUrl from server");
+
+  return { iframeUrl: data.iframeUrl };
+}
+
 
 export const getMyOrders = async (): Promise<Order[]> => {
   const res = await api.get("/orders/my");

@@ -300,8 +300,8 @@ const handleCheckout = async () => {
 
   setIsPlacingOrder(true);
   try {
-    // 1) create pending order
-    const result = await placeOrder({
+    // ✅ placeOrder returns: { order, iframeUrl }
+    const { order, iframeUrl } = await placeOrder({
       fullName,
       phone,
       email,
@@ -312,18 +312,19 @@ const handleCheckout = async () => {
       notes,
     });
 
-    // IMPORTANT: adapt this to your actual return shape:
-    const orderId = result?.order?.id || result?.order?. _id || result?.orderId;
-    if (!orderId) throw new Error("Missing orderId from placeOrder()");
+    if (!order?.id) throw new Error("Missing orderId");
+    if (!iframeUrl) throw new Error("Missing iframeUrl");
 
-    // 2) start payment + open iframe
-    await startTranzilaIframe(orderId);
+    setCurrentOrderId(order.id);
+    setIframeUrl(iframeUrl);
+    setPayOpen(true);
   } catch (e: any) {
     toast.error(e.message || "Payment failed");
   } finally {
     setIsPlacingOrder(false);
   }
 };
+
 
 
 
