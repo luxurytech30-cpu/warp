@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ArrowLeft, Sparkles, Shield, Truck, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import heroImg from "@/assets/hero.jpeg";
+import hero2 from "@/assets/hero2.jpeg"
 import { useLanguage } from "@/contexts/LanguageContext";
 
 import { getProducts } from "@/lib/api";
@@ -14,6 +15,15 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { isArabic } = useLanguage();
+  function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" }); // or "smooth"
+  }, [pathname]);
+
+  return null;
+}
   const labels = isArabic
     ? {
         loadError: "حدث خطأ أثناء تحميل المنتجات",
@@ -157,27 +167,23 @@ const Index = () => {
             </div>
 
             {/* Right: moving image (slow up/down) + fixed border/frame OVER it */}
-            <div className="relative order-1 lg:order-2 flex justify-center">
-              <div className="absolute -inset-10 rounded-full bg-primary/25 blur-3xl" />
+         <div className="relative order-1 lg:order-2 flex justify-center">
+  <div className="absolute -inset-10 rounded-full bg-primary/25 blur-3xl" />
 
-              {/* Frame wrapper (frame stays fixed, image moves under it) */}
-              <div className="relative w-72 md:w-80 lg:w-96 aspect-square">
-                {/* Clip area */}
-                <div className="relative h-full w-full overflow-hidden rounded-[28px] bg-white/10 backdrop-blur shadow-premium">
-                  <img
-                    src={heroImg}
-                    alt="Perfect Wrap"
-                    className="h-full w-full object-cover will-change-transform motion-reduce:transform-none"
-                    style={{
-                      animation: "pw-float-slow 9s ease-in-out infinite",
-                    }}
-                  />
-                </div>
+  <div className="relative w-72 md:w-80 lg:w-96 aspect-square">
+    <div className="relative h-full w-full overflow-hidden rounded-[28px] bg-white/10 backdrop-blur shadow-premium">
+      <img
+        src={hero2}
+        alt="Perfect Wrap"
+        className="h-full w-full object-contain will-change-transform  motion-reduce:transform-none"
+        style={{ animation: "pw-float-slow 9s ease-in-out infinite" }}
+      />
+    </div>
 
-                {/* FIXED frame overlay (doesn't move) */}
-                <div className="pointer-events-none absolute inset-0 rounded-[28px] ring-4 ring-white/70 shadow-[0_0_0_1px_rgba(255,255,255,0.25)]" />
-              </div>
-            </div>
+    <div className="pointer-events-none absolute inset-0 rounded-[28px] ring-4 ring-white/70 shadow-[0_0_0_1px_rgba(255,255,255,0.25)]" />
+  </div>
+</div>
+
           </div>
         </div>
       </section>

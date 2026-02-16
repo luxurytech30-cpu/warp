@@ -24,6 +24,7 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentFailed from "./pages/PaymentFailed";
 import RequireAdmin from "@/components/RequireAdmin";
 import AdminPage from "@/pages/AdminPage";
+import ScrollToTop from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -35,7 +36,10 @@ const App = () => (
           <CartProvider>
               <Toaster />
               <Sonner />
+              
               <BrowserRouter>
+                <ScrollToTop />
+
                 <div className="flex min-h-screen flex-col">
                   <Header />
                   <main className="flex-1">

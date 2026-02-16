@@ -58,7 +58,14 @@ const Cart = () => {
         loginToCheckout: "سجّلي الدخول لإتمام الطلب",
         continueShopping: "متابعة التسوق",
         clearCart: "تفريغ السلة",
-        cancelPolicy: "يمكن إلغاء الطلب خلال ساعتين فقط من وقت إنشائه.",
+        cancelPolicy: "** يمكن إلغاء الطلب خلال ساعتين فقط من وقت إنشائه.",
+        agreeToTerms: "أوافق على الشروط والأحكام",
+terms: "الشروط والأحكام",
+mustAgree: "يجب الموافقة على الشروط والأحكام للمتابعة",
+invalidPhone: "رقم الهاتف غير صحيح",
+invalidEmail: "البريد الإلكتروني غير صحيح",
+
+
       }
     : {
         noteSaved: "ההערה נשמרה",
@@ -91,13 +98,38 @@ const Cart = () => {
         loginToCheckout: "התחברו כדי להשלים את ההזמנה",
         continueShopping: "המשיכו לקנות",
         clearCart: "רוקן עגלה",
-        cancelPolicy: "ניתן לבטל הזמנה רק בתוך שעתיים מרגע יצירתה.",
+        cancelPolicy: "** ניתן לבטל הזמנה רק בתוך שעתיים מרגע יצירתה.",
+        agreeToTerms: "אני מאשר/ת שקראתי ואני מסכים/ה לתקנון",
+terms: "תקנון",
+mustAgree: "צריך לאשר את התקנון כדי להמשיך",
+invalidPhone: "מספר טלפון לא תקין",
+invalidEmail: "כתובת אימייל לא תקינה",
+
       };
 
   const totalWithoutMaam = getTotalWithoutMaam();
 
+  const startPayment = async (orderId: string) => {
+  const res = await fetch("https://wrap-back.onrender.com/api/payments/start", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      // אם auth אצלך עובד עם cookies, תשאיר רק credentials למטה
+      // ואם עובד עם Bearer token – תוסיף Authorization כאן
+    },
+    credentials: "include", // חשוב אם אתה משתמש בקוקיז/סשן
+    body: JSON.stringify({ orderId }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data?.message || "Payment start failed");
+
+  return data.paymentUrl as string;
+};
+
   // which item is being updated (for disabling + / - / input)
   const [updatingKey, setUpdatingKey] = useState<string | null>(null);
+const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   // local quantities for the inputs
   const [editQuantities, setEditQuantities] = useState<Record<string, number>>(
@@ -106,6 +138,29 @@ const Cart = () => {
 
   const getKey = (productId: string, optionIndex: number) =>
     `${productId}-${optionIndex}`;
+
+  const normalizePhone = (value: string) =>
+  value.replace(/[^\d+]/g, "").trim();
+
+const isValidILPhone = (value: string) => {
+  const p = normalizePhone(value);
+
+  // 05XXXXXXXX (10 digits)
+  if (/^05\d{8}$/.test(p)) return true;
+
+  // +9725XXXXXXXX or 9725XXXXXXXX  (country code, 9 digits after 972)
+  if (/^\+9725\d{8}$/.test(p)) return true;
+  if (/^9725\d{8}$/.test(p)) return true;
+
+  return false;
+};
+
+const isValidEmail = (value: string) => {
+  const v = value.trim();
+  // simple solid email regex
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+};
+
 
   // checkout form state
   const [fullName, setFullName] = useState("");
@@ -139,33 +194,68 @@ const Cart = () => {
     }
   };
 
-  const handleCheckout = async () => {
-    if (!isAuthenticated) {
-      toast.error(labels.loginRequired);
-      return;
+//   if (!agreedToTerms) {
+//   toast.error(labels.mustAgree);
+//   return;
+// }
+const handleCheckout = async () => {
+  if (!agreedToTerms) {
+    toast.error(labels.mustAgree);
+    return;
+  }
+
+  if (!isAuthenticated) {
+    toast.error(labels.loginRequired);
+    return;
+  }
+
+  if (!fullName || !phone || !city || !street || !houseNumber) {
+    toast.error(labels.missingFields);
+    return;
+  }
+
+  if (!isValidILPhone(phone)) {
+    toast.error(labels.invalidPhone);
+    return;
+  }
+
+  if (email.trim() && !isValidEmail(email)) {
+    toast.error(labels.invalidEmail);
+    return;
+  }
+
+  setIsPlacingOrder(true);
+  try {
+    // 1) create pending order
+    const result: any = await placeOrder({
+      fullName,
+      phone,
+      email,
+      city,
+      street,
+      houseNumber,
+      postalCode,
+      notes,
+    });
+
+    // 2) get orderId (support both possible shapes)
+    const orderId =
+      result?.order?.id || result?.orderId || result?.id || result?._id;
+
+    if (!orderId) {
+      throw new Error("Missing orderId from placeOrder()");
     }
 
-    if (!fullName || !phone || !city || !street || !houseNumber) {
-      toast.error(labels.missingFields);
-      return;
-    }
+    // 3) start payment and redirect to Tranzila
+    const paymentUrl = await startPayment(orderId);
+    window.location.href = paymentUrl;
+  } catch (err: any) {
+    toast.error(err?.message || "שגיאה בהתחלת תשלום");
+  } finally {
+    setIsPlacingOrder(false);
+  }
+};
 
-    setIsPlacingOrder(true);
-    try {
-      await placeOrder({
-        fullName,
-        phone,
-        email,
-        city,
-        street,
-        houseNumber,
-        postalCode,
-        notes,
-      });
-    } finally {
-      setIsPlacingOrder(false);
-    }
-  };
 
   const handleClearCart = () => {
     clearCart();
@@ -450,21 +540,25 @@ const Cart = () => {
                   className="text-right placeholder:text-right"
                 />
 
-                <Input
-                  placeholder={labels.phone}
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  dir="ltr"
-                  className="text-right placeholder:text-right"
-                />
+              <Input
+  placeholder={labels.phone}
+  value={phone}
+  onChange={(e) => setPhone(e.target.value)}
+  onBlur={() => phone && !isValidILPhone(phone) && toast.error(labels.invalidPhone)}
+  dir="ltr"
+  className="text-right placeholder:text-right"
+/>
 
-                <Input
-                  placeholder={labels.email}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  dir="ltr"
-                  className="text-right placeholder:text-right"
-                />
+
+            <Input
+  placeholder={labels.email}
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
+  onBlur={() => email.trim() && !isValidEmail(email) && toast.error(labels.invalidEmail)}
+  dir="ltr"
+  className="text-right placeholder:text-right"
+/>
+
 
                 <Input
                   placeholder={labels.city}
@@ -505,15 +599,33 @@ const Cart = () => {
               </div>
 
               <div className="space-y-3">
+                <div className="flex items-start gap-3 rounded-lg border p-3">
+  <input
+    id="agree"
+    type="checkbox"
+    checked={agreedToTerms}
+    onChange={(e) => setAgreedToTerms(e.target.checked)}
+    className="mt-1 h-4 w-4"
+  />
+
+  <label htmlFor="agree" className="text-sm leading-6">
+    {labels.agreeToTerms}{" "}
+    <Link to="/terms" className="text-primary underline underline-offset-4">
+      {labels.terms}
+    </Link>
+  </label>
+</div>
+
                 {isAuthenticated ? (
-                  <Button
-                    size="lg"
-                    onClick={handleCheckout}
-                    disabled={isPlacingOrder}
-                    className="w-full gradient-primary text-white shadow-premium"
-                  >
-                    {isPlacingOrder ? labels.redirecting : labels.proceedToPay}
-                  </Button>
+                 <Button
+  size="lg"
+  onClick={handleCheckout}
+  disabled={isPlacingOrder || !agreedToTerms}
+  className="w-full gradient-primary text-white shadow-premium"
+>
+  {isPlacingOrder ? labels.redirecting : labels.proceedToPay}
+</Button>
+
                 ) : (
                   <Link to="/login" className="block">
                     <Button
