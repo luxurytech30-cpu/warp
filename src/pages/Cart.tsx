@@ -10,6 +10,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
 
 const Cart = () => {
   const {
@@ -23,6 +30,10 @@ const Cart = () => {
   } = useCart();
 
   const { user } = useAuth();
+  const [payOpen, setPayOpen] = useState(false);
+const [iframeUrl, setIframeUrl] = useState<string | null>(null);
+const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
+
   const { isArabic } = useLanguage();
   const isAuthenticated = !!user;
 
@@ -108,6 +119,34 @@ invalidEmail: "כתובת אימייל לא תקינה",
       };
 
   const totalWithoutMaam = getTotalWithoutMaam();
+
+  const API_URL = import.meta.env.VITE_API_URL;
+
+const startTranzilaIframe = async (orderId: string) => {
+  const token = localStorage.getItem("token"); // adjust to your auth storage
+
+  const r = await fetch(`${API_URL}/api/payments/start`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ orderId }),
+  });
+
+  if (!r.ok) {
+    const e = await r.json().catch(() => ({}));
+    throw new Error(e.message || "Failed to start payment");
+  }
+
+  const data = await r.json();
+  if (!data?.iframeUrl) throw new Error("Missing iframeUrl from server");
+
+  setIframeUrl(data.iframeUrl);
+  setCurrentOrderId(orderId);
+  setPayOpen(true);
+};
+
 
   const startPayment = async (orderId: string) => {
   const res = await fetch("https://wrap-back.onrender.com/api/payments/start", {
@@ -198,59 +237,94 @@ const isValidEmail = (value: string) => {
 //   toast.error(labels.mustAgree);
 //   return;
 // }
+// const handleCheckout = async () => {
+//   if (!agreedToTerms) {
+//     toast.error(labels.mustAgree);
+//     return;
+//   }
+
+//   if (!isAuthenticated) {
+//     toast.error(labels.loginRequired);
+//     return;
+//   }
+
+//   if (!fullName || !phone || !city || !street || !houseNumber) {
+//     toast.error(labels.missingFields);
+//     return;
+//   }
+
+//   if (!isValidILPhone(phone)) {
+//     toast.error(labels.invalidPhone);
+//     return;
+//   }
+
+//   if (email.trim() && !isValidEmail(email)) {
+//     toast.error(labels.invalidEmail);
+//     return;
+//   }
+
+//   setIsPlacingOrder(true);
+//   try {
+//     // 1) create pending order
+//    const result = await placeOrder({
+//   fullName, phone, email, city, street, houseNumber, postalCode, notes,
+// });
+
+// // result.order.id (depends on your context return)
+// const orderId = "123";
+
+// const resp = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/payments/start`, {
+//   method: "POST",
+//   headers: { "Content-Type": "application/json" },
+//   credentials: "include",
+//   body: JSON.stringify({ orderId, supplier: "ahlam" }), // or ahlamtok
+// });
+
+// const data = await resp.json();
+// if (!resp.ok) throw new Error(data.message || "Payment start failed");
+
+// window.location.href = data.iframeUrl;
+//   } catch (err: any) {
+//     toast.error(err?.message || "שגיאה בהתחלת תשלום");
+//   } finally {
+//     setIsPlacingOrder(false);
+//   }
+// };
+
 const handleCheckout = async () => {
-  if (!agreedToTerms) {
-    toast.error(labels.mustAgree);
-    return;
-  }
-
-  if (!isAuthenticated) {
-    toast.error(labels.loginRequired);
-    return;
-  }
-
-  if (!fullName || !phone || !city || !street || !houseNumber) {
-    toast.error(labels.missingFields);
-    return;
-  }
-
-  if (!isValidILPhone(phone)) {
-    toast.error(labels.invalidPhone);
-    return;
-  }
-
-  if (email.trim() && !isValidEmail(email)) {
-    toast.error(labels.invalidEmail);
-    return;
-  }
+  if (!agreedToTerms) return toast.error(labels.mustAgree);
+  if (!isAuthenticated) return toast.error(labels.loginRequired);
+  if (!fullName || !phone || !city || !street || !houseNumber) return toast.error(labels.missingFields);
+  if (!isValidILPhone(phone)) return toast.error(labels.invalidPhone);
+  if (email.trim() && !isValidEmail(email)) return toast.error(labels.invalidEmail);
 
   setIsPlacingOrder(true);
   try {
     // 1) create pending order
-   const result = await placeOrder({
-  fullName, phone, email, city, street, houseNumber, postalCode, notes,
-});
+    const result = await placeOrder({
+      fullName,
+      phone,
+      email,
+      city,
+      street,
+      houseNumber,
+      postalCode,
+      notes,
+    });
 
-// result.order.id (depends on your context return)
-const orderId = "123";
+    // IMPORTANT: adapt this to your actual return shape:
+    const orderId = result?.order?.id || result?.order?. _id || result?.orderId;
+    if (!orderId) throw new Error("Missing orderId from placeOrder()");
 
-const resp = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/payments/start`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  credentials: "include",
-  body: JSON.stringify({ orderId, supplier: "ahlam" }), // or ahlamtok
-});
-
-const data = await resp.json();
-if (!resp.ok) throw new Error(data.message || "Payment start failed");
-
-window.location.href = data.iframeUrl;
-  } catch (err: any) {
-    toast.error(err?.message || "שגיאה בהתחלת תשלום");
+    // 2) start payment + open iframe
+    await startTranzilaIframe(orderId);
+  } catch (e: any) {
+    toast.error(e.message || "Payment failed");
   } finally {
     setIsPlacingOrder(false);
   }
 };
+
 
 
   const handleClearCart = () => {
@@ -656,6 +730,44 @@ window.location.href = data.iframeUrl;
           </div>
         </div>
       </div>
+      <Dialog open={payOpen} onOpenChange={(o) => {
+  setPayOpen(o);
+  if (!o) setIframeUrl(null);
+}}>
+  <DialogContent className="sm:max-w-2xl w-[95vw] h-[80vh] p-0 overflow-hidden">
+    <DialogHeader className="px-4 pt-4">
+      <DialogTitle className="text-center text-xl font-bold">
+        Tranzila — תשלום מאובטח
+      </DialogTitle>
+    </DialogHeader>
+
+    <div className="flex items-center justify-between gap-2 px-4 pb-2">
+      <Button
+        variant="secondary"
+        className="text-xs"
+        onClick={() => iframeUrl && window.open(iframeUrl, "_blank", "noopener")}
+        disabled={!iframeUrl}
+      >
+        פתיחה בדף מלא
+      </Button>
+    </div>
+
+    <div className="w-full h-[calc(80vh-110px)]">
+      {iframeUrl ? (
+        <iframe
+          src={iframeUrl}
+          title="Tranzila Payment"
+          className="w-full h-full"
+          style={{ border: "none" }}
+          allow="payment"
+        />
+      ) : (
+        <div className="w-full h-full grid place-items-center">טוען…</div>
+      )}
+    </div>
+  </DialogContent>
+</Dialog>
+
     </div>
   );
 };
