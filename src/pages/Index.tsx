@@ -53,6 +53,7 @@ const Index = () => {
           "اختار التصميم، أضيفي الاسم أو الرسالة، واترك لنا مهمة إعداد التغليف الفاخر والشحن السريع.",
         ctaShop: "ابدئ التسوق",
         ctaExpert: "تحدث مع خبيرة",
+        titleName:"بيرفكت راب"
       }
     : {
         loadError: "אירעה שגיאה בעת טעינת המוצרים",
@@ -82,6 +83,7 @@ const Index = () => {
           "בחרו את העיצוב, הוסיפו שם או מסר, והשאירו לנו את המשימה להכין את האריזה היוקרתית והמשלוח המהיר.",
         ctaShop: "התחילו לקנות",
         ctaExpert: "דברו עם מומחית",
+        titleName:"פרפקט ראב"
       };
 
   useEffect(() => {
@@ -132,7 +134,7 @@ const Index = () => {
               </p>
 
               <h1 className="text-5xl md:text-6xl font-black leading-tight drop-shadow-lg">
-                Perfect Wrap
+                {labels.titleName}
                 <br />
                 <span className="bg-gradient-to-l from-primary via-accent to-primary bg-clip-text text-transparent">
                   {labels.heroHeadline}

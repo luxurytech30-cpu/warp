@@ -42,7 +42,7 @@ const App = () => (
 
                 <div className="flex min-h-screen flex-col">
                   <Header />
-                  <main className="flex-1">
+                  <main className="flex-1 font-sans">
                     <Routes>
                       <Route path="/" element={<Index />} />
                       <Route path="/products" element={<Products />} />

@@ -15,10 +15,11 @@ export default {
     },
     extend: {
       fontFamily: {
-        assistant: ['Assistant', 'sans-serif'],
-        heebo: ['Heebo', 'sans-serif'],
-        cairo: ['Cairo', 'Tajawal', 'Heebo', 'Assistant', 'sans-serif'],
-        tajawal: ['Tajawal', 'Cairo', 'Heebo', 'Assistant', 'sans-serif'],
+        sans: ['Arial', 'system-ui', 'sans-serif'],
+        // assistant: ['Assistant', 'sans-serif'],
+        // heebo: ['Heebo', 'sans-serif'],
+        // cairo: ['Cairo', 'Tajawal', 'Heebo', 'Assistant', 'sans-serif'],
+        // tajawal: ['Tajawal', 'Cairo', 'Heebo', 'Assistant', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
