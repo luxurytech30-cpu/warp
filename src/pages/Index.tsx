@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import heroImg from "@/assets/hero.jpeg";
 import hero2 from "@/assets/hero2.jpeg"
+import title from "@/assets/tit2.png"
 import { useLanguage } from "@/contexts/LanguageContext";
 
 import { getProducts } from "@/lib/api";
@@ -27,7 +28,7 @@ const Index = () => {
   const labels = isArabic
     ? {
         loadError: "حدث خطأ أثناء تحميل المنتجات",
-        heroBadge: "إطلاق جديد — هدايا مخصصة لكِ",
+        heroBadge: "متجر - ستوديو - ورشات",
         heroHeadline: "هدايا راقية بلمسة شخصية",
         heroCopy:
           "اكتشف مجموعتنا الحصرية من الهدايا المطبوعة بعناية فائقة، المصممة خصيصًا لتضفي لمسة من الأناقة والتميّز على جميع مناسباتك الخاصة. اجعل لحظاتك أكثر جمالًا بهدايا تعبّر عن ذوقك الرفيع وتبقى ذكرى لا تُنسى.",
@@ -57,7 +58,7 @@ const Index = () => {
       }
     : {
         loadError: "אירעה שגיאה בעת טעינת המוצרים",
-        heroBadge: "השקה חדשה — מתנות מותאמות עבורך",
+heroBadge: "חנות - סטודיו - סדנאות",
         heroHeadline: "מתנות יוקרתיות בנגיעה אישית",
         heroCopy:
           "גלו את הקולקציה הבלעדית שלנו של מתנות מודפסות בקפידה, מעוצבות במיוחד כדי להוסיף נגיעה של אלגנטיות וייחוד לכל האירועים המיוחדים שלכם. הפכו את הרגעים שלכם ליפים יותר עם מתנות שמבטאות את הטעם שלכם ונשארות זיכרון שלא נשכח.",
@@ -133,13 +134,26 @@ const Index = () => {
                 <span>{labels.heroBadge}</span>
               </p>
 
-              <h1 className="text-5xl md:text-6xl font-black leading-tight drop-shadow-lg">
-                {labels.titleName}
-                <br />
-                <span className="bg-gradient-to-l from-primary via-accent to-primary bg-clip-text text-transparent">
-                  {labels.heroHeadline}
-                </span>
-              </h1>
+<h1 className="drop-shadow-[0_6px_20px_rgba(0,0,0,0.35)] flex flex-col items-center gap-1">
+  <img
+    src={title}
+    width={200}
+    height={50}
+    alt=""
+    className="block"
+  />
+
+  <span
+    className="font-tajawal bg-gradient-to-l from-primary via-accent to-primary bg-clip-text text-transparent
+               text-2xl md:text-3xl leading-none"
+    style={{ fontWeight: 900 }}
+  >
+    {labels.heroHeadline}
+  </span>
+</h1>
+
+
+
 
               <p className="text-lg md:text-xl text-black">
                      {labels.heroCopy}

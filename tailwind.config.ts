@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
 
@@ -16,6 +17,14 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Arial', 'system-ui', 'sans-serif'],
+        cairo: ['Cairo', 'sans-serif'],
+         tajawal: ['Tajawal', 'sans-serif'],
+         lalezar: ['Lalezar', 'sans-serif'],
+             ruqaa: ['Aref Ruqaa', 'serif'],
+    marhey: ['Marhey', 'sans-serif'],
+        baloo: ['"Baloo Bhaijaan 2"', 'system-ui', 'sans-serif'],
+
+
         // assistant: ['Assistant', 'sans-serif'],
         // heebo: ['Heebo', 'sans-serif'],
         // cairo: ['Cairo', 'Tajawal', 'Heebo', 'Assistant', 'sans-serif'],
