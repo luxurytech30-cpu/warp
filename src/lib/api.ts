@@ -102,23 +102,28 @@ export const checkoutOrder = async (
 export async function startTranzilaPayment(orderId: string): Promise<{ iframeUrl: string }> {
   const token = localStorage.getItem("token");
 
-  const r = await fetch(`/api/payments/start`, {
+  const API_BASE = "https://wrap-back.onrender.com";
+
+  const r = await fetch(`${API_BASE}/api/payments/start`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token}`, // only if your auth middleware expects it
     },
     body: JSON.stringify({ orderId }),
   });
 
-  const data = await r.json();
-  if (!r.ok) throw new Error(data?.message || "Payment start failed");
+  // safer parsing:
+  const text = await r.text();
+  let data: any = {};
+  try { data = text ? JSON.parse(text) : {}; } catch {}
 
-  // ✅ expect iframeUrl
+  if (!r.ok) throw new Error(data?.message || `Payment start failed (${r.status})`);
   if (!data?.iframeUrl) throw new Error("Missing iframeUrl from server");
 
   return { iframeUrl: data.iframeUrl };
 }
+
 
 
 export const getMyOrders = async (): Promise<Order[]> => {
