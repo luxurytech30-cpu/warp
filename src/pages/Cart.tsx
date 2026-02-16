@@ -227,28 +227,24 @@ const handleCheckout = async () => {
   setIsPlacingOrder(true);
   try {
     // 1) create pending order
-    const result: any = await placeOrder({
-      fullName,
-      phone,
-      email,
-      city,
-      street,
-      houseNumber,
-      postalCode,
-      notes,
-    });
+   const result = await placeOrder({
+  fullName, phone, email, city, street, houseNumber, postalCode, notes,
+});
 
-    // 2) get orderId (support both possible shapes)
-    const orderId =
-      result?.order?.id || result?.orderId || result?.id || result?._id;
+// result.order.id (depends on your context return)
+const orderId = "123";
 
-    if (!orderId) {
-      throw new Error("Missing orderId from placeOrder()");
-    }
+const resp = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/payments/start`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  credentials: "include",
+  body: JSON.stringify({ orderId, supplier: "ahlam" }), // or ahlamtok
+});
 
-    // 3) start payment and redirect to Tranzila
-    const paymentUrl = await startPayment(orderId);
-    window.location.href = paymentUrl;
+const data = await resp.json();
+if (!resp.ok) throw new Error(data.message || "Payment start failed");
+
+window.location.href = data.iframeUrl;
   } catch (err: any) {
     toast.error(err?.message || "שגיאה בהתחלת תשלום");
   } finally {
