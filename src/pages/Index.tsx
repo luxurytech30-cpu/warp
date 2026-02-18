@@ -10,6 +10,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 import { getProducts } from "@/lib/api";
 import type { Product } from "@/types";
+import PerfectWrapSocialNav from "@/components/socialLinks";
 
 const Index = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -128,11 +129,15 @@ heroBadge: "חנות - סטודיו - סדנאות",
         <div className="container relative mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left: text */}
-            <div className="order-2 lg:order-1 max-w-3xl space-y-6 animate-fade-slide-up text-primary">
-              <p className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-4 py-2 text-sm backdrop-blur border border-primary/20">
-                <Sparkles className="h-4 w-4" />
-                <span>{labels.heroBadge}</span>
-              </p>
+         <div className="order-2 lg:order-1 max-w-3xl space-y-6 animate-fade-slide-up text-primary
+                flex flex-col items-center text-center">
+  <p
+    className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-4 py-2 text-sm
+               backdrop-blur border border-primary/20"
+  >
+    <Sparkles className="h-4 w-4" />
+    <span>{labels.heroBadge}</span>
+  </p>
 
 <h1 className="drop-shadow-[0_6px_20px_rgba(0,0,0,0.35)] flex flex-col items-center gap-1">
   <img
@@ -159,27 +164,37 @@ heroBadge: "חנות - סטודיו - סדנאות",
                      {labels.heroCopy}
               </p>
 
-              <div className="flex flex-wrap gap-4">
-                <Link to="/products">
-                  <Button
-                    size="lg"
-                    className="gradient-primary text-white shadow-premium text-lg px-8 py-6 h-auto animate-soft-glow"
-                  >
-                    {labels.discoverProducts}
-                    <ArrowLeft className="mr-2 h-5 w-5" />
-                  </Button>
-                </Link>
+     {/* Phone centered under the buttons */}
+<div className="flex flex-col items-center gap-3">
+  <div className="flex flex-wrap justify-center gap-3">
+    <Link to="/products">
+      <Button
+        size="lg"
+        className="gradient-primary text-white shadow-premium text-sm md:text-base
+                   px-5 py-3 h-auto rounded-xl"
+      >
+        {labels.discoverProducts}
+        <ArrowLeft className="mr-2 h-4 w-4" />
+      </Button>
+    </Link>
 
-                <Link to="/contact">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="bg-primary/10 backdrop-blur border-primary text-primary hover:bg-primary hover:text-primary-foreground text-lg px-8 py-6 h-auto"
-                  >
-                    {labels.talkToUs}
-                  </Button>
-                </Link>
-              </div>
+    <Link to="/contact">
+      <Button
+        size="lg"
+        variant="outline"
+        className="bg-primary/10 backdrop-blur border-primary text-primary
+                   hover:bg-primary hover:text-primary-foreground
+                   text-sm md:text-base px-5 py-3 h-auto rounded-xl"
+      >
+        {labels.talkToUs}
+      </Button>
+    </Link>
+  </div>
+
+
+</div>
+
+
             </div>
 
             {/* Right: moving image (slow up/down) + fixed border/frame OVER it */}
@@ -203,6 +218,10 @@ heroBadge: "חנות - סטודיו - סדנאות",
           </div>
         </div>
       </section>
+   <div className="aa mr-16 relative z-[9999] pointer-events-auto" style={{ marginTop: "-40px" }}>
+  <PerfectWrapSocialNav />
+</div>
+
 
       {/* Features Section */}
       <section className="py-20 bg-muted">
