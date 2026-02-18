@@ -215,6 +215,86 @@ const isValidEmail = (value: string) => {
   // notes per item
   const [editNotes, setEditNotes] = useState<Record<string, string>>({});
   const [savingNoteKey, setSavingNoteKey] = useState<string | null>(null);
+// per-item image file (local before upload)
+const [editImages, setEditImages] = useState<Record<string, File | null>>({});
+const [imagePublicIds, setImagePublicIds] = useState<Record<string, string>>({});
+
+// per-item uploaded image url (what you send to backend / store in cart)
+const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
+
+// uploading spinner
+const [uploadingImageKey, setUploadingImageKey] = useState<string | null>(null);
+
+const MAX_IMAGE_MB = 8;
+
+const isImageFileOk = (file: File) => {
+  if (!file.type.startsWith("image/")) return false;
+  if (file.size > MAX_IMAGE_MB * 1024 * 1024) return false;
+  return true;
+};
+const getUploadSignature = async () => {
+  const token = localStorage.getItem("token");
+
+  const r = await fetch(`${API_URL}/upload/signature/cart`, {
+    method: "POST",
+    headers: {
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+  });
+
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data?.message || `Failed (${r.status})`);
+  return data;
+};
+
+const uploadItemImage = async (file: File) => {
+  const sig = await getUploadSignature();
+
+  const form = new FormData();
+  form.append("file", file);
+  form.append("api_key", sig.apiKey);
+  form.append("timestamp", String(sig.timestamp));
+  form.append("signature", sig.signature);
+  form.append("folder", sig.folder);
+
+  const cloudUrl = `https://api.cloudinary.com/v1_1/${sig.cloudName}/image/upload`;
+
+  const r = await fetch(cloudUrl, { method: "POST", body: form });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data?.error?.message || "Cloudinary upload failed");
+
+  return {
+    url: data.secure_url as string,
+    publicId: data.public_id as string,
+  };
+};
+
+
+
+const handleUploadImage = async (key: string) => {
+  const file = editImages[key];
+  if (!file) return;
+
+  if (!isImageFileOk(file)) {
+    toast.error(isArabic ? "الملف ليس صورة أو حجمه كبير" : "הקובץ לא תמונה או גדול מדי");
+    return;
+  }
+
+  setUploadingImageKey(key);
+  try {
+    const { url, publicId } = await uploadItemImage(file);
+
+    setImageUrls((prev) => ({ ...prev, [key]: url }));
+    setImagePublicIds((prev) => ({ ...prev, [key]: publicId }));
+
+    toast.success(isArabic ? "تم رفع الصورة" : "התמונה הועלתה");
+  } catch (e: any) {
+    toast.error(e?.message || (isArabic ? "فشل رفع الصورة" : "העלאת התמונה נכשלה"));
+  } finally {
+    setUploadingImageKey(null);
+  }
+};
+
 
   const handleSaveNote = async (
     productId: string,
@@ -300,6 +380,20 @@ const handleCheckout = async () => {
 
   setIsPlacingOrder(true);
   try {
+   const itemsMeta = cart.map((item) => {
+  const key = getKey(item.productId, item.optionIndex);
+    console.log("ITEM META BUILD", key, imageUrls[key]);
+
+  return {
+    productId: item.productId,
+    optionIndex: item.optionIndex,
+    note: (editNotes[key] ?? item.itemNote ?? "").trim(),
+imageUrl: imageUrls[key] || item.itemImageUrl || "",
+    publicId: imagePublicIds[key] ?? "",
+  };
+});
+
+
     // ✅ placeOrder returns: { order, iframeUrl }
     const { order, iframeUrl } = await placeOrder({
       fullName,
@@ -310,6 +404,7 @@ const handleCheckout = async () => {
       houseNumber,
       postalCode,
       notes,
+      itemsMeta
     });
 
     if (!order?.id) throw new Error("Missing orderId");
@@ -580,6 +675,50 @@ const handleCheckout = async () => {
                       {isSavingNote ? labels.saving : labels.saveNote}
                     </Button>
                   </div>
+                  {/* ✅ image upload */}
+<div className="mt-2 space-y-2">
+  <Input
+    type="file"
+    accept="image/*"
+    onChange={(e) => {
+      const f = e.target.files?.[0] || null;
+      setEditImages((prev) => ({ ...prev, [key]: f }));
+    }}
+  />
+
+  {/* preview local file */}
+  {editImages[key] && (
+    <img
+      src={URL.createObjectURL(editImages[key] as File)}
+      alt="preview"
+      className="w-32 h-32 object-cover rounded-lg border"
+    />
+  )}
+
+  {/* preview uploaded url */}
+  {imageUrls[key] && (
+    <div className="text-sm">
+      <span className="text-muted-foreground">
+        {isArabic ? "تم حفظ الصورة:" : "תמונה נשמרה:"}
+      </span>{" "}
+      <a className="text-primary underline" href={imageUrls[key]} target="_blank" rel="noreferrer">
+        {isArabic ? "عرض" : "צפייה"}
+      </a>
+    </div>
+  )}
+
+  <Button
+    size="sm"
+    className="w-full md:w-auto"
+    disabled={uploadingImageKey === key || !editImages[key]}
+    onClick={() => handleUploadImage(key)}
+  >
+    {uploadingImageKey === key
+      ? (isArabic ? "جارٍ الرفع..." : "מעלה...")
+      : (isArabic ? "رفع صورة" : "העלה תמונה")}
+  </Button>
+</div>
+
                 </Card>
               );
             })}

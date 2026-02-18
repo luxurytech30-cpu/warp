@@ -833,6 +833,8 @@ const OrdersSection: React.FC = () => {
     try {
       setLoading(true);
       const data = await getAllOrdersAdmin();
+      console.log("ADMIN ORDERS FIRST ITEM:", data?.[0]?.items?.[0]);
+
       setOrders(data);
       if (data.length && !selectedOrderId) {
         setSelectedOrderId(data[0].id);
@@ -993,40 +995,65 @@ const OrdersSection: React.FC = () => {
                 ) : (
                   <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
                     {selectedOrder.items.map((item, idx) => (
-                      <div key={idx} className="border rounded-md p-2 flex gap-2">
-                        {item.image && (
-                          <img
-                            src={item.image}
-                            alt={item.productName}
-                            className="w-16 h-16 object-cover rounded"
-                          />
-                        )}
-                        <div className="flex-1 text-sm">
-  <div className="font-medium">
-    {item.productName} – {item.optionName}
+                    <div key={idx} className="border rounded-md p-2 flex gap-3">
+  {/* Images column */}
+  <div className="flex flex-col gap-2">
+    {/* Product image */}
+    {item.image && (
+      <div className="w-20">
+        <div className="text-[11px] font-semibold text-muted-foreground mb-1">
+          {t("صورة المنتج", "תמונת מוצר")}
+        </div>
+        <img
+          src={item.image}
+          alt={item.productName}
+          className="w-20 h-20 object-cover rounded border"
+        />
+      </div>
+    )}
+
+    {/* User uploaded image */}
+    {item.itemImageUrl && item.itemImageUrl.trim() !== "" && (
+      <div className="w-20">
+        <div className="text-[11px] font-semibold text-muted-foreground mb-1">
+          {t("صورة العميل", "תמונת הלקוח")}
+        </div>
+        <a href={item.itemImageUrl} target="_blank" rel="noreferrer">
+          <img
+            src={item.itemImageUrl}
+            alt={t("صورة مرفوعة من العميل", "תמונה שהועלתה ע״י הלקוח")}
+            className="w-20 h-20 object-cover rounded border"
+          />
+        </a>
+      </div>
+    )}
   </div>
 
-  <div>
-    {t("الكمية", "כמות")}: {item.quantity} | {t("سعر القطعة", "מחיר יחידה")}:{" "}
-    <span dir="ltr">{item.priceWithoutMaam.toFixed(2)} ₪</span>
-  </div>
-
-  <div className="font-medium">
-    {t("المجموع", "סה\"כ")}:{" "}
-    <span dir="ltr">
-      {(item.priceWithoutMaam * item.quantity).toFixed(2)} ₪
-    </span>
-  </div>
-
-  {item.itemNote && item.itemNote.trim() !== "" && (
-    <div className="mt-2 text-sm">
-      <span className="font-medium">{t("ملاحظة للمنتج:", "הערה למוצר:")}</span>{" "}
-      <span className="text-muted-foreground">{item.itemNote}</span>
+  {/* Text */}
+  <div className="flex-1 text-sm">
+    <div className="font-medium">
+      {item.productName} – {item.optionName}
     </div>
-  )}
+
+    <div>
+      {t("الكمية", "כמות")}: {item.quantity} | {t("سعر القطعة", "מחיר יחידה")}:{" "}
+      <span dir="ltr">{item.priceWithoutMaam.toFixed(2)} ₪</span>
+    </div>
+
+    <div className="font-medium">
+      {t("المجموع", "סה\"כ")}:{" "}
+      <span dir="ltr">{(item.priceWithoutMaam * item.quantity).toFixed(2)} ₪</span>
+    </div>
+
+    {item.itemNote && item.itemNote.trim() !== "" && (
+      <div className="mt-2 text-sm">
+        <span className="font-medium">{t("ملاحظة للمنتج:", "הערה למוצר:")}</span>{" "}
+        <span className="text-muted-foreground">{item.itemNote}</span>
+      </div>
+    )}
+  </div>
 </div>
 
-                      </div>
                     ))}
                   </div>
                 )}

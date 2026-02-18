@@ -30,6 +30,8 @@ export interface CartItem {
   quantity: number;
   image: string;
   itemNote:string;
+  itemImageUrl?: string;
+  itemImagePublicId?: string;
 }
 
 
@@ -42,6 +44,7 @@ export interface CustomerDetails {
   houseNumber: string;
   postalCode?: string;
   notes?: string;
+  itemsMeta:any;
 }
 
 export interface Order {
