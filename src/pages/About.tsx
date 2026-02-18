@@ -1,6 +1,7 @@
 import { Card } from '@/components/ui/card';
 import { Award, Users, Truck, Shield, Target, Sparkles } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import PerfectWrapSocialNav from '@/components/socialLinks';
 
 const About = () => {
   const { isArabic } = useLanguage();
@@ -97,6 +98,14 @@ const About = () => {
             {labels.heroBody}
           </p>
         </div>
+  <div
+  className="aa relative z-[9999] pointer-events-auto flex justify-center w-full mb-10"
+  style={{ marginTop: "-40px" }}
+>
+  <div className="mx-auto px-4">
+    <PerfectWrapSocialNav />
+  </div>
+</div>
 
         {/* Stats */}
         <div className="grid md:grid-cols-4 gap-6 mb-20">

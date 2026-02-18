@@ -8,6 +8,7 @@ import { Phone, Mail, MapPin, Clock, Send } from "lucide-react";
 import { toast } from "sonner";
 import { sendContactMessage } from "@/lib/api";
 import { useLanguage } from "@/contexts/LanguageContext";
+import PerfectWrapSocialNav from "@/components/socialLinks";
 
 const Contact = () => {
   const { isArabic } = useLanguage();
@@ -111,7 +112,14 @@ const Contact = () => {
             {labels.subtitle}
           </p>
         </div>
-
+  <div
+  className="aa relative z-[9999] pointer-events-auto flex justify-center w-full mb-10"
+  style={{ marginTop: "-40px" }}
+>
+  <div className="mx-auto px-4">
+    <PerfectWrapSocialNav />
+  </div>
+</div>
         <div className="grid lg:grid-cols-3 gap-8 mb-16">
           {/* Contact Info Cards */}
           <Card className="p-8 shadow-card hover:shadow-premium transition-shadow text-center">
