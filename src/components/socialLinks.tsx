@@ -40,7 +40,7 @@ export default function PerfectWrapSocialNav() {
     },
     {
       name: "Instagram",
-      href: "https://www.instagram.com/perfectwrap2021?igsh=MTY3cXN0MnhwY3ltdw==",
+      href: "https://www.instagram.com/perfectwrap2021?utm_source=qr&igsh=MTY3cXN0MnhwY3ltdw==",
       ariaLabel: "Open Perfect Wrap on Instagram",
       icon: (
         <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
