@@ -72,7 +72,7 @@ const Cart = () => {
 
         // ✅ Delivery
         deliveryTitle: "طريقة الاستلام",
-        pickup: "استلام من المتجر (₪0)",
+        pickup: "استلام من المتجر في الباقه الغربيه مع تنسيق مسبق (₪0)",
         shipHome: "شحن للبيت (₪40)",
         subtotal: "المجموع الفرعي",
         shippingFee: "الشحن",
@@ -117,7 +117,7 @@ const Cart = () => {
 
         // ✅ Delivery
         deliveryTitle: "שיטת קבלה",
-        pickup: "איסוף מהחנות (₪0)",
+        pickup: "איסוף מהחנות בבאקה אל-גרבייה בתיאום מראש (₪0)",
         shipHome: "משלוח עד הבית (₪40)",
         subtotal: "סכום ביניים",
         shippingFee: "משלוח",
