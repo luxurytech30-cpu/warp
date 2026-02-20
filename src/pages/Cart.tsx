@@ -10,13 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const Cart = () => {
   const {
@@ -31,8 +25,8 @@ const Cart = () => {
 
   const { user } = useAuth();
   const [payOpen, setPayOpen] = useState(false);
-const [iframeUrl, setIframeUrl] = useState<string | null>(null);
-const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
+  const [iframeUrl, setIframeUrl] = useState<string | null>(null);
+  const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
 
   const { isArabic } = useLanguage();
   const isAuthenticated = !!user;
@@ -41,8 +35,8 @@ const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
     ? {
         noteSaved: "تم حفظ الملاحظة",
         loginRequired: "يجب تسجيل الدخول لإتمام الطلب",
-        missingFields:
-          "يرجى تعبئة الاسم الكامل، الهاتف، والعنوان (المدينة، الشارع، رقم المنزل)",
+        missingFieldsBase: "يرجى تعبئة الاسم الكامل والهاتف",
+        missingAddress: "يرجى تعبئة العنوان (المدينة، الشارع، رقم المنزل) للشحن",
         emptyTitle: "السلة فارغة",
         emptyBody: "لم تقوم بإضافة أي منتجات بعد",
         startShopping: "ابدء التسوق",
@@ -55,7 +49,7 @@ const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
         saveNote: "حفظ الملاحظة",
         orderSummary: "ملخص الطلب",
         totalToPay: "الإجمالي للدفع:",
-        shippingDetails: "تفاصيل الشحن",
+        shippingDetails: "تفاصيل الطلب",
         fullName: "الاسم الكامل *",
         phone: "*الهاتف",
         email: "البريد الإلكتروني (اختياري)",
@@ -71,18 +65,23 @@ const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
         clearCart: "تفريغ السلة",
         cancelPolicy: "** يمكن إلغاء الطلب خلال ساعتين فقط من وقت إنشائه.",
         agreeToTerms: "أوافق على الشروط والأحكام",
-terms: "الشروط والأحكام",
-mustAgree: "يجب الموافقة على الشروط والأحكام للمتابعة",
-invalidPhone: "رقم الهاتف غير صحيح",
-invalidEmail: "البريد الإلكتروني غير صحيح",
+        terms: "الشروط والأحكام",
+        mustAgree: "يجب الموافقة على الشروط والأحكام للمتابعة",
+        invalidPhone: "رقم الهاتف غير صحيح",
+        invalidEmail: "البريد الإلكتروني غير صحيح",
 
-
+        // ✅ Delivery
+        deliveryTitle: "طريقة الاستلام",
+        pickup: "استلام من المتجر (₪0)",
+        shipHome: "شحن للبيت (₪40)",
+        subtotal: "المجموع الفرعي",
+        shippingFee: "الشحن",
       }
     : {
         noteSaved: "ההערה נשמרה",
         loginRequired: "יש להתחבר כדי להשלים את ההזמנה",
-        missingFields:
-          "נא למלא שם מלא, טלפון וכתובת (עיר, רחוב, מספר בית)",
+        missingFieldsBase: "נא למלא שם מלא וטלפון",
+        missingAddress: "נא למלא כתובת (עיר, רחוב, מספר בית) למשלוח",
         emptyTitle: "העגלה ריקה",
         emptyBody: "לא הוספת עדיין מוצרים",
         startShopping: "התחילו לקנות",
@@ -95,7 +94,7 @@ invalidEmail: "البريد الإلكتروني غير صحيح",
         saveNote: "שמור הערה",
         orderSummary: "סיכום הזמנה",
         totalToPay: 'סה"כ לתשלום:',
-        shippingDetails: "פרטי משלוח",
+        shippingDetails: "פרטי הזמנה",
         fullName: "שם מלא *",
         phone: "*טלפון ",
         email: 'דוא"ל (אופציונלי)',
@@ -111,95 +110,52 @@ invalidEmail: "البريد الإلكتروني غير صحيح",
         clearCart: "רוקן עגלה",
         cancelPolicy: "** ניתן לבטל הזמנה רק בתוך שעתיים מרגע יצירתה.",
         agreeToTerms: "אני מאשר/ת שקראתי ואני מסכים/ה לתקנון",
-terms: "תקנון",
-mustAgree: "צריך לאשר את התקנון כדי להמשיך",
-invalidPhone: "מספר טלפון לא תקין",
-invalidEmail: "כתובת אימייל לא תקינה",
+        terms: "תקנון",
+        mustAgree: "צריך לאשר את התקנון כדי להמשיך",
+        invalidPhone: "מספר טלפון לא תקין",
+        invalidEmail: "כתובת אימייל לא תקינה",
 
+        // ✅ Delivery
+        deliveryTitle: "שיטת קבלה",
+        pickup: "איסוף מהחנות (₪0)",
+        shipHome: "משלוח עד הבית (₪40)",
+        subtotal: "סכום ביניים",
+        shippingFee: "משלוח",
       };
-
-  const totalWithoutMaam = getTotalWithoutMaam();
 
   const API_URL = import.meta.env.VITE_API_URL;
 
-const startTranzilaIframe = async (orderId: string) => {
-  const token = localStorage.getItem("token"); // adjust to your auth storage
+  // ✅ NEW: delivery method + shipping fee
+  const SHIPPING_FEE = 40;
+  const [deliveryMethod, setDeliveryMethod] = useState<"pickup" | "shipping">("pickup");
 
-  const r = await fetch(`${API_URL}/api/payments/start`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ orderId }),
-  });
-
-  if (!r.ok) {
-    const e = await r.json().catch(() => ({}));
-    throw new Error(e.message || "Failed to start payment");
-  }
-
-  const data = await r.json();
-  if (!data?.iframeUrl) throw new Error("Missing iframeUrl from server");
-
-  setIframeUrl(data.iframeUrl);
-  setCurrentOrderId(orderId);
-  setPayOpen(true);
-};
-
-
-  const startPayment = async (orderId: string) => {
-  const res = await fetch("https://wrap-back.onrender.com/api/payments/start", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      // אם auth אצלך עובד עם cookies, תשאיר רק credentials למטה
-      // ואם עובד עם Bearer token – תוסיף Authorization כאן
-    },
-    credentials: "include", // חשוב אם אתה משתמש בקוקיז/סשן
-    body: JSON.stringify({ orderId }),
-  });
-
-  const data = await res.json();
-  if (!res.ok) throw new Error(data?.message || "Payment start failed");
-
-  return data.paymentUrl as string;
-};
+  const subtotal = getTotalWithoutMaam();
+  const shippingFee = deliveryMethod === "shipping" ? SHIPPING_FEE : 0;
+  const totalToPay = subtotal + shippingFee;
 
   // which item is being updated (for disabling + / - / input)
   const [updatingKey, setUpdatingKey] = useState<string | null>(null);
-const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   // local quantities for the inputs
-  const [editQuantities, setEditQuantities] = useState<Record<string, number>>(
-    {}
-  );
+  const [editQuantities, setEditQuantities] = useState<Record<string, number>>({});
 
-  const getKey = (productId: string, optionIndex: number) =>
-    `${productId}-${optionIndex}`;
+  const getKey = (productId: string, optionIndex: number) => `${productId}-${optionIndex}`;
 
-  const normalizePhone = (value: string) =>
-  value.replace(/[^\d+]/g, "").trim();
+  const normalizePhone = (value: string) => value.replace(/[^\d+]/g, "").trim();
 
-const isValidILPhone = (value: string) => {
-  const p = normalizePhone(value);
+  const isValidILPhone = (value: string) => {
+    const p = normalizePhone(value);
+    if (/^05\d{8}$/.test(p)) return true; // 05XXXXXXXX
+    if (/^\+9725\d{8}$/.test(p)) return true; // +9725XXXXXXXX
+    if (/^9725\d{8}$/.test(p)) return true; // 9725XXXXXXXX
+    return false;
+  };
 
-  // 05XXXXXXXX (10 digits)
-  if (/^05\d{8}$/.test(p)) return true;
-
-  // +9725XXXXXXXX or 9725XXXXXXXX  (country code, 9 digits after 972)
-  if (/^\+9725\d{8}$/.test(p)) return true;
-  if (/^9725\d{8}$/.test(p)) return true;
-
-  return false;
-};
-
-const isValidEmail = (value: string) => {
-  const v = value.trim();
-  // simple solid email regex
-  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
-};
-
+  const isValidEmail = (value: string) => {
+    const v = value.trim();
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+  };
 
   // checkout form state
   const [fullName, setFullName] = useState("");
@@ -215,86 +171,78 @@ const isValidEmail = (value: string) => {
   // notes per item
   const [editNotes, setEditNotes] = useState<Record<string, string>>({});
   const [savingNoteKey, setSavingNoteKey] = useState<string | null>(null);
-// per-item image file (local before upload)
-const [editImages, setEditImages] = useState<Record<string, File | null>>({});
-const [imagePublicIds, setImagePublicIds] = useState<Record<string, string>>({});
 
-// per-item uploaded image url (what you send to backend / store in cart)
-const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
+  // per-item image file (local before upload)
+  const [editImages, setEditImages] = useState<Record<string, File | null>>({});
+  const [imagePublicIds, setImagePublicIds] = useState<Record<string, string>>({});
 
-// uploading spinner
-const [uploadingImageKey, setUploadingImageKey] = useState<string | null>(null);
+  // per-item uploaded image url (what you send to backend / store in cart)
+  const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
 
-const MAX_IMAGE_MB = 8;
+  // uploading spinner
+  const [uploadingImageKey, setUploadingImageKey] = useState<string | null>(null);
 
-const isImageFileOk = (file: File) => {
-  if (!file.type.startsWith("image/")) return false;
-  if (file.size > MAX_IMAGE_MB * 1024 * 1024) return false;
-  return true;
-};
-const getUploadSignature = async () => {
-  const token = localStorage.getItem("token");
+  const MAX_IMAGE_MB = 8;
 
-  const r = await fetch(`${API_URL}/upload/signature/cart`, {
-    method: "POST",
-    headers: {
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-  });
-
-  const data = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(data?.message || `Failed (${r.status})`);
-  return data;
-};
-
-const uploadItemImage = async (file: File) => {
-  const sig = await getUploadSignature();
-
-  const form = new FormData();
-  form.append("file", file);
-  form.append("api_key", sig.apiKey);
-  form.append("timestamp", String(sig.timestamp));
-  form.append("signature", sig.signature);
-  form.append("folder", sig.folder);
-
-  const cloudUrl = `https://api.cloudinary.com/v1_1/${sig.cloudName}/image/upload`;
-
-  const r = await fetch(cloudUrl, { method: "POST", body: form });
-  const data = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(data?.error?.message || "Cloudinary upload failed");
-
-  return {
-    url: data.secure_url as string,
-    publicId: data.public_id as string,
+  const isImageFileOk = (file: File) => {
+    if (!file.type.startsWith("image/")) return false;
+    if (file.size > MAX_IMAGE_MB * 1024 * 1024) return false;
+    return true;
   };
-};
 
+  const getUploadSignature = async () => {
+    const token = localStorage.getItem("token");
 
+    const r = await fetch(`${API_URL}/upload/signature/cart`, {
+      method: "POST",
+      headers: { Authorization: token ? `Bearer ${token}` : "" },
+    });
 
-const handleUploadImage = async (key: string) => {
-  const file = editImages[key];
-  if (!file) return;
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(data?.message || `Failed (${r.status})`);
+    return data;
+  };
 
-  if (!isImageFileOk(file)) {
-    toast.error(isArabic ? "الملف ليس صورة أو حجمه كبير" : "הקובץ לא תמונה או גדול מדי");
-    return;
-  }
+  const uploadItemImage = async (file: File) => {
+    const sig = await getUploadSignature();
 
-  setUploadingImageKey(key);
-  try {
-    const { url, publicId } = await uploadItemImage(file);
+    const form = new FormData();
+    form.append("file", file);
+    form.append("api_key", sig.apiKey);
+    form.append("timestamp", String(sig.timestamp));
+    form.append("signature", sig.signature);
+    form.append("folder", sig.folder);
 
-    setImageUrls((prev) => ({ ...prev, [key]: url }));
-    setImagePublicIds((prev) => ({ ...prev, [key]: publicId }));
+    const cloudUrl = `https://api.cloudinary.com/v1_1/${sig.cloudName}/image/upload`;
 
-    toast.success(isArabic ? "تم رفع الصورة" : "התמונה הועלתה");
-  } catch (e: any) {
-    toast.error(e?.message || (isArabic ? "فشل رفع الصورة" : "העלאת התמונה נכשלה"));
-  } finally {
-    setUploadingImageKey(null);
-  }
-};
+    const r = await fetch(cloudUrl, { method: "POST", body: form });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(data?.error?.message || "Cloudinary upload failed");
 
+    return { url: data.secure_url as string, publicId: data.public_id as string };
+  };
+
+  const handleUploadImage = async (key: string) => {
+    const file = editImages[key];
+    if (!file) return;
+
+    if (!isImageFileOk(file)) {
+      toast.error(isArabic ? "الملف ليس صورة أو حجمه كبير" : "הקובץ לא תמונה או גדול מדי");
+      return;
+    }
+
+    setUploadingImageKey(key);
+    try {
+      const { url, publicId } = await uploadItemImage(file);
+      setImageUrls((prev) => ({ ...prev, [key]: url }));
+      setImagePublicIds((prev) => ({ ...prev, [key]: publicId }));
+      toast.success(isArabic ? "تم رفع الصورة" : "התמונה הועלתה");
+    } catch (e: any) {
+      toast.error(e?.message || (isArabic ? "فشل رفع الصورة" : "העלאת התמונה נכשלה"));
+    } finally {
+      setUploadingImageKey(null);
+    }
+  };
 
   const handleSaveNote = async (
     productId: string,
@@ -303,7 +251,6 @@ const handleUploadImage = async (key: string) => {
     fallback: string
   ) => {
     const noteToSave = (editNotes[key] ?? fallback).trim();
-
     setSavingNoteKey(key);
     try {
       await updateItemNote(productId, optionIndex, noteToSave);
@@ -313,115 +260,63 @@ const handleUploadImage = async (key: string) => {
     }
   };
 
-//   if (!agreedToTerms) {
-//   toast.error(labels.mustAgree);
-//   return;
-// }
-// const handleCheckout = async () => {
-//   if (!agreedToTerms) {
-//     toast.error(labels.mustAgree);
-//     return;
-//   }
+  // ✅ UPDATED: validation + hide address on pickup + send deliveryMethod/shippingFee
+  const handleCheckout = async () => {
+    if (!agreedToTerms) return toast.error(labels.mustAgree);
+    if (!isAuthenticated) return toast.error(labels.loginRequired);
 
-//   if (!isAuthenticated) {
-//     toast.error(labels.loginRequired);
-//     return;
-//   }
+    // base required
+    if (!fullName || !phone) return toast.error(labels.missingFieldsBase);
+    if (!isValidILPhone(phone)) return toast.error(labels.invalidPhone);
+    if (email.trim() && !isValidEmail(email)) return toast.error(labels.invalidEmail);
 
-//   if (!fullName || !phone || !city || !street || !houseNumber) {
-//     toast.error(labels.missingFields);
-//     return;
-//   }
+    // address only when shipping
+    if (deliveryMethod === "shipping") {
+      if (!city || !street || !houseNumber) return toast.error(labels.missingAddress);
+    }
 
-//   if (!isValidILPhone(phone)) {
-//     toast.error(labels.invalidPhone);
-//     return;
-//   }
+    setIsPlacingOrder(true);
+    try {
+      const itemsMeta = cart.map((item) => {
+        const key = getKey(item.productId, item.optionIndex);
+        return {
+          productId: item.productId,
+          optionIndex: item.optionIndex,
+          note: (editNotes[key] ?? item.itemNote ?? "").trim(),
+          imageUrl: imageUrls[key] || item.itemImageUrl || "",
+          publicId: imagePublicIds[key] ?? "",
+        };
+      });
 
-//   if (email.trim() && !isValidEmail(email)) {
-//     toast.error(labels.invalidEmail);
-//     return;
-//   }
+      const { order, iframeUrl } = await placeOrder({
+        fullName,
+        phone,
+        email,
+        // ✅ if pickup -> send empty address
+        city: deliveryMethod === "shipping" ? city : "",
+        street: deliveryMethod === "shipping" ? street : "",
+        houseNumber: deliveryMethod === "shipping" ? houseNumber : "",
+        postalCode: deliveryMethod === "shipping" ? postalCode : "",
+        notes,
+        itemsMeta,
 
-//   setIsPlacingOrder(true);
-//   try {
-//     // 1) create pending order
-//    const result = await placeOrder({
-//   fullName, phone, email, city, street, houseNumber, postalCode, notes,
-// });
+        // ✅ NEW (requires types/backend updates too)
+        deliveryMethod,
+        shippingFee,
+      } as any);
 
-// // result.order.id (depends on your context return)
-// const orderId = "123";
+      if (!order?.id) throw new Error("Missing orderId");
+      if (!iframeUrl) throw new Error("Missing iframeUrl");
 
-// const resp = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/payments/start`, {
-//   method: "POST",
-//   headers: { "Content-Type": "application/json" },
-//   credentials: "include",
-//   body: JSON.stringify({ orderId, supplier: "ahlam" }), // or ahlamtok
-// });
-
-// const data = await resp.json();
-// if (!resp.ok) throw new Error(data.message || "Payment start failed");
-
-// window.location.href = data.iframeUrl;
-//   } catch (err: any) {
-//     toast.error(err?.message || "שגיאה בהתחלת תשלום");
-//   } finally {
-//     setIsPlacingOrder(false);
-//   }
-// };
-
-const handleCheckout = async () => {
-  if (!agreedToTerms) return toast.error(labels.mustAgree);
-  if (!isAuthenticated) return toast.error(labels.loginRequired);
-  if (!fullName || !phone || !city || !street || !houseNumber) return toast.error(labels.missingFields);
-  if (!isValidILPhone(phone)) return toast.error(labels.invalidPhone);
-  if (email.trim() && !isValidEmail(email)) return toast.error(labels.invalidEmail);
-
-  setIsPlacingOrder(true);
-  try {
-   const itemsMeta = cart.map((item) => {
-  const key = getKey(item.productId, item.optionIndex);
-    console.log("ITEM META BUILD", key, imageUrls[key]);
-
-  return {
-    productId: item.productId,
-    optionIndex: item.optionIndex,
-    note: (editNotes[key] ?? item.itemNote ?? "").trim(),
-imageUrl: imageUrls[key] || item.itemImageUrl || "",
-    publicId: imagePublicIds[key] ?? "",
+      setCurrentOrderId(order.id);
+      setIframeUrl(iframeUrl);
+      setPayOpen(true);
+    } catch (e: any) {
+      toast.error(e.message || "Payment failed");
+    } finally {
+      setIsPlacingOrder(false);
+    }
   };
-});
-
-
-    // ✅ placeOrder returns: { order, iframeUrl }
-    const { order, iframeUrl } = await placeOrder({
-      fullName,
-      phone,
-      email,
-      city,
-      street,
-      houseNumber,
-      postalCode,
-      notes,
-      itemsMeta
-    });
-
-    if (!order?.id) throw new Error("Missing orderId");
-    if (!iframeUrl) throw new Error("Missing iframeUrl");
-
-    setCurrentOrderId(order.id);
-    setIframeUrl(iframeUrl);
-    setPayOpen(true);
-  } catch (e: any) {
-    toast.error(e.message || "Payment failed");
-  } finally {
-    setIsPlacingOrder(false);
-  }
-};
-
-
-
 
   const handleClearCart = () => {
     clearCart();
@@ -490,20 +385,13 @@ imageUrl: imageUrls[key] || item.itemImageUrl || "",
 
   if (cart.length === 0) {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center py-12"
-        dir="rtl"
-        lang={isArabic ? "ar" : "he"}
-      >
+      <div className="min-h-screen flex items-center justify-center py-12" dir="rtl" lang={isArabic ? "ar" : "he"}>
         <div className="text-center">
           <ShoppingBag className="h-24 w-24 mx-auto mb-6 text-muted-foreground" />
           <h2 className="text-3xl font-bold mb-4">{labels.emptyTitle}</h2>
           <p className="text-muted-foreground mb-8">{labels.emptyBody}</p>
           <Link to="/products">
-            <Button
-              size="lg"
-              className="gradient-primary text-white shadow-premium"
-            >
+            <Button size="lg" className="gradient-primary text-white shadow-premium">
               {labels.startShopping}
               <ArrowLeft className="mr-2 h-5 w-5" />
             </Button>
@@ -517,8 +405,7 @@ imageUrl: imageUrls[key] || item.itemImageUrl || "",
     <div className="min-h-screen py-12" dir="rtl" lang={isArabic ? "ar" : "he"}>
       <div className="container mx-auto px-4">
         <h1 className="text-4xl font-black mb-8">
-          {labels.cartTitle}{" "}
-          <span className="text-gradient-primary">{labels.cartHighlight}</span>
+          {labels.cartTitle} <span className="text-gradient-primary">{labels.cartHighlight}</span>
         </h1>
 
         <div className="grid lg:grid-cols-3 gap-8">
@@ -527,31 +414,19 @@ imageUrl: imageUrls[key] || item.itemImageUrl || "",
             {cart.map((item) => {
               const key = getKey(item.productId, item.optionIndex);
               const isUpdating = updatingKey === key;
-              const displayQty =
-                editQuantities[key] !== undefined
-                  ? editQuantities[key]
-                  : item.quantity;
+              const displayQty = editQuantities[key] !== undefined ? editQuantities[key] : item.quantity;
 
               const noteValue = editNotes[key] ?? (item.itemNote || "");
               const isSavingNote = savingNoteKey === key;
 
               return (
                 <Card key={key} className="p-6 shadow-card">
-                  {/* ✅ responsive row (no shrinking on mobile) */}
                   <div className="flex flex-col md:flex-row gap-4">
-                    <img
-                      src={item.image}
-                      alt={item.productName}
-                      className="w-24 h-24 object-cover rounded-lg"
-                    />
+                    <img src={item.image} alt={item.productName} className="w-24 h-24 object-cover rounded-lg" />
 
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-lg mb-1">
-                        {item.productName}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mb-3">
-                        {item.optionName}
-                      </p>
+                      <h3 className="font-bold text-lg mb-1">{item.productName}</h3>
+                      <p className="text-sm text-muted-foreground mb-3">{item.optionName}</p>
 
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2 border rounded-lg">
@@ -559,13 +434,7 @@ imageUrl: imageUrls[key] || item.itemImageUrl || "",
                             variant="ghost"
                             size="icon"
                             disabled={isUpdating}
-                            onClick={() =>
-                              handleDecrement(
-                                item.productId,
-                                item.optionIndex,
-                                item.quantity
-                              )
-                            }
+                            onClick={() => handleDecrement(item.productId, item.optionIndex, item.quantity)}
                           >
                             <Minus className="h-4 w-4" />
                           </Button>
@@ -575,21 +444,8 @@ imageUrl: imageUrls[key] || item.itemImageUrl || "",
                             min={1}
                             value={displayQty}
                             disabled={isUpdating}
-                            onChange={(e) =>
-                              handleChangeInput(
-                                key,
-                                e.target.value,
-                                item.quantity
-                              )
-                            }
-                            onBlur={() =>
-                              handleBlurInput(
-                                item.productId,
-                                item.optionIndex,
-                                key,
-                                item.quantity
-                              )
-                            }
+                            onChange={(e) => handleChangeInput(key, e.target.value, item.quantity)}
+                            onBlur={() => handleBlurInput(item.productId, item.optionIndex, key, item.quantity)}
                             className="w-16 text-center border-0"
                             dir="ltr"
                           />
@@ -598,13 +454,7 @@ imageUrl: imageUrls[key] || item.itemImageUrl || "",
                             variant="ghost"
                             size="icon"
                             disabled={isUpdating}
-                            onClick={() =>
-                              handleIncrement(
-                                item.productId,
-                                item.optionIndex,
-                                item.quantity
-                              )
-                            }
+                            onClick={() => handleIncrement(item.productId, item.optionIndex, item.quantity)}
                           >
                             <Plus className="h-4 w-4" />
                           </Button>
@@ -614,9 +464,7 @@ imageUrl: imageUrls[key] || item.itemImageUrl || "",
                           variant="ghost"
                           size="icon"
                           disabled={isUpdating}
-                          onClick={() =>
-                            removeFromCart(item.productId, item.optionIndex)
-                          }
+                          onClick={() => removeFromCart(item.productId, item.optionIndex)}
                           className="text-destructive hover:text-destructive"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -624,101 +472,74 @@ imageUrl: imageUrls[key] || item.itemImageUrl || "",
                       </div>
                     </div>
 
-                    {/* ✅ price box: full width on mobile, side on desktop */}
                     <div className="w-full md:w-auto md:text-left flex md:block justify-between md:justify-start">
                       <div>
-                        <div className="text-sm text-muted-foreground mb-1">
-                          {labels.unitPrice}
-                        </div>
-                        <div className="font-bold text-primary">
-                          ₪{item.priceWithoutMaam}
-                        </div>
+                        <div className="text-sm text-muted-foreground mb-1">{labels.unitPrice}</div>
+                        <div className="font-bold text-primary">₪{item.priceWithoutMaam}</div>
                       </div>
 
                       <div className="text-right md:text-left">
-                        <div className="text-sm text-muted-foreground mt-0 md:mt-3">
-                          {labels.total}
-                        </div>
-                        <div className="font-bold text-xl">
-                          ₪{(item.priceWithoutMaam * displayQty).toFixed(2)}
-                        </div>
+                        <div className="text-sm text-muted-foreground mt-0 md:mt-3">{labels.total}</div>
+                        <div className="font-bold text-xl">₪{(item.priceWithoutMaam * displayQty).toFixed(2)}</div>
                       </div>
                     </div>
                   </div>
 
-                  {/* ✅ note section under (full width) */}
+                  {/* note */}
                   <div className="mt-4 space-y-2">
                     <Textarea
                       placeholder={labels.notePlaceholder}
                       value={noteValue}
-                      onChange={(e) =>
-                        setEditNotes((prev) => ({
-                          ...prev,
-                          [key]: e.target.value,
-                        }))
-                      }
+                      onChange={(e) => setEditNotes((prev) => ({ ...prev, [key]: e.target.value }))}
                     />
 
                     <Button
                       size="sm"
                       className="w-full md:w-auto"
                       disabled={isSavingNote}
-                      onClick={() =>
-                        handleSaveNote(
-                          item.productId,
-                          item.optionIndex,
-                          key,
-                          item.itemNote || ""
-                        )
-                      }
+                      onClick={() => handleSaveNote(item.productId, item.optionIndex, key, item.itemNote || "")}
                     >
                       {isSavingNote ? labels.saving : labels.saveNote}
                     </Button>
                   </div>
-                  {/* ✅ image upload */}
-<div className="mt-2 space-y-2">
-  <Input
-    type="file"
-    accept="image/*"
-    onChange={(e) => {
-      const f = e.target.files?.[0] || null;
-      setEditImages((prev) => ({ ...prev, [key]: f }));
-    }}
-  />
 
-  {/* preview local file */}
-  {editImages[key] && (
-    <img
-      src={URL.createObjectURL(editImages[key] as File)}
-      alt="preview"
-      className="w-32 h-32 object-cover rounded-lg border"
-    />
-  )}
+                  {/* image upload */}
+                  <div className="mt-2 space-y-2">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0] || null;
+                        setEditImages((prev) => ({ ...prev, [key]: f }));
+                      }}
+                    />
 
-  {/* preview uploaded url */}
-  {imageUrls[key] && (
-    <div className="text-sm">
-      <span className="text-muted-foreground">
-        {isArabic ? "تم حفظ الصورة:" : "תמונה נשמרה:"}
-      </span>{" "}
-      <a className="text-primary underline" href={imageUrls[key]} target="_blank" rel="noreferrer">
-        {isArabic ? "عرض" : "צפייה"}
-      </a>
-    </div>
-  )}
+                    {editImages[key] && (
+                      <img
+                        src={URL.createObjectURL(editImages[key] as File)}
+                        alt="preview"
+                        className="w-32 h-32 object-cover rounded-lg border"
+                      />
+                    )}
 
-  <Button
-    size="sm"
-    className="w-full md:w-auto"
-    disabled={uploadingImageKey === key || !editImages[key]}
-    onClick={() => handleUploadImage(key)}
-  >
-    {uploadingImageKey === key
-      ? (isArabic ? "جارٍ الرفع..." : "מעלה...")
-      : (isArabic ? "رفع صورة" : "העלה תמונה")}
-  </Button>
-</div>
+                    {imageUrls[key] && (
+                      <div className="text-sm">
+                        <span className="text-muted-foreground">{isArabic ? "تم حفظ الصورة:" : "תמונה נשמרה:"}</span>{" "}
+                        <a className="text-primary underline" href={imageUrls[key]} target="_blank" rel="noreferrer">
+                          {isArabic ? "عرض" : "צפייה"}
+                        </a>
+                      </div>
+                    )}
 
+                    <Button
+                      size="sm"
+                      className="w-full md:w-auto"
+                      disabled={uploadingImageKey === key || !editImages[key]}
+                      onClick={() => handleUploadImage(key)}
+                    >
+                      {uploadingImageKey === key ? (isArabic ? "جارٍ الرفع..." : "מעלה...") : isArabic ? "رفع صورة" : "העלה תמונה"}
+                    </Button>
+                  </div>
                 </Card>
               );
             })}
@@ -726,16 +547,51 @@ imageUrl: imageUrls[key] || item.itemImageUrl || "",
 
           {/* Summary + checkout form */}
           <div className="lg:col-span-1">
-            {/* ✅ sticky only on large screens */}
             <Card className="p-6 shadow-premium lg:sticky lg:top-24">
               <h2 className="text-2xl font-bold mb-6">{labels.orderSummary}</h2>
 
+              {/* Delivery options */}
+              <div className="space-y-2 mb-4">
+                <h3 className="text-lg font-semibold">{labels.deliveryTitle}</h3>
+
+                <label className="flex items-center gap-2 border rounded-lg p-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="delivery"
+                    value="pickup"
+                    checked={deliveryMethod === "pickup"}
+                    onChange={() => setDeliveryMethod("pickup")}
+                  />
+                  <span>{labels.pickup}</span>
+                </label>
+
+                <label className="flex items-center gap-2 border rounded-lg p-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="delivery"
+                    value="shipping"
+                    checked={deliveryMethod === "shipping"}
+                    onChange={() => setDeliveryMethod("shipping")}
+                  />
+                  <span>{labels.shipHome}</span>
+                </label>
+              </div>
+
+              {/* totals */}
               <div className="space-y-3 mb-6">
+                <div className="flex justify-between">
+                  <span>{labels.subtotal}</span>
+                  <span>₪{subtotal.toFixed(2)}</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>{labels.shippingFee}</span>
+                  <span>₪{shippingFee.toFixed(2)}</span>
+                </div>
+
                 <div className="border-t pt-3 flex justify-between text-xl font-bold">
                   <span>{labels.totalToPay}</span>
-                  <span className="text-2xl text-primary">
-                    ₪{totalWithoutMaam.toFixed(2)}
-                  </span>
+                  <span className="text-2xl text-primary">₪{totalToPay.toFixed(2)}</span>
                 </div>
               </div>
 
@@ -750,55 +606,58 @@ imageUrl: imageUrls[key] || item.itemImageUrl || "",
                   className="text-right placeholder:text-right"
                 />
 
-              <Input
-  placeholder={labels.phone}
-  value={phone}
-  onChange={(e) => setPhone(e.target.value)}
-  onBlur={() => phone && !isValidILPhone(phone) && toast.error(labels.invalidPhone)}
-  dir="ltr"
-  className="text-right placeholder:text-right"
-/>
-
-
-            <Input
-  placeholder={labels.email}
-  value={email}
-  onChange={(e) => setEmail(e.target.value)}
-  onBlur={() => email.trim() && !isValidEmail(email) && toast.error(labels.invalidEmail)}
-  dir="ltr"
-  className="text-right placeholder:text-right"
-/>
-
-
                 <Input
-                  placeholder={labels.city}
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  className="text-right placeholder:text-right"
-                />
-
-                <Input
-                  placeholder={labels.street}
-                  value={street}
-                  onChange={(e) => setStreet(e.target.value)}
-                  className="text-right placeholder:text-right"
-                />
-
-                <Input
-                  placeholder={labels.houseNumber}
-                  value={houseNumber}
-                  onChange={(e) => setHouseNumber(e.target.value)}
+                  placeholder={labels.phone}
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  onBlur={() => phone && !isValidILPhone(phone) && toast.error(labels.invalidPhone)}
                   dir="ltr"
                   className="text-right placeholder:text-right"
                 />
 
                 <Input
-                  placeholder={labels.postalCode}
-                  value={postalCode}
-                  onChange={(e) => setPostalCode(e.target.value)}
+                  placeholder={labels.email}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onBlur={() => email.trim() && !isValidEmail(email) && toast.error(labels.invalidEmail)}
                   dir="ltr"
                   className="text-right placeholder:text-right"
                 />
+
+                {/* ✅ HIDE address fields when pickup */}
+                {deliveryMethod === "shipping" && (
+                  <>
+                    <Input
+                      placeholder={labels.city}
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      className="text-right placeholder:text-right"
+                    />
+
+                    <Input
+                      placeholder={labels.street}
+                      value={street}
+                      onChange={(e) => setStreet(e.target.value)}
+                      className="text-right placeholder:text-right"
+                    />
+
+                    <Input
+                      placeholder={labels.houseNumber}
+                      value={houseNumber}
+                      onChange={(e) => setHouseNumber(e.target.value)}
+                      dir="ltr"
+                      className="text-right placeholder:text-right"
+                    />
+
+                    <Input
+                      placeholder={labels.postalCode}
+                      value={postalCode}
+                      onChange={(e) => setPostalCode(e.target.value)}
+                      dir="ltr"
+                      className="text-right placeholder:text-right"
+                    />
+                  </>
+                )}
 
                 <Textarea
                   placeholder={labels.orderNotes}
@@ -810,38 +669,34 @@ imageUrl: imageUrls[key] || item.itemImageUrl || "",
 
               <div className="space-y-3">
                 <div className="flex items-start gap-3 rounded-lg border p-3">
-  <input
-    id="agree"
-    type="checkbox"
-    checked={agreedToTerms}
-    onChange={(e) => setAgreedToTerms(e.target.checked)}
-    className="mt-1 h-4 w-4"
-  />
+                  <input
+                    id="agree"
+                    type="checkbox"
+                    checked={agreedToTerms}
+                    onChange={(e) => setAgreedToTerms(e.target.checked)}
+                    className="mt-1 h-4 w-4"
+                  />
 
-  <label htmlFor="agree" className="text-sm leading-6">
-    {labels.agreeToTerms}{" "}
-    <Link to="/terms" className="text-primary underline underline-offset-4">
-      {labels.terms}
-    </Link>
-  </label>
-</div>
+                  <label htmlFor="agree" className="text-sm leading-6">
+                    {labels.agreeToTerms}{" "}
+                    <Link to="/terms" className="text-primary underline underline-offset-4">
+                      {labels.terms}
+                    </Link>
+                  </label>
+                </div>
 
                 {isAuthenticated ? (
-                 <Button
-  size="lg"
-  onClick={handleCheckout}
-  disabled={isPlacingOrder || !agreedToTerms}
-  className="w-full gradient-primary text-white shadow-premium"
->
-  {isPlacingOrder ? labels.redirecting : labels.proceedToPay}
-</Button>
-
+                  <Button
+                    size="lg"
+                    onClick={handleCheckout}
+                    disabled={isPlacingOrder || !agreedToTerms}
+                    className="w-full gradient-primary text-white shadow-premium"
+                  >
+                    {isPlacingOrder ? labels.redirecting : labels.proceedToPay}
+                  </Button>
                 ) : (
                   <Link to="/login" className="block">
-                    <Button
-                      size="lg"
-                      className="w-full gradient-primary text-white shadow-premium"
-                    >
+                    <Button size="lg" className="w-full gradient-primary text-white shadow-premium">
                       {labels.loginToCheckout}
                     </Button>
                   </Link>
@@ -862,52 +717,51 @@ imageUrl: imageUrls[key] || item.itemImageUrl || "",
                   {labels.clearCart}
                 </Button>
 
-                <p className="text-xs text-muted-foreground text-center">
-                  {labels.cancelPolicy}
-                </p>
+                <p className="text-xs text-muted-foreground text-center">{labels.cancelPolicy}</p>
               </div>
             </Card>
           </div>
         </div>
       </div>
-      <Dialog open={payOpen} onOpenChange={(o) => {
-  setPayOpen(o);
-  if (!o) setIframeUrl(null);
-}}>
-  <DialogContent className="sm:max-w-2xl w-[95vw] h-[80vh] p-0 overflow-hidden">
-    <DialogHeader className="px-4 pt-4">
-      <DialogTitle className="text-center text-xl font-bold">
-        Tranzila — תשלום מאובטח
-      </DialogTitle>
-    </DialogHeader>
 
-    <div className="flex items-center justify-between gap-2 px-4 pb-2">
-      <Button
-        variant="secondary"
-        className="text-xs"
-        onClick={() => iframeUrl && window.open(iframeUrl, "_blank", "noopener")}
-        disabled={!iframeUrl}
+      <Dialog
+        open={payOpen}
+        onOpenChange={(o) => {
+          setPayOpen(o);
+          if (!o) setIframeUrl(null);
+        }}
       >
-        פתיחה בדף מלא
-      </Button>
-    </div>
+        <DialogContent className="sm:max-w-2xl w-[95vw] h-[80vh] p-0 overflow-hidden">
+          <DialogHeader className="px-4 pt-4">
+            <DialogTitle className="text-center text-xl font-bold">Tranzila — תשלום מאובטח</DialogTitle>
+          </DialogHeader>
 
-    <div className="w-full h-[calc(80vh-110px)]">
-      {iframeUrl ? (
-        <iframe
-          src={iframeUrl}
-          title="Tranzila Payment"
-          className="w-full h-full"
-          style={{ border: "none" }}
-          allow="payment"
-        />
-      ) : (
-        <div className="w-full h-full grid place-items-center">טוען…</div>
-      )}
-    </div>
-  </DialogContent>
-</Dialog>
+          <div className="flex items-center justify-between gap-2 px-4 pb-2">
+            <Button
+              variant="secondary"
+              className="text-xs"
+              onClick={() => iframeUrl && window.open(iframeUrl, "_blank", "noopener")}
+              disabled={!iframeUrl}
+            >
+              פתיחה בדף מלא
+            </Button>
+          </div>
 
+          <div className="w-full h-[calc(80vh-110px)]">
+            {iframeUrl ? (
+              <iframe
+                src={iframeUrl}
+                title="Tranzila Payment"
+                className="w-full h-full"
+                style={{ border: "none" }}
+                allow="payment"
+              />
+            ) : (
+              <div className="w-full h-full grid place-items-center">טוען…</div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

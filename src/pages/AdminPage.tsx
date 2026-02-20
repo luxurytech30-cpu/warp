@@ -10,24 +10,19 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import type { Category, Product, User, Order, CustomerDetails } from "@/types";
 
 import {
-  // categories
   getAdminCategories,
   createCategoryRequest,
   updateCategoryRequest,
   deleteCategoryRequest,
-  // products
   getAdminProducts,
   createProductRequest,
   updateProductRequest,
   deleteProductRequest,
-  // users
   getAllUsers,
   updateUserRoleRequest,
-  // orders
   getAllOrdersAdmin,
 } from "@/lib/api";
 
-// ✅ helper for Cloudinary signed upload
 import { uploadProductImageSigned } from "@/lib/cloudinaryUpload";
 
 type Tab = "categories" | "products" | "users" | "orders";
@@ -36,7 +31,7 @@ const AdminPage: React.FC = () => {
   const [tab, setTab] = useState<Tab>("products");
   const { isArabic } = useLanguage();
   const t = (ar: string, he: string) => (isArabic ? ar : he);
- 
+
   return (
     <div className="min-h-screen py-8 px-4" dir="rtl" lang={isArabic ? "ar" : "he"}>
       <div className="max-w-6xl mx-auto space-y-6">
@@ -81,7 +76,7 @@ const AdminPage: React.FC = () => {
 export default AdminPage;
 
 //
-// 1. Categories – simple CRUD
+// 1. Categories
 //
 
 const CategoriesSection: React.FC = () => {
@@ -135,15 +130,17 @@ const CategoriesSection: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm(t("هل تريد حذف هذا التصنيف؟", "האם למחוק את הקטגוריה הזו?"))) return;
+    if (!window.confirm(t("هل تريد حذف هذا التصنيف؟", "האם למחוק את הקטגוריה הזו?")))
+      return;
 
     try {
-      // check if there are products connected to this category
       const products = await getAdminProducts();
       const hasProducts = products.some((p) => p.category && p.category._id === id);
 
       if (hasProducts) {
-        toast.error(t("لا يمكن حذف تصنيف مرتبط بمنتجات", "לא ניתן למחוק קטגוריה שמקושרת למוצרים"));
+        toast.error(
+          t("لا يمكن حذف تصنيف مرتبط بمنتجات", "לא ניתן למחוק קטגוריה שמקושרת למוצרים")
+        );
         return;
       }
 
@@ -177,10 +174,7 @@ const CategoriesSection: React.FC = () => {
           >
             {editingId === cat._id ? (
               <div className="flex flex-1 gap-2">
-                <Input
-                  value={editingName}
-                  onChange={(e) => setEditingName(e.target.value)}
-                />
+                <Input value={editingName} onChange={(e) => setEditingName(e.target.value)} />
                 <Button size="sm" onClick={() => handleUpdate(cat._id)}>
                   {t("حفظ", "שמור")}
                 </Button>
@@ -209,11 +203,7 @@ const CategoriesSection: React.FC = () => {
                   >
                     {t("تعديل", "ערוך")}
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => handleDelete(cat._id)}
-                  >
+                  <Button size="sm" variant="destructive" onClick={() => handleDelete(cat._id)}>
                     {t("حذف", "מחק")}
                   </Button>
                 </div>
@@ -228,7 +218,7 @@ const CategoriesSection: React.FC = () => {
 };
 
 //
-// 2. Products – CRUD + options + Cloudinary signed upload
+// 2. Products (unchanged from your version)
 //
 
 type ProductOptionForm = {
@@ -284,15 +274,14 @@ const ProductsSection: React.FC = () => {
   const loadInitial = async () => {
     try {
       setLoading(true);
-      const [cats, prods] = await Promise.all([
-        getAdminCategories(),
-        getAdminProducts(),
-      ]);
+      const [cats, prods] = await Promise.all([getAdminCategories(), getAdminProducts()]);
       setCategories(cats);
       setProducts(prods);
     } catch (e) {
       console.error(e);
-      toast.error(t("خطأ في تحميل بيانات المنتجات/التصنيفات", "שגיאה בטעינת נתוני מוצרים/קטגוריות"));
+      toast.error(
+        t("خطأ في تحميل بيانات المنتجات/التصنيفات", "שגיאה בטעינת נתוני מוצרים/קטגוריות")
+      );
     } finally {
       setLoading(false);
     }
@@ -319,8 +308,7 @@ const ProductsSection: React.FC = () => {
     options: p.options.map((o) => ({
       optionName: o.optionName,
       priceWithoutMaam: String(o.priceWithoutMaam),
-      salePriceWithoutMaam:
-        o.salePriceWithoutMaam !== undefined ? String(o.salePriceWithoutMaam) : "",
+      salePriceWithoutMaam: o.salePriceWithoutMaam !== undefined ? String(o.salePriceWithoutMaam) : "",
       stock: String(o.stock),
     })),
   });
@@ -329,10 +317,7 @@ const ProductsSection: React.FC = () => {
     setForm(fromProductToForm(p));
     setIsEditing(true);
     setImageFile(null);
-
-    if (formRef.current) {
-      formRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const handleDeleteProduct = async (id: string) => {
@@ -349,18 +334,11 @@ const ProductsSection: React.FC = () => {
     }
   };
 
-  const handleFormChange = (
-    field: keyof ProductFormState,
-    value: string | boolean
-  ) => {
+  const handleFormChange = (field: keyof ProductFormState, value: string | boolean) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleOptionChange = (
-    index: number,
-    field: keyof ProductOptionForm,
-    value: string
-  ) => {
+  const handleOptionChange = (index: number, field: keyof ProductOptionForm, value: string) => {
     setForm((prev) => {
       const opts = [...prev.options];
       opts[index] = { ...opts[index], [field]: value };
@@ -373,12 +351,7 @@ const ProductsSection: React.FC = () => {
       ...prev,
       options: [
         ...prev.options,
-        {
-          optionName: "",
-          priceWithoutMaam: "",
-          salePriceWithoutMaam: "",
-          stock: "0",
-        },
+        { optionName: "", priceWithoutMaam: "", salePriceWithoutMaam: "", stock: "0" },
       ],
     }));
   };
@@ -393,35 +366,15 @@ const ProductsSection: React.FC = () => {
   };
 
   const validateForm = () => {
-    if (!form.name.trim()) {
-      toast.error(t("اسم المنتج مطلوب", "שם מוצר נדרש"));
-      return false;
-    }
-    if (!form.description.trim()) {
-      toast.error(t("وصف المنتج مطلوب", "תיאור מוצר נדרש"));
-      return false;
-    }
-    if (!form.categoryId) {
-      toast.error(t("يرجى اختيار التصنيف", "אנא בחר קטגוריה"));
-      return false;
-    }
-    if (!form.image.trim()) {
-      toast.error(t("يرجى رفع صورة للمنتج", "נא להעלות תמונה למוצר"));
-      return false;
-    }
-    if (!form.options.length) {
-      toast.error(t("يجب وجود خيار واحد على الأقل", "חייבת להיות לפחות אפשרות אחת"));
-      return false;
-    }
+    if (!form.name.trim()) return toast.error(t("اسم المنتج مطلوب", "שם מוצר נדרש")), false;
+    if (!form.description.trim()) return toast.error(t("وصف المنتج مطلوب", "תיאור מוצר נדרש")), false;
+    if (!form.categoryId) return toast.error(t("يرجى اختيار التصنيف", "אנא בחר קטגוריה")), false;
+    if (!form.image.trim()) return toast.error(t("يرجى رفع صورة للمنتج", "נא להעלות תמונה למוצר")), false;
+    if (!form.options.length) return toast.error(t("يجب وجود خيار واحد على الأقل", "חייבת להיות לפחות אפשרות אחת")), false;
+
     for (const opt of form.options) {
-      if (!opt.optionName.trim()) {
-        toast.error(t("اسم الخيار مطلوب", "שם אפשרות נדרש"));
-        return false;
-      }
-      if (!opt.priceWithoutMaam.trim()) {
-        toast.error(t("السعر بدون ضريبة مطلوب", "מחיר ללא מע\"מ נדרש"));
-        return false;
-      }
+      if (!opt.optionName.trim()) return toast.error(t("اسم الخيار مطلوب", "שם אפשרות נדרש")), false;
+      if (!opt.priceWithoutMaam.trim()) return toast.error(t("السعر بدون ضريبة مطلوب", 'מחיר ללא מע"מ נדרש')), false;
     }
     return true;
   };
@@ -448,9 +401,7 @@ const ProductsSection: React.FC = () => {
     const payloadOptions = form.options.map((o) => ({
       optionName: o.optionName.trim(),
       priceWithoutMaam: Number(o.priceWithoutMaam) || 0,
-      salePriceWithoutMaam: o.salePriceWithoutMaam
-        ? Number(o.salePriceWithoutMaam)
-        : undefined,
+      salePriceWithoutMaam: o.salePriceWithoutMaam ? Number(o.salePriceWithoutMaam) : undefined,
       stock: Number(o.stock) || 0,
     }));
 
@@ -484,7 +435,6 @@ const ProductsSection: React.FC = () => {
     <Card className="p-4 space-y-6">
       <h2 className="text-xl font-semibold mb-2">{t("المنتجات", "מוצרים")}</h2>
 
-      {/* Product form */}
       <form
         ref={formRef}
         onSubmit={handleSubmit}
@@ -492,11 +442,7 @@ const ProductsSection: React.FC = () => {
       >
         <div className="space-y-2">
           <Label htmlFor="name">{t("اسم المنتج", "שם מוצר")}</Label>
-          <Input
-            id="name"
-            value={form.name}
-            onChange={(e) => handleFormChange("name", e.target.value)}
-          />
+          <Input id="name" value={form.name} onChange={(e) => handleFormChange("name", e.target.value)} />
         </div>
 
         <div className="space-y-2">
@@ -526,7 +472,6 @@ const ProductsSection: React.FC = () => {
           />
         </div>
 
-        {/* Cloudinary signed image upload */}
         <div className="space-y-2">
           <Label>{t("صورة المنتج", "תמונת מוצר")}</Label>
           <div className="flex gap-2 items-center">
@@ -536,12 +481,7 @@ const ProductsSection: React.FC = () => {
               disabled={uploadingImg}
               onChange={(e) => setImageFile(e.target.files?.[0] || null)}
             />
-            <Button
-              type="button"
-              variant="outline"
-              disabled={!imageFile || uploadingImg}
-              onClick={handleUploadImage}
-            >
+            <Button type="button" variant="outline" disabled={!imageFile || uploadingImg} onClick={handleUploadImage}>
               {uploadingImg ? t("جاري الرفع...", "מעלה...") : t("رفع", "העלה")}
             </Button>
           </div>
@@ -554,11 +494,7 @@ const ProductsSection: React.FC = () => {
           />
 
           {form.image && (
-            <img
-              src={form.image}
-              alt="preview"
-              className="w-24 h-24 object-cover rounded-md border"
-            />
+            <img src={form.image} alt="preview" className="w-24 h-24 object-cover rounded-md border" />
           )}
         </div>
 
@@ -572,34 +508,20 @@ const ProductsSection: React.FC = () => {
           <Label htmlFor="isTop">{t("منتج مميز (Top)", "מוצר מובחר (Top)")}</Label>
         </div>
 
-        {/* Options list */}
         <div className="md:col-span-2 space-y-3 mt-2">
           <div className="flex items-center justify-between">
             <h3 className="font-medium">{t("الخيارات", "אפשרויות")}</h3>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleAddOption}
-            >
+            <Button type="button" variant="outline" size="sm" onClick={handleAddOption}>
               {t("إضافة خيار", "הוסף אפשרות")}
             </Button>
           </div>
 
           <div className="space-y-2">
             {form.options.map((opt, index) => (
-              <div
-                key={index}
-                className="grid gap-2 md:grid-cols-4 border rounded-md p-3"
-              >
+              <div key={index} className="grid gap-2 md:grid-cols-4 border rounded-md p-3">
                 <div className="space-y-1">
                   <Label>{t("اسم الخيار", "שם אפשרות")}</Label>
-                  <Input
-                    value={opt.optionName}
-                    onChange={(e) =>
-                      handleOptionChange(index, "optionName", e.target.value)
-                    }
-                  />
+                  <Input value={opt.optionName} onChange={(e) => handleOptionChange(index, "optionName", e.target.value)} />
                 </div>
 
                 <div className="space-y-1">
@@ -608,9 +530,7 @@ const ProductsSection: React.FC = () => {
                     type="number"
                     step="0.01"
                     value={opt.priceWithoutMaam}
-                    onChange={(e) =>
-                      handleOptionChange(index, "priceWithoutMaam", e.target.value)
-                    }
+                    onChange={(e) => handleOptionChange(index, "priceWithoutMaam", e.target.value)}
                     dir="ltr"
                   />
                 </div>
@@ -621,13 +541,7 @@ const ProductsSection: React.FC = () => {
                     type="number"
                     step="0.01"
                     value={opt.salePriceWithoutMaam}
-                    onChange={(e) =>
-                      handleOptionChange(
-                        index,
-                        "salePriceWithoutMaam",
-                        e.target.value
-                      )
-                    }
+                    onChange={(e) => handleOptionChange(index, "salePriceWithoutMaam", e.target.value)}
                     dir="ltr"
                   />
                 </div>
@@ -635,14 +549,7 @@ const ProductsSection: React.FC = () => {
                 <div className="space-y-1">
                   <Label>{t("المخزون", "מלאי")}</Label>
                   <div className="flex gap-2">
-                    <Input
-                      type="number"
-                      value={opt.stock}
-                      onChange={(e) =>
-                        handleOptionChange(index, "stock", e.target.value)
-                      }
-                      dir="ltr"
-                    />
+                    <Input type="number" value={opt.stock} onChange={(e) => handleOptionChange(index, "stock", e.target.value)} dir="ltr" />
                     <Button
                       type="button"
                       variant="destructive"
@@ -665,11 +572,12 @@ const ProductsSection: React.FC = () => {
               {t("إلغاء التعديل", "בטל עריכה")}
             </Button>
           )}
-          <Button type="submit">{isEditing ? t("حفظ التغييرات", "שמור שינויים") : t("إنشاء منتج", "צור מוצר")}</Button>
+          <Button type="submit">
+            {isEditing ? t("حفظ التغييرات", "שמור שינויים") : t("إنشاء منتج", "צור מוצר")}
+          </Button>
         </div>
       </form>
 
-      {/* Products table */}
       <div className="space-y-2">
         <h3 className="font-semibold">{t("قائمة المنتجات", "רשימת מוצרים")}</h3>
         {loading ? (
@@ -694,11 +602,7 @@ const ProductsSection: React.FC = () => {
                   <tr key={p._id} className="border-b">
                     <td className="p-2">
                       {p.image ? (
-                        <img
-                          src={p.image}
-                          alt={p.name}
-                          className="w-10 h-10 object-cover rounded border"
-                        />
+                        <img src={p.image} alt={p.name} className="w-10 h-10 object-cover rounded border" />
                       ) : (
                         "-"
                       )}
@@ -729,7 +633,7 @@ const ProductsSection: React.FC = () => {
 };
 
 //
-// 3. Users – show + change role
+// 3. Users
 //
 
 const UsersSection: React.FC = () => {
@@ -790,18 +694,10 @@ const UsersSection: React.FC = () => {
                   <td className="p-2">{u.role === "admin" ? t("مدير", "מנהל") : t("عميل", "לקוח")}</td>
                   <td className="p-2">
                     <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant={u.role === "customer" ? "default" : "outline"}
-                        onClick={() => changeRole(u.id, "customer")}
-                      >
+                      <Button size="sm" variant={u.role === "customer" ? "default" : "outline"} onClick={() => changeRole(u.id, "customer")}>
                         {t("عميل", "לקוח")}
                       </Button>
-                      <Button
-                        size="sm"
-                        variant={u.role === "admin" ? "default" : "outline"}
-                        onClick={() => changeRole(u.id, "admin")}
-                      >
+                      <Button size="sm" variant={u.role === "admin" ? "default" : "outline"} onClick={() => changeRole(u.id, "admin")}>
                         {t("مدير", "מנהל")}
                       </Button>
                     </div>
@@ -818,6 +714,7 @@ const UsersSection: React.FC = () => {
 
 //
 // 4. Orders – list + details
+// ✅ UPDATED: show shipping/pickup + fee + final total
 //
 
 const OrdersSection: React.FC = () => {
@@ -833,8 +730,6 @@ const OrdersSection: React.FC = () => {
     try {
       setLoading(true);
       const data = await getAllOrdersAdmin();
-      console.log("ADMIN ORDERS FIRST ITEM:", data?.[0]?.items?.[0]);
-
       setOrders(data);
       if (data.length && !selectedOrderId) {
         setSelectedOrderId(data[0].id);
@@ -859,6 +754,12 @@ const OrdersSection: React.FC = () => {
     return `${c.fullName} (${c.phone})`;
   };
 
+  const deliveryLabel = (method?: any) => {
+    const m = method || "pickup";
+    if (m === "shipping") return t("شحن", "משלוח");
+    return t("استلام", "איסוף");
+  };
+
   const scrollToDetails = () => {
     if (!detailsRef.current) return;
     const rect = detailsRef.current.getBoundingClientRect();
@@ -874,6 +775,7 @@ const OrdersSection: React.FC = () => {
   return (
     <Card className="p-4 space-y-4">
       <h2 className="text-xl font-semibold mb-2">{t("كل الطلبات", "כל ההזמנות")}</h2>
+
       {loading ? (
         <p>{t("جاري التحميل...", "טוען...")}</p>
       ) : orders.length === 0 ? (
@@ -887,179 +789,230 @@ const OrdersSection: React.FC = () => {
                   <th className="text-right p-2">{t("رقم الطلب", "מספר הזמנה")}</th>
                   <th className="text-right p-2">{t("التاريخ", "תאריך")}</th>
                   <th className="text-right p-2">{t("العميل", "לקוח")}</th>
-                  <th className="text-right p-2">{t("الإجمالي مع الضريبة", "סה\"כ עם מע\"מ")}</th>
+
+                  {/* ✅ NEW */}
+                  <th className="text-right p-2">{t("الطريقة", "שיטה")}</th>
+
+                  {/* ✅ CHANGED: show final total */}
+                  <th className="text-right p-2">{t("الإجمالي للدفع", "סה\"כ לתשלום")}</th>
+
                   <th className="text-right p-2">{t("الحالة", "סטטוס")}</th>
                   <th className="text-right p-2">{t("التفاصيل", "פרטים")}</th>
                 </tr>
               </thead>
               <tbody>
-                {orders.map((o) => (
-                  <tr
-                    key={o.id}
-                    className={
-                      "border-b " + (o.id === selectedOrderId ? "bg-muted/60" : "")
-                    }
-                  >
-                    <td className="p-2">{o.id}</td>
-                    <td className="p-2">{new Date(o.date).toLocaleString(isArabic ? "ar" : "he")}</td>
-                    <td className="p-2">{formatCustomer(o.customerDetails)}</td>
-                    <td className="p-2">
-                      <span dir="ltr">{o.totalWithoutMaam.toFixed(2)} ₪</span>
-                    </td>
-                    <td className="p-2">{o.status}</td>
-                    <td className="p-2">
-                      <Button
-                        size="sm"
-                        variant={o.id === selectedOrderId ? "default" : "outline"}
-                        onClick={() => {
-                          setSelectedOrderId(o.id);
-                          setTimeout(scrollToDetails, 0);
-                        }}
-                      >
-                        {t("عرض", "הצג")}
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
+                {orders.map((o) => {
+                  const shippingFee = (o as any).shippingFee ?? 0;
+                  const totalToPay =
+                    (o as any).totalToPay ??
+                    Number(o.totalWithoutMaam || 0) + Number(shippingFee || 0);
+
+                  const method =
+                    (o as any).deliveryMethod ||
+                    (o.customerDetails as any)?.deliveryMethod ||
+                    "pickup";
+
+                  return (
+                    <tr
+                      key={o.id}
+                      className={"border-b " + (o.id === selectedOrderId ? "bg-muted/60" : "")}
+                    >
+                      <td className="p-2">{o.id}</td>
+                      <td className="p-2">
+                        {new Date(o.date).toLocaleString(isArabic ? "ar" : "he")}
+                      </td>
+                      <td className="p-2">{formatCustomer(o.customerDetails)}</td>
+
+                      {/* ✅ NEW */}
+                      <td className="p-2">{deliveryLabel(method)}</td>
+
+                      {/* ✅ show final total */}
+                      <td className="p-2">
+                        <span dir="ltr">{Number(totalToPay).toFixed(2)} ₪</span>
+                      </td>
+
+                      <td className="p-2">{o.status}</td>
+                      <td className="p-2">
+                        <Button
+                          size="sm"
+                          variant={o.id === selectedOrderId ? "default" : "outline"}
+                          onClick={() => {
+                            setSelectedOrderId(o.id);
+                            setTimeout(scrollToDetails, 0);
+                          }}
+                        >
+                          {t("عرض", "הצג")}
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
 
-          {selectedOrder && (
-            <div ref={detailsRef} className="mt-4 grid gap-4 md:grid-cols-3">
-              <Card className="p-4 space-y-2 md:col-span-1">
-                <h3 className="font-semibold mb-2">{t("تفاصيل الطلب", "פרטי הזמנה")}</h3>
-                <p>
-                  <span className="font-medium">{t("رقم الطلب:", "מספר הזמנה:")}</span> {selectedOrder.id}
-                </p>
-                <p>
-                  <span className="font-medium">{t("التاريخ:", "תאריך:")}</span>{" "}
-                  {new Date(selectedOrder.date).toLocaleString(isArabic ? "ar" : "he")}
-                </p>
-                <p>
-                  <span className="font-medium">{t("الحالة:", "סטטוס:")}</span> {selectedOrder.status}
-                </p>
-                <p>
-                  <span className="font-medium">{t("الإجمالي:", "סה\"כ:")}</span>{" "}
-                  <span dir="ltr">{selectedOrder.totalWithoutMaam.toFixed(2)} ₪</span>
-                </p>
-               
-              </Card>
+          {selectedOrder && (() => {
+            const method =
+              (selectedOrder as any).deliveryMethod ||
+              (selectedOrder.customerDetails as any)?.deliveryMethod ||
+              "pickup";
+            const shippingFee =
+              (selectedOrder as any).shippingFee ??
+              (selectedOrder.customerDetails as any)?.shippingFee ??
+              0;
+            const totalToPay =
+              (selectedOrder as any).totalToPay ??
+              Number(selectedOrder.totalWithoutMaam || 0) + Number(shippingFee || 0);
 
-              <Card className="p-4 space-y-2 md:col-span-1">
-                <h3 className="font-semibold mb-2">{t("تفاصيل العميل", "פרטי לקוח")}</h3>
-                {selectedOrder.customerDetails ? (
-                  <>
-                    <p>
-                      <span className="font-medium">{t("الاسم:", "שם:")}</span>{" "}
-                      {selectedOrder.customerDetails.fullName}
-                    </p>
-                    <p>
-                      <span className="font-medium">{t("الهاتف:", "טלפון:")}</span>{" "}
-                      <span dir="ltr">{selectedOrder.customerDetails.phone}</span>
-                    </p>
-                    {selectedOrder.customerDetails.email && (
+            return (
+              <div ref={detailsRef} className="mt-4 grid gap-4 md:grid-cols-3">
+                <Card className="p-4 space-y-2 md:col-span-1">
+                  <h3 className="font-semibold mb-2">{t("تفاصيل الطلب", "פרטי הזמנה")}</h3>
+                  <p>
+                    <span className="font-medium">{t("رقم الطلب:", "מספר הזמנה:")}</span>{" "}
+                    {selectedOrder.id}
+                  </p>
+                  <p>
+                    <span className="font-medium">{t("التاريخ:", "תאריך:")}</span>{" "}
+                    {new Date(selectedOrder.date).toLocaleString(isArabic ? "ar" : "he")}
+                  </p>
+                  <p>
+                    <span className="font-medium">{t("الحالة:", "סטטוס:")}</span>{" "}
+                    {selectedOrder.status}
+                  </p>
+
+                  {/* ✅ NEW */}
+                  <p>
+                    <span className="font-medium">{t("الطريقة:", "שיטה:")}</span>{" "}
+                    {deliveryLabel(method)}
+                  </p>
+                  <p>
+                    <span className="font-medium">{t("رسوم الشحن:", "דמי משלוח:")}</span>{" "}
+                    <span dir="ltr">{Number(shippingFee).toFixed(2)} ₪</span>
+                  </p>
+
+                  <p>
+                    <span className="font-medium">{t("الإجمالي للدفع:", 'סה"כ לתשלום:')}</span>{" "}
+                    <span dir="ltr">{Number(totalToPay).toFixed(2)} ₪</span>
+                  </p>
+
+                  {/* keep your old totalWithoutMaam info if you want */}
+                  <p className="text-xs text-muted-foreground">
+                    {t("مجموع المنتجات فقط:", "סך מוצרים בלבד:")}{" "}
+                    <span dir="ltr">{Number(selectedOrder.totalWithoutMaam).toFixed(2)} ₪</span>
+                  </p>
+                </Card>
+
+                <Card className="p-4 space-y-2 md:col-span-1">
+                  <h3 className="font-semibold mb-2">{t("تفاصيل العميل", "פרטי לקוח")}</h3>
+                  {selectedOrder.customerDetails ? (
+                    <>
                       <p>
-                        <span className="font-medium">{t("البريد:", "דוא\"ל:")}</span>{" "}
-                        <span dir="ltr">{selectedOrder.customerDetails.email}</span>
+                        <span className="font-medium">{t("الاسم:", "שם:")}</span>{" "}
+                        {selectedOrder.customerDetails.fullName}
                       </p>
-                    )}
-                    <p>
-                      <span className="font-medium">{t("العنوان:", "כתובת:")}</span>{" "}
-                      {selectedOrder.customerDetails.street}{" "}
-                      {selectedOrder.customerDetails.houseNumber},{" "}
-                      {selectedOrder.customerDetails.city}
-                    </p>
-                    {selectedOrder.customerDetails.postalCode && (
                       <p>
-                        <span className="font-medium">{t("الرمز البريدي:", "מיקוד:")}</span>{" "}
-                        <span dir="ltr">{selectedOrder.customerDetails.postalCode}</span>
+                        <span className="font-medium">{t("الهاتف:", "טלפון:")}</span>{" "}
+                        <span dir="ltr">{selectedOrder.customerDetails.phone}</span>
                       </p>
-                    )}
-                    {selectedOrder.customerDetails.notes && (
+                      {selectedOrder.customerDetails.email && (
+                        <p>
+                          <span className="font-medium">{t("البريد:", 'דוא"ל:')}</span>{" "}
+                          <span dir="ltr">{selectedOrder.customerDetails.email}</span>
+                        </p>
+                      )}
                       <p>
-                        <span className="font-medium">{t("ملاحظات:", "הערות:")}</span>{" "}
-                        {selectedOrder.customerDetails.notes}
+                        <span className="font-medium">{t("العنوان:", "כתובת:")}</span>{" "}
+                        {selectedOrder.customerDetails.street}{" "}
+                        {selectedOrder.customerDetails.houseNumber},{" "}
+                        {selectedOrder.customerDetails.city}
                       </p>
-                    )}
-                  </>
-                ) : (
-                  <p>{t("لا توجد تفاصيل عميل.", "אין פרטי לקוח.")}</p>
-                )}
-              </Card>
+                      {selectedOrder.customerDetails.postalCode && (
+                        <p>
+                          <span className="font-medium">{t("الرمز البريدي:", "מיקוד:")}</span>{" "}
+                          <span dir="ltr">{selectedOrder.customerDetails.postalCode}</span>
+                        </p>
+                      )}
+                      {selectedOrder.customerDetails.notes && (
+                        <p>
+                          <span className="font-medium">{t("ملاحظات:", "הערות:")}</span>{" "}
+                          {selectedOrder.customerDetails.notes}
+                        </p>
+                      )}
+                    </>
+                  ) : (
+                    <p>{t("لا توجد تفاصيل عميل.", "אין פרטי לקוח.")}</p>
+                  )}
+                </Card>
 
-              <Card className="p-4 space-y-2 md:col-span-1 md:row-span-2">
-                <h3 className="font-semibold mb-2">{t("منتجات الطلب", "מוצרי ההזמנה")}</h3>
-                {selectedOrder.items.length === 0 ? (
-                  <p>{t("لا توجد عناصر.", "אין פריטים.")}</p>
-                ) : (
-                  <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
-                    {selectedOrder.items.map((item, idx) => (
-                    <div key={idx} className="border rounded-md p-2 flex gap-3">
-  {/* Images column */}
-  <div className="flex flex-col gap-2">
-    {/* Product image */}
-    {item.image && (
-      <div className="w-20">
-        <div className="text-[11px] font-semibold text-muted-foreground mb-1">
-          {t("صورة المنتج", "תמונת מוצר")}
-        </div>
-        <img
-          src={item.image}
-          alt={item.productName}
-          className="w-20 h-20 object-cover rounded border"
-        />
-      </div>
-    )}
+                <Card className="p-4 space-y-2 md:col-span-1 md:row-span-2">
+                  <h3 className="font-semibold mb-2">{t("منتجات الطلب", "מוצרי ההזמנה")}</h3>
+                  {selectedOrder.items.length === 0 ? (
+                    <p>{t("لا توجد عناصر.", "אין פריטים.")}</p>
+                  ) : (
+                    <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+                      {selectedOrder.items.map((item, idx) => (
+                        <div key={idx} className="border rounded-md p-2 flex gap-3">
+                          <div className="flex flex-col gap-2">
+                            {item.image && (
+                              <div className="w-20">
+                                <div className="text-[11px] font-semibold text-muted-foreground mb-1">
+                                  {t("صورة المنتج", "תמונת מוצר")}
+                                </div>
+                                <img
+                                  src={item.image}
+                                  alt={item.productName}
+                                  className="w-20 h-20 object-cover rounded border"
+                                />
+                              </div>
+                            )}
 
-    {/* User uploaded image */}
-    {item.itemImageUrl && item.itemImageUrl.trim() !== "" && (
-      <div className="w-20">
-        <div className="text-[11px] font-semibold text-muted-foreground mb-1">
-          {t("صورة العميل", "תמונת הלקוח")}
-        </div>
-        <a href={item.itemImageUrl} target="_blank" rel="noreferrer">
-          <img
-            src={item.itemImageUrl}
-            alt={t("صورة مرفوعة من العميل", "תמונה שהועלתה ע״י הלקוח")}
-            className="w-20 h-20 object-cover rounded border"
-          />
-        </a>
-      </div>
-    )}
-  </div>
+                            {item.itemImageUrl && item.itemImageUrl.trim() !== "" && (
+                              <div className="w-20">
+                                <div className="text-[11px] font-semibold text-muted-foreground mb-1">
+                                  {t("صورة العميل", "תמונת הלקוח")}
+                                </div>
+                                <a href={item.itemImageUrl} target="_blank" rel="noreferrer">
+                                  <img
+                                    src={item.itemImageUrl}
+                                    alt={t("صورة مرفوعة من العميل", "תמונה שהועלתה ע״י הלקוח")}
+                                    className="w-20 h-20 object-cover rounded border"
+                                  />
+                                </a>
+                              </div>
+                            )}
+                          </div>
 
-  {/* Text */}
-  <div className="flex-1 text-sm">
-    <div className="font-medium">
-      {item.productName} – {item.optionName}
-    </div>
+                          <div className="flex-1 text-sm">
+                            <div className="font-medium">
+                              {item.productName} – {item.optionName}
+                            </div>
 
-    <div>
-      {t("الكمية", "כמות")}: {item.quantity} | {t("سعر القطعة", "מחיר יחידה")}:{" "}
-      <span dir="ltr">{item.priceWithoutMaam.toFixed(2)} ₪</span>
-    </div>
+                            <div>
+                              {t("الكمية", "כמות")}: {item.quantity} | {t("سعر القطعة", "מחיר יחידה")}:{" "}
+                              <span dir="ltr">{item.priceWithoutMaam.toFixed(2)} ₪</span>
+                            </div>
 
-    <div className="font-medium">
-      {t("المجموع", "סה\"כ")}:{" "}
-      <span dir="ltr">{(item.priceWithoutMaam * item.quantity).toFixed(2)} ₪</span>
-    </div>
+                            <div className="font-medium">
+                              {t("المجموع", 'סה"כ')}:{" "}
+                              <span dir="ltr">{(item.priceWithoutMaam * item.quantity).toFixed(2)} ₪</span>
+                            </div>
 
-    {item.itemNote && item.itemNote.trim() !== "" && (
-      <div className="mt-2 text-sm">
-        <span className="font-medium">{t("ملاحظة للمنتج:", "הערה למוצר:")}</span>{" "}
-        <span className="text-muted-foreground">{item.itemNote}</span>
-      </div>
-    )}
-  </div>
-</div>
-
-                    ))}
-                  </div>
-                )}
-              </Card>
-            </div>
-          )}
+                            {item.itemNote && item.itemNote.trim() !== "" && (
+                              <div className="mt-2 text-sm">
+                                <span className="font-medium">{t("ملاحظة للمنتج:", "הערה למוצר:")}</span>{" "}
+                                <span className="text-muted-foreground">{item.itemNote}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </Card>
+              </div>
+            );
+          })()}
         </>
       )}
     </Card>

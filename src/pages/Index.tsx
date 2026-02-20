@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ArrowLeft, Sparkles, Shield, Truck, Award } from "lucide-react";
+import { ArrowLeft, Sparkles, Shield, Truck, Award, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import heroImg from "@/assets/hero.jpeg";
-import hero2 from "@/assets/hero2.jpeg"
-import title from "@/assets/tit2.png"
+import hero2 from "@/assets/hero2.jpeg";
+import title from "@/assets/tit2.png";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 import { getProducts } from "@/lib/api";
@@ -17,15 +17,17 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { isArabic } = useLanguage();
+
   function ScrollToTop() {
-  const { pathname } = useLocation();
+    const { pathname } = useLocation();
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" }); // or "smooth"
-  }, [pathname]);
+    useEffect(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" }); // or "smooth"
+    }, [pathname]);
 
-  return null;
-}
+    return null;
+  }
+
   const labels = isArabic
     ? {
         loadError: "حدث خطأ أثناء تحميل المنتجات",
@@ -40,9 +42,15 @@ const Index = () => {
         featureQualityTitle: "جودة فاخرة",
         featureQualityBody: "مواد مختارة بعناية وتغليف أنيق",
         featureShippingTitle: "شحن سريع",
-        featureShippingBody: "إلى بابك مع تحديثات لحظية للحالة",
+        featureShippingBody: "الشحن من 3 حتى 5 ايام عمل",
         featureWrapTitle: "تغليف ساحر",
         featureWrapBody: "علب وشرايط حريرية جاهزة للإهداء",
+
+        // ✅ NEW
+        featureGiftTitle: "هدية مجانية لكل طلب",
+        featureGiftBody:
+          "هدية مجانية من Perfect Wrap لكل طلب. لمعرفة كيفية اختيار الهدية من المتجر، تابعنا على إنستغرام:",
+
         topTitle: "منتجات",
         topHighlight: "مميزة",
         topSubtitle: "مختارات أنيقة تم تنسيقها لعشاق اللمسات الشخصية",
@@ -55,11 +63,11 @@ const Index = () => {
           "اختار التصميم، أضيفي الاسم أو الرسالة، واترك لنا مهمة إعداد التغليف الفاخر والشحن السريع.",
         ctaShop: "ابدئ التسوق",
         ctaExpert: "تحدث مع خبيرة",
-        titleName:"بيرفكت راب"
+        titleName: "بيرفكت راب",
       }
     : {
         loadError: "אירעה שגיאה בעת טעינת המוצרים",
-heroBadge: "חנות - סטודיו - סדנאות",
+        heroBadge: "חנות - סטודיו - סדנאות",
         heroHeadline: "מתנות יוקרתיות בנגיעה אישית",
         heroCopy:
           "גלו את הקולקציה הבלעדית שלנו של מתנות מודפסות בקפידה, מעוצבות במיוחד כדי להוסיף נגיעה של אלגנטיות וייחוד לכל האירועים המיוחדים שלכם. הפכו את הרגעים שלכם ליפים יותר עם מתנות שמבטאות את הטעם שלכם ונשארות זיכרון שלא נשכח.",
@@ -73,6 +81,12 @@ heroBadge: "חנות - סטודיו - סדנאות",
         featureShippingBody: "עד הבית עם עדכונים בזמן אמת",
         featureWrapTitle: "אריזה קסומה",
         featureWrapBody: "קופסאות וסרטי משי מוכנים למתנה",
+
+        // ✅ NEW
+        featureGiftTitle: "מתנה חינם לכל הזמנה",
+        featureGiftBody:
+          "מתנה חינם מ-Perfect Wrap לכל הזמנה. כדי לדעת איך לבחור את המתנה מהחנות, עקבו אחרינו באינסטגרם:",
+
         topTitle: "מוצרים",
         topHighlight: "מובחרים",
         topSubtitle: "בחירות אלגנטיות שתואמו לחובבי הנגיעה האישית",
@@ -85,7 +99,7 @@ heroBadge: "חנות - סטודיו - סדנאות",
           "בחרו את העיצוב, הוסיפו שם או מסר, והשאירו לנו את המשימה להכין את האריזה היוקרתית והמשלוח המהיר.",
         ctaShop: "התחילו לקנות",
         ctaExpert: "דברו עם מומחית",
-        titleName:"פרפקט ראב"
+        titleName: "פרפקט ראב",
       };
 
   useEffect(() => {
@@ -129,112 +143,96 @@ heroBadge: "חנות - סטודיו - סדנאות",
         <div className="container relative mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left: text */}
-         <div className="order-2 lg:order-1 max-w-3xl space-y-6 animate-fade-slide-up text-primary
-                flex flex-col items-center text-center">
-  <p
-    className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-4 py-2 text-sm
+            <div
+              className="order-2 lg:order-1 max-w-3xl space-y-6 animate-fade-slide-up text-primary
+                flex flex-col items-center text-center"
+            >
+              <p
+                className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-4 py-2 text-sm
                backdrop-blur border border-primary/20"
-  >
-    <Sparkles className="h-4 w-4" />
-    <span>{labels.heroBadge}</span>
-  </p>
-
-<h1 className="drop-shadow-[0_6px_20px_rgba(0,0,0,0.35)] flex flex-col items-center gap-1">
-  <img
-    src={title}
-    width={200}
-    height={50}
-    alt=""
-    className="block"
-  />
-
-  <span
-    className="font-tajawal bg-gradient-to-l from-primary via-accent to-primary bg-clip-text text-transparent
-               text-2xl md:text-3xl leading-none"
-    style={{ fontWeight: 900 }}
-  >
-    {labels.heroHeadline}
-  </span>
-</h1>
-
-
-
-
-              <p className="text-lg md:text-xl text-black">
-                     {labels.heroCopy}
+              >
+                <Sparkles className="h-4 w-4" />
+                <span>{labels.heroBadge}</span>
               </p>
 
-     {/* Phone centered under the buttons */}
-<div className="flex flex-col items-center gap-3">
-  <div className="flex flex-wrap justify-center gap-3">
-    <Link to="/products">
-      <Button
-        size="lg"
-        className="gradient-primary text-white shadow-premium text-sm md:text-base
-                   px-5 py-3 h-auto rounded-xl"
-      >
-        {labels.discoverProducts}
-        <ArrowLeft className="mr-2 h-4 w-4" />
-      </Button>
-    </Link>
+              <h1 className="drop-shadow-[0_6px_20px_rgba(0,0,0,0.35)] flex flex-col items-center gap-1">
+                <img src={title} width={200} height={50} alt="" className="block" />
 
-    <Link to="/contact">
-      <Button
-        size="lg"
-        variant="outline"
-        className="bg-primary/10 backdrop-blur border-primary text-primary
+                <span
+                  className="font-tajawal bg-gradient-to-l from-primary via-accent to-primary bg-clip-text text-transparent
+               text-2xl md:text-3xl leading-none"
+                  style={{ fontWeight: 900 }}
+                >
+                  {labels.heroHeadline}
+                </span>
+              </h1>
+
+              <p className="text-lg md:text-xl text-black">{labels.heroCopy}</p>
+
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex flex-wrap justify-center gap-3">
+                  <Link to="/products">
+                    <Button
+                      size="lg"
+                      className="gradient-primary text-white shadow-premium text-sm md:text-base
+                   px-5 py-3 h-auto rounded-xl"
+                    >
+                      {labels.discoverProducts}
+                      <ArrowLeft className="mr-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+
+                  <Link to="/contact">
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="bg-primary/10 backdrop-blur border-primary text-primary
                    hover:bg-primary hover:text-primary-foreground
                    text-sm md:text-base px-5 py-3 h-auto rounded-xl"
-      >
-        {labels.talkToUs}
-      </Button>
-    </Link>
-  </div>
-
-
-</div>
-
-
+                    >
+                      {labels.talkToUs}
+                    </Button>
+                  </Link>
+                </div>
+              </div>
             </div>
 
-            {/* Right: moving image (slow up/down) + fixed border/frame OVER it */}
-         <div className="relative order-1 lg:order-2 flex justify-center">
-  <div className="absolute -inset-10 rounded-full bg-primary/25 blur-3xl" />
+            {/* Right: moving image */}
+            <div className="relative order-1 lg:order-2 flex justify-center">
+              <div className="absolute -inset-10 rounded-full bg-primary/25 blur-3xl" />
 
-  <div className="relative w-72 md:w-80 lg:w-96 aspect-square">
-    <div className="relative h-full w-full overflow-hidden rounded-[28px] bg-white/10 backdrop-blur shadow-premium">
-      <img
-        src={hero2}
-        alt="Perfect Wrap"
-        className="h-full w-full object-contain will-change-transform  motion-reduce:transform-none"
-        style={{ animation: "pw-float-slow 9s ease-in-out infinite" }}
-      />
-    </div>
+              <div className="relative w-72 md:w-80 lg:w-96 aspect-square">
+                <div className="relative h-full w-full overflow-hidden rounded-[28px] bg-white/10 backdrop-blur shadow-premium">
+                  <img
+                    src={hero2}
+                    alt="Perfect Wrap"
+                    className="h-full w-full object-contain will-change-transform  motion-reduce:transform-none"
+                    style={{ animation: "pw-float-slow 9s ease-in-out infinite" }}
+                  />
+                </div>
 
-    <div className="pointer-events-none absolute inset-0 rounded-[28px] ring-4 ring-white/70 shadow-[0_0_0_1px_rgba(255,255,255,0.25)]" />
-  </div>
-</div>
-
+                <div className="pointer-events-none absolute inset-0 rounded-[28px] ring-4 ring-white/70 shadow-[0_0_0_1px_rgba(255,255,255,0.25)]" />
+              </div>
+            </div>
           </div>
         </div>
       </section>
-   <div className="aa mr-16 relative z-[9999] pointer-events-auto" style={{ marginTop: "-40px" }}>
-  <PerfectWrapSocialNav />
-</div>
 
+      <div className="aa mr-16 relative z-[9999] pointer-events-auto" style={{ marginTop: "-40px" }}>
+        <PerfectWrapSocialNav />
+      </div>
 
       {/* Features Section */}
       <section className="py-20 bg-muted">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
+          {/* ✅ changed to 5 columns on md+ */}
+          <div className="grid md:grid-cols-5 gap-8">
             <Card className="p-8 text-center shadow-card hover:shadow-premium transition-shadow">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full gradient-primary flex items-center justify-center">
                 <Sparkles className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">{labels.featureCustomTitle}</h3>
-              <p className="text-muted-foreground">
-                {labels.featureCustomBody}
-              </p>
+              <p className="text-muted-foreground">{labels.featureCustomBody}</p>
             </Card>
 
             <Card className="p-8 text-center shadow-card hover:shadow-premium transition-shadow">
@@ -242,9 +240,7 @@ heroBadge: "חנות - סטודיו - סדנאות",
                 <Shield className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">{labels.featureQualityTitle}</h3>
-              <p className="text-muted-foreground">
-                {labels.featureQualityBody}
-              </p>
+              <p className="text-muted-foreground">{labels.featureQualityBody}</p>
             </Card>
 
             <Card className="p-8 text-center shadow-card hover:shadow-premium transition-shadow">
@@ -252,9 +248,7 @@ heroBadge: "חנות - סטודיו - סדנאות",
                 <Truck className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">{labels.featureShippingTitle}</h3>
-              <p className="text-muted-foreground">
-                {labels.featureShippingBody}
-              </p>
+              <p className="text-muted-foreground">{labels.featureShippingBody}</p>
             </Card>
 
             <Card className="p-8 text-center shadow-card hover:shadow-premium transition-shadow">
@@ -262,8 +256,27 @@ heroBadge: "חנות - סטודיו - סדנאות",
                 <Award className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-xl font-bold mb-2">{labels.featureWrapTitle}</h3>
+              <p className="text-muted-foreground">{labels.featureWrapBody}</p>
+            </Card>
+
+            {/* ✅ NEW CARD */}
+            <Card className="p-8 text-center shadow-card hover:shadow-premium transition-shadow">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full gradient-primary flex items-center justify-center">
+                <Gift className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">{labels.featureGiftTitle}</h3>
+
               <p className="text-muted-foreground">
-                {labels.featureWrapBody}
+                {labels.featureGiftBody}{" "}
+                <a
+                  href="https://www.instagram.com/perfectwrap2021?igsh=MTY3cXN0MnhwY3ltdw=="
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary underline underline-offset-4"
+                  dir="ltr"
+                >
+                  @perfectwrap2021
+                </a>
               </p>
             </Card>
           </div>
@@ -274,16 +287,15 @@ heroBadge: "חנות - סטודיו - סדנאות",
       <section className="py-20 bg-muted">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl md:text-5xl font-black text-center mb-4">
-            {labels.topTitle} <span className="text-gradient-gold">{labels.topHighlight}</span>
+            {labels.topTitle}{" "}
+            <span className="text-gradient-gold">{labels.topHighlight}</span>
           </h2>
           <p className="text-center text-muted-foreground text-lg mb-12">
             {labels.topSubtitle}
           </p>
 
           {loading && (
-            <p className="text-center text-muted-foreground">
-              {labels.loading}
-            </p>
+            <p className="text-center text-muted-foreground">{labels.loading}</p>
           )}
 
           {error && !loading && (
@@ -291,9 +303,7 @@ heroBadge: "חנות - סטודיו - סדנאות",
           )}
 
           {!loading && !error && topProducts.length === 0 && (
-            <p className="text-center text-muted-foreground">
-              {labels.noTop}
-            </p>
+            <p className="text-center text-muted-foreground">{labels.noTop}</p>
           )}
 
           {!loading && !error && topProducts.length > 0 && (
@@ -302,8 +312,7 @@ heroBadge: "חנות - סטודיו - סדנאות",
                 {topProducts.map((product) => {
                   const firstOption = product.options[0];
                   const price =
-                    firstOption.salePriceWithoutMaam ??
-                    firstOption.priceWithoutMaam;
+                    firstOption.salePriceWithoutMaam ?? firstOption.priceWithoutMaam;
 
                   return (
                     <Link key={product._id} to={`/products/${product._id}`}>
@@ -321,9 +330,7 @@ heroBadge: "חנות - סטודיו - סדנאות",
                               ? product.category
                               : product.category?.name}
                           </div>
-                          <h3 className="text-xl font-bold mb-2">
-                            {product.name}
-                          </h3>
+                          <h3 className="text-xl font-bold mb-2">{product.name}</h3>
                           <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
                             {product.description}
                           </p>
@@ -332,7 +339,6 @@ heroBadge: "חנות - סטודיו - סדנאות",
                               <span className="text-2xl font-bold text-primary">
                                 ₪{price}
                               </span>
-                              
                             </div>
                             <Button
                               variant="outline"

@@ -12,28 +12,29 @@ export interface Product {
   options: ProductOption[];
   image: string;
   isTop: boolean;
-  category: Category;        // not string anymore
+  category: Category; // not string anymore
 }
 
 export interface User {
   username: string;
   id: string;
-  role: 'customer' | 'admin';
+  role: "customer" | "admin";
 }
 
 export interface CartItem {
   productId: string;
   productName: string;
   optionName: string;
-  optionIndex: number;          // <--- add this
+  optionIndex: number; // <--- add this
   priceWithoutMaam: number;
   quantity: number;
   image: string;
-  itemNote:string;
+  itemNote: string;
   itemImageUrl?: string;
   itemImagePublicId?: string;
 }
 
+export type DeliveryMethod = "pickup" | "shipping";
 
 export interface CustomerDetails {
   fullName: string;
@@ -44,7 +45,11 @@ export interface CustomerDetails {
   houseNumber: string;
   postalCode?: string;
   notes?: string;
-  itemsMeta:any;
+  itemsMeta: any;
+
+  // ✅ NEW
+  deliveryMethod: DeliveryMethod;
+  shippingFee: number; // 0 or 40
 }
 
 export interface Order {
@@ -52,13 +57,17 @@ export interface Order {
   date: string;
   items: CartItem[];
   totalWithoutMaam: number;
-  
+
+  // ✅ NEW
+  shippingFee?: number;
+  totalToPay?: number;
+  deliveryMethod?: DeliveryMethod;
+
   status: "pending" | "paid" | "shipped" | "completed" | "failed" | "canceled";
   customerDetails?: CustomerDetails;
 }
 
 export interface Category {
-  _id: string;           // MongoDB ID
-  name: string;          // Category name
- 
+  _id: string; // MongoDB ID
+  name: string; // Category name
 }
