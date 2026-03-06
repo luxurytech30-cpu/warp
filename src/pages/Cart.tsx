@@ -1,6 +1,6 @@
 // src/pages/Cart.tsx
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,18 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { getMyOrders } from "@/lib/api";
+
+type PaymentMessage = {
+  type: "tranzila:payment-success" | "tranzila:payment-failed";
+  orderId?: string | null;
+};
+
+const isPaymentMessage = (value: unknown): value is PaymentMessage => {
+  if (!value || typeof value !== "object") return false;
+  const data = value as Record<string, unknown>;
+  return data.type === "tranzila:payment-success" || data.type === "tranzila:payment-failed";
+};
 
 const Cart = () => {
   const {
@@ -21,12 +33,15 @@ const Cart = () => {
     updateItemNote,
     placeOrder,
     clearCart,
+    loadCart,
   } = useCart();
 
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [payOpen, setPayOpen] = useState(false);
   const [iframeUrl, setIframeUrl] = useState<string | null>(null);
   const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
+  const finalizingPaymentRef = useRef(false);
 
   const { isArabic } = useLanguage();
   const isAuthenticated = !!user;
@@ -317,6 +332,98 @@ const Cart = () => {
       setIsPlacingOrder(false);
     }
   };
+
+  const handlePaymentSuccess = useCallback(
+    async (incomingOrderId?: string | null) => {
+      if (finalizingPaymentRef.current) return;
+      finalizingPaymentRef.current = true;
+
+      const orderId = incomingOrderId || currentOrderId;
+
+      try {
+        setPayOpen(false);
+        setIframeUrl(null);
+        await loadCart();
+      } catch (error) {
+        console.error("PAYMENT SUCCESS SYNC ERROR:", error);
+      } finally {
+        setCurrentOrderId(null);
+        const query = orderId ? `?orderId=${encodeURIComponent(orderId)}` : "";
+        navigate(`/payment-success${query}`, { replace: true });
+      }
+    },
+    [currentOrderId, loadCart, navigate]
+  );
+
+  const handlePaymentFailure = useCallback(
+    (incomingOrderId?: string | null) => {
+      if (finalizingPaymentRef.current) return;
+      finalizingPaymentRef.current = true;
+
+      setPayOpen(false);
+      setIframeUrl(null);
+      setCurrentOrderId(null);
+
+      const orderId = incomingOrderId || currentOrderId;
+      const query = orderId ? `?orderId=${encodeURIComponent(orderId)}` : "";
+      navigate(`/payment-failed${query}`, { replace: true });
+    },
+    [currentOrderId, navigate]
+  );
+
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return;
+      if (!isPaymentMessage(event.data)) return;
+
+      if (event.data.type === "tranzila:payment-success") {
+        void handlePaymentSuccess(event.data.orderId);
+        return;
+      }
+
+      handlePaymentFailure(event.data.orderId);
+    };
+
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, [handlePaymentFailure, handlePaymentSuccess]);
+
+  useEffect(() => {
+    if (!payOpen || !currentOrderId || finalizingPaymentRef.current) return;
+
+    let active = true;
+
+    const pollOrderStatus = async () => {
+      try {
+        const orders = await getMyOrders();
+        if (!active || finalizingPaymentRef.current) return;
+
+        const currentOrder = orders.find((order) => order.id === currentOrderId);
+        if (!currentOrder) return;
+
+        if (["paid", "shipped", "completed"].includes(currentOrder.status)) {
+          await handlePaymentSuccess(currentOrderId);
+          return;
+        }
+
+        if (["failed", "canceled"].includes(currentOrder.status)) {
+          handlePaymentFailure(currentOrderId);
+        }
+      } catch (error) {
+        console.error("PAYMENT STATUS POLL ERROR:", error);
+      }
+    };
+
+    void pollOrderStatus();
+    const intervalId = window.setInterval(() => {
+      void pollOrderStatus();
+    }, 3000);
+
+    return () => {
+      active = false;
+      window.clearInterval(intervalId);
+    };
+  }, [payOpen, currentOrderId, handlePaymentFailure, handlePaymentSuccess]);
 
   const handleClearCart = () => {
     clearCart();

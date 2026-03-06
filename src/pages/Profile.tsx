@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/dialog";
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+const CANCELLABLE_STATUSES: Array<Order["status"]> = ["pending", "paid"];
 
 const Profile = () => {
   // ✅ Hooks ALWAYS called in same order
@@ -171,10 +172,19 @@ const Profile = () => {
     },
   });
 
-  const canCancelOrder = (order: Order) => {
-    if (order.status !== "pending") return false;
+  const isCancellableStatus = (status: Order["status"]) =>
+    CANCELLABLE_STATUSES.includes(status);
+
+  const getOrderAgeMs = (order: Order) => {
     const createdAt = new Date(order.date).getTime();
-    return Date.now() - createdAt <= TWO_HOURS_MS;
+    if (Number.isNaN(createdAt)) return Number.POSITIVE_INFINITY;
+    return Date.now() - createdAt;
+  };
+
+  const canCancelOrder = (order: Order) => {
+    if (!isCancellableStatus(order.status)) return false;
+    const ageMs = getOrderAgeMs(order);
+    return ageMs >= 0 && ageMs <= TWO_HOURS_MS;
   };
 
   const getStatusLabel = (status: string) => {
@@ -247,19 +257,19 @@ const Profile = () => {
 
   // ✅ NEW: request cancel -> open confirmation dialog
   const requestCancelOrder = (order: Order) => {
-    const ageMs = Date.now() - new Date(order.date).getTime();
+    const ageMs = getOrderAgeMs(order);
 
     if (order.status === "canceled") {
       toast.error(labels.alreadyCanceled);
       return;
     }
 
-    if (ageMs > TWO_HOURS_MS) {
+    if (ageMs > TWO_HOURS_MS || ageMs < 0) {
       toast.error(labels.cancelTooLate);
       return;
     }
 
-    if (order.status !== "pending") {
+    if (!isCancellableStatus(order.status)) {
       toast.error(labels.cancelNotAllowed);
       return;
     }
@@ -413,18 +423,18 @@ const Profile = () => {
                             </Button>
                           </td>
                           <td className="py-2 px-2 align-middle">
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              disabled={cancelMutation.isPending}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                requestCancelOrder(order); // ✅ confirmation first
-                              }}
-                            >
-                              {labels.cancel}
-                            </Button>
-                          </td>
+  <Button
+    size="sm"
+    variant="destructive"
+    disabled={!canCancelOrder(order) || cancelMutation.isPending}
+    onClick={(e) => {
+      e.stopPropagation();
+      requestCancelOrder(order);
+    }}
+  >
+    {labels.cancel}
+  </Button>
+</td>
                         </tr>
                       ))}
                     </tbody>

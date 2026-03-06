@@ -42,7 +42,7 @@ const Index = () => {
         featureQualityTitle: "جودة فاخرة",
         featureQualityBody: "مواد مختارة بعناية وتغليف أنيق",
         featureShippingTitle: "شحن سريع",
-      featureShippingBody: "تجهيز الطلب قبل الشحن حتى 3 أيام عمل، 34 الشحن من 3 حتى 5 أيام عمل",
+      featureShippingBody: "تجهيز الطلب قبل الشحن حتى 3 أيام عمل، الشحن من 3 حتى 5 أيام عمل",
         featureWrapTitle: "تغليف ساحر",
         featureWrapBody: "علب وشرايط حريرية جاهزة للإهداء",
 

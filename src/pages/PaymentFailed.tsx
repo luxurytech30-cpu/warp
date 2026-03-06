@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,18 @@ const PaymentFailed = () => {
         retry: "נסה שוב",
         backToShopping: "חזרה לקניות",
       };
+
+  useEffect(() => {
+    if (window.self === window.top) return;
+
+    window.parent.postMessage(
+      {
+        type: "tranzila:payment-failed",
+        orderId,
+      },
+      window.location.origin
+    );
+  }, [orderId]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">
