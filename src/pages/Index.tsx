@@ -218,70 +218,9 @@ const Index = () => {
         </div>
       </section>
 
-      <div className="aa mr-16 relative z-[9999] pointer-events-auto" style={{ marginTop: "-40px" }}>
-        <PerfectWrapSocialNav />
-      </div>
+      
 
-      {/* Features Section */}
-      <section className="py-20 bg-muted">
-        <div className="container mx-auto px-4">
-          {/* ✅ changed to 5 columns on md+ */}
-          <div className="grid md:grid-cols-5 gap-8">
-            <Card className="p-8 text-center shadow-card hover:shadow-premium transition-shadow">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full gradient-primary flex items-center justify-center">
-                <Sparkles className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-2">{labels.featureCustomTitle}</h3>
-              <p className="text-muted-foreground">{labels.featureCustomBody}</p>
-            </Card>
-
-            <Card className="p-8 text-center shadow-card hover:shadow-premium transition-shadow">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full gradient-gold flex items-center justify-center">
-                <Shield className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-2">{labels.featureQualityTitle}</h3>
-              <p className="text-muted-foreground">{labels.featureQualityBody}</p>
-            </Card>
-
-            <Card className="p-8 text-center shadow-card hover:shadow-premium transition-shadow">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full gradient-primary flex items-center justify-center">
-                <Truck className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-2">{labels.featureShippingTitle}</h3>
-              <p className="text-muted-foreground">{labels.featureShippingBody}</p>
-            </Card>
-
-            <Card className="p-8 text-center shadow-card hover:shadow-premium transition-shadow">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full gradient-gold flex items-center justify-center">
-                <Award className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-2">{labels.featureWrapTitle}</h3>
-              <p className="text-muted-foreground">{labels.featureWrapBody}</p>
-            </Card>
-
-            {/* ✅ NEW CARD */}
-            <Card className="p-8 text-center shadow-card hover:shadow-premium transition-shadow">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full gradient-primary flex items-center justify-center">
-                <Gift className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-2">{labels.featureGiftTitle}</h3>
-
-              <p className="text-muted-foreground">
-                {labels.featureGiftBody}{" "}
-                <a
-                  href="https://www.instagram.com/perfectwrap2021?igsh=MTY3cXN0MnhwY3ltdw=="
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-primary underline underline-offset-4"
-                  dir="ltr"
-                >
-                  @perfectwrap2021
-                </a>
-              </p>
-            </Card>
-          </div>
-        </div>
-      </section>
+      
 
       {/* Top Products Section */}
       <section className="py-20 bg-muted">
@@ -367,6 +306,71 @@ const Index = () => {
               </div>
             </>
           )}
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 bg-muted">
+        <div className="container mx-auto px-4">
+          {/* ✅ changed to 5 columns on md+ */}
+          <div className="grid md:grid-cols-5 gap-8">
+            <Card className="p-8 text-center shadow-card hover:shadow-premium transition-shadow">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full gradient-primary flex items-center justify-center">
+                <Sparkles className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">{labels.featureCustomTitle}</h3>
+              <p className="text-muted-foreground">{labels.featureCustomBody}</p>
+            </Card>
+
+            <Card className="p-8 text-center shadow-card hover:shadow-premium transition-shadow">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full gradient-gold flex items-center justify-center">
+                <Shield className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">{labels.featureQualityTitle}</h3>
+              <p className="text-muted-foreground">{labels.featureQualityBody}</p>
+            </Card>
+
+            <Card className="p-8 text-center shadow-card hover:shadow-premium transition-shadow">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full gradient-primary flex items-center justify-center">
+                <Truck className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">{labels.featureShippingTitle}</h3>
+              <p className="text-muted-foreground">{labels.featureShippingBody}</p>
+            </Card>
+
+            <Card className="p-8 text-center shadow-card hover:shadow-premium transition-shadow">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full gradient-gold flex items-center justify-center">
+                <Award className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">{labels.featureWrapTitle}</h3>
+              <p className="text-muted-foreground">{labels.featureWrapBody}</p>
+            </Card>
+
+            {/* ✅ NEW CARD */}
+            <Card className="p-8 text-center shadow-card hover:shadow-premium transition-shadow">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full gradient-primary flex items-center justify-center">
+                <Gift className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">{labels.featureGiftTitle}</h3>
+
+              <p className="text-muted-foreground">
+                {labels.featureGiftBody}{" "}
+                <a
+                  href="https://www.instagram.com/perfectwrap2021?igsh=MTY3cXN0MnhwY3ltdw=="
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary underline underline-offset-4"
+                  dir="ltr"
+                >
+                  @perfectwrap2021
+                </a>
+              </p>
+            </Card>
+            
+          </div>
+          <div className="aa mr-16 relative z-[9999] pointer-events-auto pt-20" style={{ marginTop: "-40px" }}>
+        <PerfectWrapSocialNav />
+      </div>
         </div>
       </section>
 
